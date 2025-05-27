@@ -30,7 +30,8 @@ game.RunService.Stepped:Connect(function()
                   if (v.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= range and not Cooldown then
                          Cooldown = true
                          game:GetService("VirtualInputManager"):SendMouseButtonEvent(0, 0, 0, true, game, false)
-                         task.wait(1)
+                         game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.CFrame
+                         task.wait(.7)
                          for i = 1,2 do
                          Cooldown = false
                          end
