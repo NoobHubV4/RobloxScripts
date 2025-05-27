@@ -2,6 +2,7 @@ local lib = loadstring(game:HttpGet("https://raw.githubusercontent.com/NoobHubV1
 local AutoParry = false
 local range = 15
 local Cooldown = false
+local GotoBall = false
 
 lib:SetTitle("Blade Soccer")
 lib:SetTitleColor(0, 0, 255)
@@ -23,6 +24,10 @@ lib:AddButton("Distance -", function()
       end
 end)
 
+lib:AddToggle("Goto The Ball", function(v)
+      GotoBall = v
+end, false)
+
 game.RunService.Stepped:Connect(function()
    if AutoParry then
        for _,v in pairs(workspace:GetDescendants()) do
@@ -30,8 +35,10 @@ game.RunService.Stepped:Connect(function()
                   if (v.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= range and not Cooldown then
                          Cooldown = true
                          game:GetService("VirtualInputManager"):SendMouseButtonEvent(0, 0, 0, true, game, false)
-                         game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.CFrame
-                         task.wait(.7)
+                         if GotoBall then
+                                game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.CFrame
+                         end
+                         task.wait(.8)
                          for i = 1,2 do
                          Cooldown = false
                          end
