@@ -2,12 +2,12 @@ local Library = loadstring(Game:HttpGet("https://raw.githubusercontent.com/NoobH
 local ParryMethod = "MouseClick"
 local VIM = game:GetService("VirtualInputManager") or game:FindFirstDescendant("VirtualInputManager")
 local Balls = workspace.Balls
-local MultiParry = 0.3
+local MultiParry = 0.5
 local States = {}
 
 local Parry = function(Mode)
       if Mode == "MouseClick" then
-             VIM:SendMouseButtonEvent(0, 0, 0, true, game, 0)
+             VIM:SendMouseButtonEvent(0, 0, 0, true, game, false)
       elseif Mode == "Keypress" then
              VIM:SendKeyEvent(true,"F",false,game)
       end
@@ -37,15 +37,6 @@ Section:CreateToggle("Auto Parry", function(v)
       States.AutoParry = v
 end)
 
-Section:CreateTextbox("Auto Parry Multiplier", function(value)
-      if value > 3.0000000000000000000001 then
-             MultiParry = value
-      end
-end)
-
---[[
-	WARNING: Heads up! This script has not been verified by ScriptBlox. Use at your own risk!
-]]
 local RunService = game:GetService("RunService") or game:FindFirstDescendant("RunService")
 local Players = game:GetService("Players") or game:FindFirstDescendant("Players")
 
@@ -80,6 +71,7 @@ Balls.ChildAdded:Connect(function()
 end)
 
 RunService.PreSimulation:Connect(function()
+ if States.AutoParry then
     local Ball, HRP = GetBall(), Player.Character.HumanoidRootPart
     if not Ball or not HRP then
       return
@@ -93,8 +85,9 @@ RunService.PreSimulation:Connect(function()
       Parried = true
       Cooldown = tick()
       
-      if (tick() - Cooldown) >= 1 then
+      if (tick() - Cooldown) >= 0.5 then
         Parried = false
       end
     end
+end
 end)
