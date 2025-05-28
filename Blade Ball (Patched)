@@ -1,0 +1,4 @@
+local Library = loadstring(Game:HttpGet("https://raw.githubusercontent.com/NoobHubV1/NoobHubV1/main/Wizard%20Lib.lua"))()
+local GameMode = "Game"
+
+-- Patched
