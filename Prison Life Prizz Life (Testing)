@@ -2124,9 +2124,8 @@ local MultiKill = function(plrs, exclude)
 	for i,v in pairs(plrs:GetPlayers()) do
 		if not (v == LocalPlayer or v == exclude) and CheckWhitelist(v) then
 			if v.Character and not v.Character:FindFirstChildWhichIsA("ForceField") and not (v.Character:FindFirstChild("Humanoid").Health == 0) then
-                          repeat
-                                KillPL(v) 
-                          until v.Character.Humanoid.Health == 0
+                                 wait(.15)
+                                 KillPL(v)
 			end
 		end
 	end
