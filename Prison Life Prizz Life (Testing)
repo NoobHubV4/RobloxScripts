@@ -1,6 +1,6 @@
 Execution_Runtime = tick() 
 PLadmin_Settings = { 
-	DefaultPrefix = ";" 
+	DefaultPrefix = ";";
 	JoinNotify = false; 
 	AutoRespawn = true; --Automatically loadcharacter when dying 
 	AntiVoid = true; --Automatically teleport up when falling into void 
