@@ -2020,7 +2020,7 @@ local KillPL = function(plr, events, guntouse, WaitToDie)
 		};
 	end
 	task.spawn(function()
-		for i = 1, 7 do
+		for i = 1, 15 do
 			Rstorage.ReloadEvent:FireServer(AK)
 			task.wait(.05)
 		end
