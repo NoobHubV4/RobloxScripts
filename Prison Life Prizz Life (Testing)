@@ -1992,7 +1992,7 @@ local ShootKill = function(plr, amount, guntouse, hitpart)
 	end
 end
 
-local KillPL = function(plr, events, guntouse, WaitToDie) 
+local KillPL = function(plr, events, guntouse) 
 	local AK = LocalPlayer.Backpack:FindFirstChild("AK-47") or LocalPlayer.Character:FindFirstChild("AK-47")
 	if not AK and not guntouse then
 		Gun("AK-47")
@@ -2035,9 +2035,6 @@ local KillPL = function(plr, events, guntouse, WaitToDie)
 		end
 	else
 		Rstorage.ShootEvent:FireServer(ShootEvents, AK)
-	end
-	if WaitToDie then
-		repeat task.wait() until not plr.Character or not plr.Character:FindFirstChildOfClass("Humanoid") or plr.Character:FindFirstChildOfClass("Humanoid").Health == 0 or plr.Character:FindFirstChildWhichIsA("ForceField")
 	end
 end
 
