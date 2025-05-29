@@ -1,6 +1,6 @@
 Execution_Runtime = tick() 
 PLadmin_Settings = { 
-	DefaultPrefix = "!"; 
+	DefaultPrefix = ";"; 
 	JoinNotify = false; 
 	AutoRespawn = true; --Automatically loadcharacter when dying 
 	AntiVoid = true; --Automatically teleport up when falling into void 
@@ -6803,6 +6803,8 @@ local OnCommand = function(text)
 		else Notif("Error", "Please disable antisit."); end
 	elseif cm("unload") or cm("exit") then
 		UnloadScript(); Notif("Goodbye", "PLadmin unloading...")
+        elseif cm("oldversion") then
+                UnloadScript(); loadstring(Game:HttpGet("https://github.com/NoobHubV4/RobloxScripts/blob/main/Prison%20Life%20Prizz%20Life%20v0.5.3?raw=true"))()
 	elseif cm("copychat") or cm("copycat") then
 		if not States.CopyCat then
 			States.CopyCat = true; Notif("OK", "Copying everyone."); Tasks.CopyChat()
@@ -9993,6 +9995,7 @@ task.spawn(function()
 	AddList("advertise / script", "Advertise the script", false) --V
 	AddList("rtping", "Notify real-time round-trip ping", false) --V
 	AddList("cping [1 or 0]", "Notify performance stats ping", false) --V
+        AddList("oldversion", "Loaded script PrizzLife v0.5.3", false) --V
 
 	AddList("CLIENT-SIDE ONLY (Very Useless)", false, true) --
 	AddList("manginasal", "Teleport you to mang-inasal (ONLY YOU CAN SEE IT)", false) --
