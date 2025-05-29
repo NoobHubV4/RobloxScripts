@@ -22,7 +22,7 @@ PLadmin_Settings = {
 	WhisperToRanked = true; --Use whisper for outputing commands for ranked players 
 };wait()
 
-Instance.new("Folder", game:GetService("Workspace")).Name = "PLADMIN LOADED SUCCESS"
+Instance.new("Folder", game).Name = "PLADMIN LOADED SUCCESS"
 local PLAdmin = Instance.new("ScreenGui")
 local MainFrame = Instance.new("Frame")
 local ScriptName = Instance.new("TextLabel")
@@ -742,6 +742,7 @@ local LocPL = {
 	isMouse = game:GetService("UserInputService").MouseEnabled;
 };
 local Threads, Tasks = nil, nil
+local API = {}
 
 --Functions
 local deprint = function(args)
@@ -6802,9 +6803,9 @@ local OnCommand = function(text)
 			Notif("OK", "You are now walking with a car.")
 		else Notif("Error", "Please disable antisit."); end
 	elseif cm("unload") or cm("exit") then
-		UnloadScript(); Notif("Goodbye", "PLadmin unloading...")
+		API:UnloadScript(); Notif("Goodbye", "PLadmin unloading...")
         elseif cm("oldversion") then
-                UnloadScript(); loadstring(Game:HttpGet("https://github.com/NoobHubV4/RobloxScripts/blob/main/Prison%20Life%20Prizz%20Life%20v0.5.3?raw=true"))()
+                API:UnloadScript(); loadstring(Game:HttpGet("https://github.com/NoobHubV4/RobloxScripts/blob/main/Prison%20Life%20Prizz%20Life%20v0.5.3?raw=true"))()
 	elseif cm("copychat") or cm("copycat") then
 		if not States.CopyCat then
 			States.CopyCat = true; Notif("OK", "Copying everyone."); Tasks.CopyChat()
@@ -10270,7 +10271,7 @@ Connections.JumpStamina = game:GetService("UserInputService").JumpRequest:Connec
 end)
 
 --Unload script
-UnloadScript = function()
+API:UnloadScript = function()
 	Unloaded = true; for _, cons in next, Connections do
 		cons:Disconnect(); cons = nil
 	end; for _, Ccon in next, ChatCon do
@@ -10280,7 +10281,7 @@ UnloadScript = function()
 		States.Invisible = nil; Tasks.Refresh()
 	end; Loops = {}; Powers = {}; States = {}; Toggles = {}; Settings = {User = {}, Ranked = {}}; SavedArgs = {}; RankedPlrs = {};
 	Saved.TeamFrame:Destroy(); PLAdmin:Destroy(); Saved.PLINIT:Destroy(); Saved = {Thread = {}}; LocPL = {};
-	game.Players.LocalPlayer.PlayerScripts.ClientGunReplicator.Disabled = false; workspace:FindFirstChild("PLADMIN LOADED SUCCESS"):Destroy()
+	game.Players.LocalPlayer.PlayerScripts.ClientGunReplicator.Disabled = false; game:FindFirstChild("PLADMIN LOADED SUCCESS"):Destroy()
 end
 --Check gamepass
 LocPL.Gamepass = game:GetService("MarketplaceService"):UserOwnsGamePassAsync(LocalPlayer.UserId, 96651) or game:GetService("MarketplaceService"):UserOwnsGamePassAsync(LocalPlayer.UserId, 643697197)
