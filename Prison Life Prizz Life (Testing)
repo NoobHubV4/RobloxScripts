@@ -2009,7 +2009,7 @@ local KillPL = function(plr, events, guntouse, WaitToDie)
 	if plr.Character:FindFirstChild("Humanoid").Health == 0 or plr.Character:FindFirstChildWhichIsA("ForceField") then
 		return
 	end
-	local Eve = events or 8
+	local Eve = events or 10
 	local ShootEvents = {};
 	for i = 1, Eve do
 		ShootEvents[#ShootEvents + 1] = {
