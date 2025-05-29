@@ -2027,11 +2027,8 @@ local KillPL = function(plr, events, guntouse, WaitToDie)
 	end)
 	if plr.TeamColor == LocalPlayer.TeamColor then
 		if plr.TeamColor == BrickColor.new("Really red") or plr.TeamColor == BrickColor.new("Bright blue") then
-			SavedPositions.AutoRe = LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame
-			SaveCamPos()
-			TeamEve("Bright orange")
+			TeamTo("inmate")
 			Rstorage.ShootEvent:FireServer(ShootEvents, AK)
-			task.wait(0.06)
 		else
 			TeamTo("criminal")
 			Rstorage.ShootEvent:FireServer(ShootEvents, AK)
