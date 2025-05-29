@@ -2009,7 +2009,7 @@ local KillPL = function(plr, events, guntouse, WaitToDie)
 	if plr.Character:FindFirstChild("Humanoid").Health == 0 or plr.Character:FindFirstChildWhichIsA("ForceField") then
 		return
 	end
-	local Eve = events or 10
+	local Eve = events or 8
 	local ShootEvents = {};
 	for i = 1, Eve do
 		ShootEvents[#ShootEvents + 1] = {
@@ -2020,7 +2020,7 @@ local KillPL = function(plr, events, guntouse, WaitToDie)
 		};
 	end
 	task.spawn(function()
-		for i = 1, 10 do
+		for i = 1, 7 do
 			Rstorage.ReloadEvent:FireServer(AK)
 			task.wait(.05)
 		end
@@ -2124,7 +2124,8 @@ local MultiKill = function(plrs, exclude)
 	for i,v in pairs(plrs:GetPlayers()) do
 		if not (v == LocalPlayer or v == exclude) and CheckWhitelist(v) then
 			if v.Character and not v.Character:FindFirstChildWhichIsA("ForceField") and not (v.Character:FindFirstChild("Humanoid").Health == 0) then
-        KillPL(v) task.wait(.1)
+                          KillPL(v) 
+                          wait(.1)
 			end
 		end
 	end
