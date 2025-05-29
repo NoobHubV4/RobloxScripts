@@ -1,6 +1,6 @@
 Execution_Runtime = tick() 
 PLadmin_Settings = { 
-	DefaultPrefix = "!"; 
+	DefaultPrefix = ";" 
 	JoinNotify = false; 
 	AutoRespawn = true; --Automatically loadcharacter when dying 
 	AntiVoid = true; --Automatically teleport up when falling into void 
@@ -2127,7 +2127,7 @@ local MultiKill = function(plrs, exclude)
 	for i,v in pairs(plrs:GetPlayers()) do
 		if not (v == LocalPlayer or v == exclude) and CheckWhitelist(v) then
 			if v.Character and not v.Character:FindFirstChildWhichIsA("ForceField") and not (v.Character:FindFirstChild("Humanoid").Health == 0) then
-				KillPL(v)
+				KillPL(v) wait(.1)
 			end
 		end
 	end
