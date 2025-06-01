@@ -1,5 +1,95 @@
-local player = game.Players:GetPlayers()
+local Prefix = ";"
+local LocalPlayer = game.Players.LocalPlayer
+local Unloaded = true
 
-for i,v in pairs(player) do
-     v:Kick("Event Patched")
+local Notif = function(Title, Text, Duration)
+	local Duration = Duration
+	if not Duration then
+		Duration = 3
+	end
+	game:GetService("StarterGui"):SetCore("SendNotification", {
+		Title = Title;
+		Text = Text;
+		Icon = "";
+		Duration = Duration;
+	})
 end
+
+Notif("Check", "Check Id game", 3)
+if game.PlaceId == 14493533447 then
+       Unloaded = false
+       Notif("Successfully", "Game Support", 10)
+else
+       Notif("Error", "Game Not Support")
+end
+
+if Unloaded == false then
+local Whitelisted = {}
+
+function getEvent()
+        local char = LocalPlayer.Character
+        local back = LocalPlayer.Backpack
+
+        local tool = char:FindFirstChild("GoldSlapTool") or char:FindFirstChild("BlueSlapTool") or back:FindFirstChild("GoldSlapTool") or back:FindFirstChild("BlueSlapTool")
+        if not tool then
+              return Notif("Error", "Not Slap", 3)
+        end
+        if tool and tool:FindFirstChild("Event") then
+              return tool.Event
+        end
+end
+        
+
+function Slap(Player)
+        local targetPart = Player.Character and Player.Character:FindFirstChild("HumanoidRootPart")
+        local Event = getEvent()
+        if Event then
+             if targetPart then
+                    Event:FireServer("slash", Player.Character, targetPart.Position, Vector3.new(0, 500000, 0))
+                    if targetPart and targetPart.Parent:FindFirstChild("BodyVelocity") == nil then
+
+                        local bodyVelocity = Instance.new("BodyVelocity")
+
+                            bodyVelocity.MaxForce = Vector3.new(0, math.huge, 0)
+
+                            bodyVelocity.Velocity = Vector3.new(0, SLAP_POWER, 0)
+
+                            bodyVelocity.Parent = targetPart
+
+                            game.Debris:AddItem(bodyVelocity, 0.5)
+
+                    end
+              end
+       end
+end
+
+function SlapAll()
+   local Event = getEvent()
+   for _,Player in pairs(game.Players:GetPlayers()) do
+     if Player ~= LocalPlayer and not table.find(Whitelisted,v) then
+        local targetPart = Player.Character and Player.Character:FindFirstChild("HumanoidRootPart")
+        if Event then
+             if targetPart then
+                    Event:FireServer("slash", Player.Character, targetPart.Position, Vector3.new(0, 500000, 0))
+                    if targetPart and targetPart.Parent:FindFirstChild("BodyVelocity") == nil then
+
+                        local bodyVelocity = Instance.new("BodyVelocity")
+
+                            bodyVelocity.MaxForce = Vector3.new(0, math.huge, 0)
+
+                            bodyVelocity.Velocity = Vector3.new(0, SLAP_POWER, 0)
+
+                            bodyVelocity.Parent = targetPart
+
+                            game.Debris:AddItem(bodyVelocity, 0.5)
+
+                    end
+              end
+       end
+    end
+  end
+end
+SlapAll()
+end
+
+--Coming soon
