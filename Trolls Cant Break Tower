@@ -1,5 +1,6 @@
 local Prefix = ";"
-local LocalPlayer = game.Players.LocalPlayer
+local Players = game.Players
+local LocalPlayer = Players.LocalPlayer
 local Unloaded = true
 
 local Notif = function(Title, Text, Duration)
@@ -25,6 +26,36 @@ end
 
 if Unloaded == false then
 local Whitelisted = {}
+local States = {SlapAll = false}
+local Slap = {}
+
+local PlrFromArgs = function(plr, args)
+	if plr and plr:lower() == "me" then
+		return args
+	elseif not plr and not args then
+		return false
+	elseif not plr and args then
+		return args
+	end
+	local foundplr = false
+	for i,v in pairs(Players:GetPlayers()) do
+		local Name, DisplayName = v.Name:lower(), v.DisplayName:lower()
+		if Name:sub(1, #plr) == plr:lower() or DisplayName:sub(1, #plr) == plr:lower() then
+			foundplr = v
+		end
+	end
+	return foundplr
+end
+
+local GetRandomPlr = function(args)
+	local DaPlayers = Players:GetPlayers()
+	local DaIndex = math.random(1, #DaPlayers)
+	local ToReturn = DaPlayers[DaIndex]
+	if args and ToReturn.UserId == args.UserId then
+		DaPlayers = Players:GetPlayers(); DaIndex = math.random(1, #DaPlayers); ToReturn = DaPlayers[DaIndex]
+	end
+	return ToReturn
+end
 
 function getEvent()
         local char = LocalPlayer.Character
@@ -89,7 +120,44 @@ function SlapAll()
     end
   end
 end
-SlapAll()
+function OnCommand(text)
+        local Args = text:split(" ")
+	if Args[1] == "/e" or Args[1] == "/c" or Args[1] == "/t" or Args[1] == "/" then
+		table.remove(Args, 1)
+	end
+	if Args[1] == "/w" then
+		table.remove(Args, 1)
+		if Args[2] then
+			table.remove(Args, 1)
+		end
+	end
+	local function cm(args)
+		return args == Args[1]:sub(#Prefix+1):lower()
+	end
+        if cm("slap") then
+                local DaPlayer = PlrFromArgs(Args[2], false)
+                if DaPlayer then
+                        Slap(DaPlayer)
+                        Notif("Successfully", "Slap "..DaPlayer)
+                end
+                local ar = Args[2] and Args[2]:lower()
+                if ar == "all" then
+                        SlapAll()
+                        Notif("Successfully", "Slap All")
+                elseif ar == "random" then
+                        local DaRandom = GetRandomPlr(LocalPlayer)
+                        Slap(DaRandom)
+                        Notif("Successfully", "Slap "..DaRandom)
+                elseif not DaPlayer then
+                        Notif("Error", "Not Player in Server")
+                end
+        else
+                Notif("Error", tostring(Args[1]) .. " is not a valid command.")
+        end
+end
+LocalPlayer.Chatted:Connect(function(t)
+	OnCommand(t)
+end)
 end
 
 --Coming soon
