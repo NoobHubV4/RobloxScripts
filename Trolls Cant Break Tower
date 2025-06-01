@@ -1,0 +1,5 @@
+local player = game.Players:GetPlayers()
+
+for i,v in pairs(player) do
+     v:Kick("Event Patched")
+end
