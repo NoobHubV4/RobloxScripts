@@ -7,6 +7,7 @@ print([[
         unwhitelist / unwl [plr] | Blacklisted Player
         slapaura [plr] | Give Slap Aura Player
         unslapaura [plr] | Revoke Slap Aura Player
+        rejoin / rj | Rejoin the server
 ]])
 local Prefix = ";"
 local Players = game.Players
@@ -263,6 +264,8 @@ function OnCommand(text)
                 else
                         Notif("Error", "Not Player in Server")
                 end
+        elseif cm("rejoin") or cm("rj") then
+                game:FindService("TeleportService"):Teleport(game.PlaceId)
         else
                 Notif("Error", tostring(Args[1]).." is a valid command.")
         end
@@ -319,15 +322,23 @@ task.spawn(function()
 					Slap(v)
 				end
 			end
-                        if Loops.Slaps.Auras then 
-                                for _,PlayerGui in next, Loops.Slaps.Auras do
-                                          SlapAura(PlayerGui)
-                                end
-                        end
                 end
         end
         while wait() do
                 pcall(task0)
+        end
+end)
+task.spawn(function()
+        task1 = function()
+                if Unloaded then return end
+                if Loops.Slaps.Auras then 
+                        for _,PlayerGui in next, Loops.Slaps.Auras do
+                                SlapAura(PlayerGui)
+                        end
+                end
+        end
+        while wait() do
+                pcall(task1)
         end
 end)
 end
