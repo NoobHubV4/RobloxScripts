@@ -50,6 +50,7 @@ ExecBar.PlaceholderColor3 = Color3.fromRGB(255, 255, 255)
 ExecBar.Text = ""
 ExecBar.TextColor3 = Color3.fromRGB(255, 255, 255)
 ExecBar.TextSize = 23.000
+ExecBar.ClearTextOnFocus = false
 
 function getRemote()
         local char = LocalPlayer.Character
@@ -180,21 +181,40 @@ function OnCommand(text)
                         Notif("Error", "Not Player in Server")
                 end
         elseif cm("loopslap") then
+                local DaPlayer = PlrFromArgs(Args[2], false)
+                if DaPlayer then
+                        Loops.Slaps.Plr[DaPlayer.UserId] = DaPlayer
+                        Notif("Successfully", "Loop Slap "..DaPlayer.DisplayName)
+                end
                 local ar = Args[2] and Args[2]:lower()
                 if ar == "all" then
                         Loops.Slaps.All = true
                         Notif("Successfully", "Loop Slap All")
+                elseif not DaPlayer then
+                        Notif("Error", "Not Player in Server")
                 end
         elseif cm("unloopslap") then
+                local DaPlayer = PlrFromArgs(Args[2], false)
+                if DaPlayer then
+                        Loops.Slaps.Plr[DaPlayer.UserId] = nil
+                        Notif("Successfully", "Loop Slap "..DaPlayer.DisplayName)
+                end
                 local ar = Args[2] and Args[2]:lower()
                 if ar == "all" then
                         Loops.Slaps.All = false
                         Notif("Successfully", "UnLoop Slap All")
+                elseif not DaPlayer then
+                        Notif("Error", "Not Player in Server")
                 end
         else
                 Notif("Error", tostring(Args[1]).." is a valid command.")
         end
 end
+Players.PlayerAdded:Connect(function(plr)
+        if Loops.Slaps.Plr[plr.UserId] then
+		Loops.Slaps.Plr[plr.UserId] = plr
+	end
+end)
 LocalPlayer.Chatted:Connect(function(t)
 	if not chatdebounce then
 		chatdebounce = true
@@ -230,6 +250,12 @@ task.spawn(function()
                 if Loops.Slaps.All then
                         SlapAll()
                         wait(CPing(nil, true) / 2)
+                else
+                        if Loops.Slaps.Plr then
+				for i,v in next, Loops.Slaps.Plr do
+					Slap(v)
+				end
+			end
                 end
         end
         while task.wait() do
