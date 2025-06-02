@@ -303,7 +303,6 @@ task.spawn(function()
         task0 = function()
                 if Loops.Slaps.All then
                         SlapAll()
-                        wait(CPing(nil, true) / 2)
                 else
                         if Loops.Slaps.Plr then
 				for i,v in next, Loops.Slaps.Plr do
@@ -313,22 +312,23 @@ task.spawn(function()
                         if Loops.Slaps.Auras then 
                                 for _,Plr in next, Loops.Slaps.Auras do
                                           for i,v in pairs(game.Players:GetPlayers()) do
-                                                if v ~= Plr then
+                                                if v ~= Plr and CheckWhitelist(Plr) and v ~= LocalPlayer then
                                                         if (v.Character.HumanoidRootPart.Position - Plr.Character.HumanoidRootPart.Position).Magnitude < 10 then
                                                                 Slap(v)
                                                         end
                                                 end
                                           end
                                 end
-                                wait(CPing(nil, true) / 2)
                         end
                 end
         end
-        while task.wait() do
+        while true do
                 pcall(task0)
                 if Unloaded then
                         break
                 end
+                task.wait(CPing(nil, true) / 2)
         end
 end)
 end
+ 
