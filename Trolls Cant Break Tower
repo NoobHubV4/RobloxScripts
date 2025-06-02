@@ -26,8 +26,24 @@ end
 
 if Unloaded == false then
 local Whitelisted = {}
-local States = {SlapAll = false}
-local Slap = {}
+local SlapAll = false
+local Slaping = {}
+local ScreenGui = Instance.new("ScreenGui", game.CoreGui)
+ScreenGui.Name = "ScreenGui"
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+local TextBox = Instance.new("TextBox", ScreenGui)
+TextBox.Name = "TextBox"
+TextBox.BackgroundColor3 = Color3.fromRGB(172, 172, 172)
+TextBox.BackgroundTransparency = 0.400
+TextBox.Position = UDim2.new(0.0255349874, 0, 0.800595582, 0)
+TextBox.Size = UDim2.new(0, 278, 0, 33)
+TextBox.Font = Enum.Font.SourceSans
+TextBox.PlaceholderText = "Command Bar"
+TextBox.PlaceholderColor3 = Color3.fromRGB(255, 255, 255)
+TextBox.Text = ""
+TextBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+TextBox.TextSize = 23.000
+TextBox.Draggable = true
 
 local PlrFromArgs = function(plr, args)
 	if plr and plr:lower() == "me" then
@@ -157,6 +173,25 @@ function OnCommand(text)
 end
 LocalPlayer.Chatted:Connect(function(t)
 	OnCommand(t)
+end)
+TextBox.FocusLost:Connect(function(enterPressed, inputObj)
+	if TextBox.Text == "" then
+		return
+	end
+	if enterPressed then
+		local success, errors = pcall(function()
+			if string.sub(TextBox.Text, 0, 1) == Prefix then
+				OnCommand(TextBox.Text)
+			else
+				OnCommand(Prefix .. TextBox.Text)
+			end
+		end)
+		if not success then
+			dewarn("NoobHubV4_Error: " .. tostring(errors) .. ".")
+		end
+		task.wait(.2)
+		TextBox.Text = ""
+	end
 end)
 end
 
