@@ -48,7 +48,7 @@ TextBox.Draggable = true
 local PlrFromArgs = function(plr)
 	local function findPlayer(stringg)
 	        if (stringg == ("me")) then
-			return lp
+			return LocalPlayer
 		elseif (stringg == ("random")) then
 			local GetPlayers = game.Players:GetPlayers()
 			if table.find(GetPlayers,Player) then table.remove(GetPlayers,table.find(GetPlayers,Player)) end
@@ -62,16 +62,6 @@ local PlrFromArgs = function(plr)
 		end
 	end
 	return findPlayer(plr)
-end
-
-local GetRandomPlr = function(args)
-	local DaPlayers = Players:GetPlayers()
-	local DaIndex = math.random(1, #DaPlayers)
-	local ToReturn = DaPlayers[DaIndex]
-	if args and ToReturn.UserId == args.UserId then
-		DaPlayers = Players:GetPlayers(); DaIndex = math.random(1, #DaPlayers); ToReturn = DaPlayers[DaIndex]
-	end
-	return ToReturn
 end
 
 function getEvent()
@@ -152,7 +142,7 @@ function OnCommand(text)
 		return args == Args[1]:sub(#Prefix+1):lower()
 	end
         if cm("slap") then
-                local DaPlayer = PlrFromArgs(Args[2], false)
+                local DaPlayer = PlrFromArgs(Args[2])
                 if DaPlayer then
                         Slap(DaPlayer)
                         Notif("Successfully", "Slap "..DaPlayer)
@@ -161,10 +151,6 @@ function OnCommand(text)
                 if ar == "all" then
                         SlapAll()
                         Notif("Successfully", "Slap All")
-                elseif ar == "random" then
-                        local DaRandom = GetRandomPlr(LocalPlayer)
-                        Slap(DaRandom)
-                        Notif("Successfully", "Slap "..DaRandom)
                 elseif not DaPlayer then
                         Notif("Error", "Not Player in Server")
                 end
