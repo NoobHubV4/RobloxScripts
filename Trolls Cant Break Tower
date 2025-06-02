@@ -22,7 +22,7 @@ if game.PlaceId == 14493533447 then
         Notif("Successfully", "Game Support", 10)
 else
         Notif("Error", "Game Not Support")
-        wait(.5)
+        safeWait(5)
         game:FindService("TeleportService"):Teleport(14493533447)
 end
 
@@ -32,6 +32,7 @@ local Loops = {
       Slaps = {
       All = false,
       Plr = {},
+      Auras = {},
       },
 }
 local ScreenGui = Instance.new("ScreenGui", game.Players.LocalPlayer.PlayerGui)
@@ -51,6 +52,7 @@ ExecBar.Text = ""
 ExecBar.TextColor3 = Color3.fromRGB(255, 255, 255)
 ExecBar.TextSize = 23.000
 ExecBar.ClearTextOnFocus = false
+ExecBar.Draggable = true
 
 function getRemote()
         local char = LocalPlayer.Character
@@ -226,6 +228,22 @@ function OnCommand(text)
                 else
                         Notif("Error", "Not Player in Server")
                 end
+        elseif cm("slapaura") then
+                local DaPlayer = PlrFromArgs(Args[2], LocalPlayer)
+                if DaPlayer then
+                        Loops.Slaps.Auras[DaPlayer.UserId] = DaPlayer
+                        Notif("Successfully", "Give slapaura "..DaPlayer.DisplayName)
+                else
+                        Notif("Error", "Not Player in Server")
+                end
+        elseif cm("unslapaura") then
+                local DaPlayer = PlrFromArgs(Args[2], LocalPlayer)
+                if DaPlayer then
+                        Loops.Slaps.Auras[DaPlayer.UserId] = nil
+                        Notif("Successfully", "Revoke slapaura "..DaPlayer.DisplayName)
+                else
+                        Notif("Error", "Not Player in Server")
+                end
         else
                 Notif("Error", tostring(Args[1]).." is a valid command.")
         end
@@ -236,6 +254,9 @@ Players.PlayerAdded:Connect(function(plr)
 	end
         if Whitelisted[plr.UserId] then
                 Whitelisted[plr.UserId] = plr
+        end
+        if Loops.Slaps.Auras[plr.UserId] then
+                Loops.Slaps.Auras[plr.UserId] = plr
         end
 end)
 LocalPlayer.Chatted:Connect(function(t)
@@ -280,8 +301,20 @@ task.spawn(function()
 				end
 			end
                 end
+                if Loops.Slaps.Auras then 
+                        for _,Plr in next, Loops.Slaps.Auras do
+                                for i,v in pairs(Players:GetPlayers()) do
+                                        if v ~= Plr then
+                                                if (v.Character.HumanoidRootPart.Position - Plr.Character.HumanoidRootPart.Position).Magnitude < 10 then
+                                                        Slap(v)
+                                                end
+                                        end
+                                end
+                        end
+                        wait(CPing(nil, true) / 2)
+                end
         end
-        while task.wait() do
+        while wait(.02) do
                 pcall(task0)
                 if Unloaded then
                         break
