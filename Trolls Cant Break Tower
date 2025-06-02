@@ -126,7 +126,7 @@ end
 function SlapAll()
         local remote = getRemote()
         for _, arg in pairs(Players:GetPlayers()) do
-                  if arg ~= LocalPlayer and not CheckWhitelist(arg) then
+                  if arg ~= LocalPlayer and CheckWhitelist(arg) then
         local targetPart = arg.Character and arg.Character:FindFirstChild("HumanoidRootPart")
                 if targetPart then
                         coroutine.wrap(function()
