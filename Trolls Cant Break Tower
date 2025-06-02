@@ -26,8 +26,7 @@ end
 
 if Unloaded == false then
 local Whitelisted = {}
-local SlapAll = false
-local Slaping = {}
+local Loops = {}
 local ScreenGui = Instance.new("ScreenGui", game.CoreGui)
 ScreenGui.Name = "ScreenGui"
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
@@ -50,11 +49,11 @@ local PlrFromArgs = function(plr)
 	        if (stringg == ("me")) then
 			return LocalPlayer
 		elseif (stringg == ("random")) then
-			local GetPlayers = game.Players:GetPlayers()
+			local GetPlayers = Players:GetPlayers()
 			if table.find(GetPlayers,Player) then table.remove(GetPlayers,table.find(GetPlayers,Player)) end
 			return GetPlayers[math.random(#GetPlayers)]
 		else
-			for _, v in pairs(game.Players:GetPlayers()) do
+			for _, v in pairs(Players:GetPlayers()) do
 				if (stringg:lower() == (v.Name:lower()):sub(1, #stringg)) or (stringg:lower() == (v.DisplayName:lower()):sub(1, #stringg)) then 
 					return v 
 				end
@@ -154,6 +153,18 @@ function OnCommand(text)
                 elseif not DaPlayer then
                         Notif("Error", "Not Player in Server")
                 end
+        elseif cm("loopslap") then
+                local ar = Args[2] and Args[2]:lower()
+                if ar == "all" then
+                        Loops.SlapAll = true
+                        Notif("Successfully", "Loop Slap All")
+                end
+        elseif cm("unloopslap") then
+                local ar = Args[2] and Args[2]:lower()
+                if ar == "all" then
+                        Loops.SlapAll = false
+                        Notif("Successfully", "UnLoop Slap All")
+                end
         else
                 Notif("Error", tostring(Args[1]) .. " is not a valid command.")
         end
@@ -183,6 +194,18 @@ TextBox.FocusLost:Connect(function(enterPressed, inputObj)
 		TextBox.Text = ""
 	end
 end)
+task.spawn(function()
+        task0 = function()
+                if Loops.SlapAll then
+                        SlapAll()
+                end
+        end
+        while task.wait() do
+                pcall(task0)
+                if Unloaded then
+                        break
+                end
+        end
+end)
 end
-
 --Coming soon
