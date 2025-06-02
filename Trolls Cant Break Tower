@@ -45,22 +45,23 @@ TextBox.TextColor3 = Color3.fromRGB(255, 255, 255)
 TextBox.TextSize = 23.000
 TextBox.Draggable = true
 
-local PlrFromArgs = function(plr, args)
-	if plr and plr:lower() == "me" then
-		return args
-	elseif not plr and not args then
-		return false
-	elseif not plr and args then
-		return args
-	end
-	local foundplr = false
-	for i,v in pairs(Players:GetPlayers()) do
-		local Name, DisplayName = v.Name:lower(), v.DisplayName:lower()
-		if Name:sub(1, #plr) == plr:lower() or DisplayName:sub(1, #plr) == plr:lower() then
-			foundplr = v
+local PlrFromArgs = function(plr)
+	local function findPlayer(stringg)
+	        if (stringg == ("me")) then
+			return lp
+		elseif (stringg == ("random")) then
+			local GetPlayers = game.Players:GetPlayers()
+			if table.find(GetPlayers,Player) then table.remove(GetPlayers,table.find(GetPlayers,Player)) end
+			return GetPlayers[math.random(#GetPlayers)]
+		else
+			for _, v in pairs(game.Players:GetPlayers()) do
+				if (stringg:lower() == (v.Name:lower()):sub(1, #stringg)) or (stringg:lower() == (v.DisplayName:lower()):sub(1, #stringg)) then 
+					return v 
+				end
+			end
 		end
 	end
-	return foundplr
+	return findPlayer(plr)
 end
 
 local GetRandomPlr = function(args)
@@ -172,7 +173,10 @@ function OnCommand(text)
         end
 end
 LocalPlayer.Chatted:Connect(function(t)
-	OnCommand(t)
+	local Subbed = string.sub(t,1,1)
+        if Subbed == Prefix then
+                OnCommand(t)
+        end
 end)
 TextBox.FocusLost:Connect(function(enterPressed, inputObj)
 	if TextBox.Text == "" then
