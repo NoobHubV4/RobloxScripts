@@ -64,6 +64,10 @@ function getRemote()
         end
 end
 
+function CheckWhitelist(args)
+        return not (Whitelisted[args.UserId])
+end
+
 function CPing(ConvertToHuman, OneWayTrip)
 	if ConvertToHuman then
 		return OneWayTrip and LocalPlayer:GetNetworkPing() * 1000 or game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValue()
@@ -122,7 +126,7 @@ end
 function SlapAll()
         local remote = getRemote()
         for _, arg in pairs(Players:GetPlayers()) do
-                  if arg ~= LocalPlayer and not table.find(Whitelisted,arg) then
+                  if arg ~= LocalPlayer and not CheckWhitelist(arg) then
         local targetPart = arg.Character and arg.Character:FindFirstChild("HumanoidRootPart")
                 if targetPart then
                         coroutine.wrap(function()
@@ -206,6 +210,22 @@ function OnCommand(text)
                 elseif not DaPlayer then
                         Notif("Error", "Not Player in Server")
                 end
+        elseif cm("whitelist") or cm("wl") then
+                local DaPlayer = PlrFromArgs(Args[2], false)
+                if DaPlayer then
+                        Whitelisted[DaPlayer.UserId] = DaPlayer
+                        Notif("Successfully", "Whitelist "..DaPlayer.DisplayName)
+                else
+                        Notif("Error", "Not Player in Server")
+                end
+        elseif cm("unwhitelist") or cm("unwl") then
+                local DaPlayer = PlrFromArgs(Args[2], false)
+                if DaPlayer then
+                        Whitelisted[DaPlayer.UserId] = nil
+                        Notif("Successfully", "Blacklist "..DaPlayer.DisplayName)
+                else
+                        Notif("Error", "Not Player in Server")
+                end
         else
                 Notif("Error", tostring(Args[1]).." is a valid command.")
         end
@@ -214,6 +234,9 @@ Players.PlayerAdded:Connect(function(plr)
         if Loops.Slaps.Plr[plr.UserId] then
 		Loops.Slaps.Plr[plr.UserId] = plr
 	end
+        if Whitelisted[plr.UserId] then
+                Whitelisted[plr.UserId] = plr
+        end
 end)
 LocalPlayer.Chatted:Connect(function(t)
 	if not chatdebounce then
