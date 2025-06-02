@@ -1,3 +1,13 @@
+print([[
+     Commands:
+        slap [plr,all] | Slap the Player
+        loopslap [plr,all] | Loop Slap the Player
+        unloopslap [plr,all] | Unloop Slap the Player
+        whitelist / wl [plr] | Whitelisted Player
+        unwhitelist / unwl [plr] | Blacklisted Player
+        slapaura [plr] | Give Slap Aura Player
+        unslapaura [plr] | Revoke Slap Aura Player
+]])
 local Prefix = ";"
 local Players = game.Players
 local LocalPlayer = Players.LocalPlayer
@@ -127,7 +137,7 @@ end
 
 function SlapAll()
         local remote = getRemote()
-        for _, arg in pairs(Players:GetPlayers()) do
+        for _, arg in pairs(game.Players:GetPlayers()) do
                   if arg ~= LocalPlayer and CheckWhitelist(arg) then
         local targetPart = arg.Character and arg.Character:FindFirstChild("HumanoidRootPart")
                 if targetPart then
@@ -300,21 +310,21 @@ task.spawn(function()
 					Slap(v)
 				end
 			end
-                end
-                if Loops.Slaps.Auras then 
-                        for _,Plr in next, Loops.Slaps.Auras do
-                                for i,v in pairs(Players:GetPlayers()) do
-                                        if v ~= Plr then
-                                                if (v.Character.HumanoidRootPart.Position - Plr.Character.HumanoidRootPart.Position).Magnitude < 10 then
-                                                        Slap(v)
+                        if Loops.Slaps.Auras then 
+                                for _,Plr in next, Loops.Slaps.Auras do
+                                          for i,v in pairs(game.Players:GetPlayers()) do
+                                                if v ~= Plr then
+                                                        if (v.Character.HumanoidRootPart.Position - Plr.Character.HumanoidRootPart.Position).Magnitude < 10 then
+                                                                Slap(v)
+                                                        end
                                                 end
-                                        end
+                                          end
                                 end
+                                wait(CPing(nil, true) / 2)
                         end
-                        wait(CPing(nil, true) / 2)
                 end
         end
-        while wait(.02) do
+        while task.wait() do
                 pcall(task0)
                 if Unloaded then
                         break
