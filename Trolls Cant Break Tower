@@ -1,0 +1,124 @@
+local Prefix = ";"
+local Players = game.Players
+local LocalPlayer = Players.LocalPlayer
+local Unloaded = true
+
+local Notif = function(Title, Text, Duration)
+	local Duration = Duration
+	if not Duration then
+		Duration = 3
+	end
+	game:GetService("StarterGui"):SetCore("SendNotification", {
+		Title = Title;
+		Text = Text;
+		Icon = "";
+		Duration = Duration;
+	})
+end
+
+Notif("Checking", "Check Id Game")
+if game.PlaceId == 14493533447 then
+        Unloaded = false
+        Notif("Successfully", "Game Support", 10)
+else
+        Notif("Error", "Game Not Support")
+        wait(.5)
+        game:FindServer("TeleportService"):Teleport(game.PlaceId)
+end
+
+if not Unloaded then
+local Whitelisted = {}
+local Loops = {
+      Slaps = {
+      All = false,
+      Plr = {},
+      },
+}
+
+function getRemote()
+        local char = LocalPlayer.Character
+        local back = LocalPlayer.Backpack
+
+        local tool = char:FindFirstChild("GoldSlapTool") or char:FindFirstChild("BlueSlapTool") or back:FindFirstChild("GoldSlapTool") or back:FindFirstChild("BlueSlapTool")
+        if not tool then
+                return Notif("Error", "Not Tool")
+        elseif tool:IsA("Tool") and tool:FindFirstChild("Event") then
+                return tool.Event
+        end
+end
+
+local PlrFromArgs = function(plr, args)
+	if plr and plr:lower() == "me" then
+		return args
+	elseif not plr and not args then
+		return false
+	elseif not plr and args then
+		return args
+	end
+	local foundplr = false
+	for i,v in pairs(Players:GetPlayers()) do
+		local Name, DisplayName = v.Name:lower(), v.DisplayName:lower()
+		if Name:sub(1, #plr) == plr:lower() or DisplayName:sub(1, #plr) == plr:lower() then
+			foundplr = v
+		end
+	end
+	return foundplr
+end
+
+local GetRandomPlr = function(args)
+	local DaPlayers = Players:GetPlayers()
+	local DaIndex = math.random(1, #DaPlayers)
+	local ToReturn = DaPlayers[DaIndex]
+	if args and ToReturn.UserId == args.UserId then
+		DaPlayers = Players:GetPlayers(); DaIndex = math.random(1, #DaPlayers); ToReturn = DaPlayers[DaIndex]
+	end
+	return ToReturn
+end
+
+function Slap(arg)
+        local remote = getRemote()
+        local targetPart = arg.Character and arg.Character:FindFirstChild("HumanoidRootPart")
+                if targetPart then
+                        coroutine.wrap(function()
+                            pcall(function()
+                                -- Fire remote with extreme upward force
+                                remote:FireServer("slash", arg.Character, targetPart.Position, Vector3.new(0, 500000, 0))
+                                -- Apply massive upward velocity to target
+                                if targetPart and targetPart.Parent:FindFirstChild("BodyVelocity") == nil then
+                                    local bodyVelocity = Instance.new("BodyVelocity")
+                                    bodyVelocity.MaxForce = Vector3.new(0, math.huge, 0)
+                                    bodyVelocity.Velocity = Vector3.new(0, SLAP_POWER, 0)
+                                    bodyVelocity.Parent = targetPart
+                                    game.Debris:AddItem(bodyVelocity, 0.5)
+                                end
+                            end)
+                        end)()
+                end
+end
+
+function SlapAll()
+        local remote = getRemote()
+        for _, arg in pairs(Players:GetPlayers()) do
+                  if arg ~= LocalPlayer and not table.find(Whitelisted,arg) then
+        local targetPart = arg.Character and arg.Character:FindFirstChild("HumanoidRootPart")
+                if targetPart then
+                        coroutine.wrap(function()
+                            pcall(function()
+                                -- Fire remote with extreme upward force
+                                remote:FireServer("slash", arg.Character, targetPart.Position, Vector3.new(0, 500000, 0))
+                                -- Apply massive upward velocity to target
+                                if targetPart and targetPart.Parent:FindFirstChild("BodyVelocity") == nil then
+                                    local bodyVelocity = Instance.new("BodyVelocity")
+                                    bodyVelocity.MaxForce = Vector3.new(0, math.huge, 0)
+                                    bodyVelocity.Velocity = Vector3.new(0, SLAP_POWER, 0)
+                                    bodyVelocity.Parent = targetPart
+                                    game.Debris:AddItem(bodyVelocity, 0.5)
+                                end
+                            end)
+                        end)()
+                end
+                                end
+                      end
+end
+SlapAll()
+end
