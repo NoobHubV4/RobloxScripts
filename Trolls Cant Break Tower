@@ -25,8 +25,12 @@ else
 end
 
 if Unloaded == false then
-local Whitelisted = {}
-local Loops = {}
+local Loops = {
+      Slaping = {}
+}
+local API = {
+      Whitelisted = {}
+}
 local ScreenGui = Instance.new("ScreenGui", game.CoreGui)
 ScreenGui.Name = "ScreenGui"
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
@@ -43,6 +47,7 @@ TextBox.Text = ""
 TextBox.TextColor3 = Color3.fromRGB(255, 255, 255)
 TextBox.TextSize = 23.000
 TextBox.Draggable = true
+TextBox.ClearTextOnFocus = false
 
 local PlrFromArgs = function(plr)
 	local function findPlayer(stringg)
@@ -103,7 +108,7 @@ end
 function SlapAll()
    local Event = getEvent()
    for _,Player in pairs(game.Players:GetPlayers()) do
-     if Player ~= LocalPlayer and not table.find(Whitelisted,v) then
+     if Player ~= LocalPlayer and not table.find(API.Whitelisted,Player) then
         local targetPart = Player.Character and Player.Character:FindFirstChild("HumanoidRootPart")
         if Event then
              if targetPart then
@@ -144,7 +149,7 @@ function OnCommand(text)
                 local DaPlayer = PlrFromArgs(Args[2])
                 if DaPlayer then
                         Slap(DaPlayer)
-                        Notif("Successfully", "Slap "..DaPlayer)
+                        Notif("Successfully", "Slap "..DaPlayer.Name)
                 end
                 local ar = Args[2] and Args[2]:lower()
                 if ar == "all" then
@@ -154,16 +159,46 @@ function OnCommand(text)
                         Notif("Error", "Not Player in Server")
                 end
         elseif cm("loopslap") then
+                local DaPlayer = PlrFromArgs(Args[2])
+                if not table.find(Loops.Slaping,DaPlayer.Name) then
+                        table.insert(Loops.Slaping,DaPlayer.Name)
+                        Notif("Successfully", "Loop Slap "..DaPlayer.Name)
+                end
                 local ar = Args[2] and Args[2]:lower()
                 if ar == "all" then
                         Loops.SlapAll = true
                         Notif("Successfully", "Loop Slap All")
+                elseif not DaPlayer then
+                        Notif("Error", "Not Player in Server")
                 end
         elseif cm("unloopslap") then
+                local DaPlayer = PlrFromArgs(Args[2])
+                if table.find(Loops.Slaping,DaPlayer.Name) then
+                        table.remove(Loops.Slaping,table.find(Loops.Slaping,DaPlayer.Name))
+                        Notif("Successfully", "Loop Slap "..DaPlayer.Name)
+                end
                 local ar = Args[2] and Args[2]:lower()
                 if ar == "all" then
-                        Loops.SlapAll = false
-                        Notif("Successfully", "UnLoop Slap All")
+                        Loops.SlapAll = true
+                        Notif("Successfully", "Loop Slap All")
+                elseif not DaPlayer then
+                        Notif("Error", "Not Player in Server")
+                end
+        elseif cm("whitelist") or cm("wl") then
+                local DaPlayer = PlrFromArgs(Args[2])
+                if not table.find(API.Whitelisted,DaPlayer.Name) then
+                        table.insert(API.Whitelisted,DaPlayer.Name)
+                        Notif("Successfully", "Whitelist "..DaPlayer.Name)
+                elseif not DaPlayer then
+                        Notif("Error", "Not Player in Server")
+                end
+        elseif cm("unwhitelist") or cm("unwl") then
+                local DaPlayer = PlrFromArgs(Args[2])
+                if table.find(API.Whitelisted,DaPlayer.Name) then
+                        table.remove(API.Whitelisted,table.find(API.Whitelisted,DaPlayer.Name))
+                        Notif("Successfully", "Blacklist "..DaPlayer.Name)
+                elseif not DaPlayer then
+                        Notif("Error", "Not Player in Server")
                 end
         else
                 Notif("Error", tostring(Args[1]) .. " is not a valid command.")
@@ -199,6 +234,13 @@ task.spawn(function()
                 if Loops.SlapAll then
                         SlapAll()
                 end
+                for i,v in pairs(Loops.Slaping) do
+			if v and game:GetService("Players"):FindFirstChild(v) then
+				local Target = game:GetService("Players"):FindFirstChild(v)
+                                        Slap(Target)
+                                        wait(.1)
+			end
+		end
         end
         while task.wait() do
                 pcall(task0)
