@@ -26,11 +26,14 @@ end
 
 if Unloaded == false then
 local Loops = {
-      Slaping = {}
-}
+      Slaping = {};
+};
 local API = {
-      Whitelisted = {}
-}
+      Whitelisted = {};
+};
+local Saved = {
+      SlapDebounce = {};
+};
 local ScreenGui = Instance.new("ScreenGui", game.CoreGui)
 ScreenGui.Name = "ScreenGui"
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
@@ -68,6 +71,24 @@ local PlrFromArgs = function(plr)
 	return findPlayer(plr)
 end
 
+local RTPing = function(value)
+	if value then
+		task.wait(value)
+	end
+	local RT1 = tick()
+	local RT2 = tick()
+	local RoundTrip = (RT2-RT1) * 1000
+	return RoundTrip
+end
+
+local CPing = function(ConvertToHuman, OneWayTrip)
+	if ConvertToHuman then
+		return OneWayTrip and LocalPlayer:GetNetworkPing() * 1000 or game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValue()
+	else
+		return OneWayTrip and LocalPlayer:GetNetworkPing() or game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValue() / 1000
+	end
+end
+
 function getEvent()
         local char = LocalPlayer.Character
         local back = LocalPlayer.Backpack
@@ -75,8 +96,7 @@ function getEvent()
         local tool = char:FindFirstChild("GoldSlapTool") or char:FindFirstChild("BlueSlapTool") or back:FindFirstChild("GoldSlapTool") or back:FindFirstChild("BlueSlapTool")
         if not tool then
               return Notif("Error", "Not Slap", 3)
-        end
-        if tool and tool:FindFirstChild("Event") then
+        elseif tool and tool:FindFirstChild("Event") then
               return tool.Event
         end
 end
@@ -233,6 +253,7 @@ task.spawn(function()
         task0 = function()
                 if Loops.SlapAll then
                         SlapAll()
+                        wait(CPing(nil, true) / 2)
                 end
                 for i,v in pairs(Loops.Slaping) do
 			if v and game:GetService("Players"):FindFirstChild(v) then
