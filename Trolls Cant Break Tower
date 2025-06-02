@@ -63,6 +63,14 @@ function getRemote()
         end
 end
 
+function CPing(ConvertToHuman, OneWayTrip)
+	if ConvertToHuman then
+		return OneWayTrip and LocalPlayer:GetNetworkPing() * 1000 or game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValue()
+	else
+		return OneWayTrip and LocalPlayer:GetNetworkPing() or game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValue() / 1000
+	end
+end
+
 local PlrFromArgs = function(plr, args)
 	if plr and plr:lower() == "me" then
 		return args
@@ -171,6 +179,18 @@ function OnCommand(text)
                 elseif not DaPlayer then
                         Notif("Error", "Not Player in Server")
                 end
+        elseif cm("loopslap") then
+                local ar = Args[2] and Args[2]:lower()
+                if ar == "all" then
+                        Loops.Slaps.All = true
+                        Notif("Successfully", "Loop Slap All")
+                end
+        elseif cm("unloopslap") then
+                local ar = Args[2] and Args[2]:lower()
+                if ar == "all" then
+                        Loops.Slaps.All = false
+                        Notif("Successfully", "UnLoop Slap All")
+                end
         else
                 Notif("Error", tostring(Args[1]).." is a valid command.")
         end
@@ -204,5 +224,19 @@ ExecBar.FocusLost:Connect(function(enterPressed, inputObj)
 		task.wait(.2)
 		ExecBar.Text = ""
 	end
+end)
+task.spawn(function()
+        task0 = function()
+                if Loops.Slaps.All then
+                        SlapAll()
+                        wait(CPing(nil, true) / 2)
+                end
+        end
+        while task.wait() do
+                pcall(task0)
+                if Unloaded then
+                        break
+                end
+        end
 end)
 end
