@@ -56,6 +56,7 @@ local Loops = {
 }
 local SavedPositions = {};
 local States = {};
+local ViewPlr = {};
 local ScreenGui = Instance.new("ScreenGui", game.Players.LocalPlayer.PlayerGui)
 ScreenGui.Name = "ScreenGui"
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
@@ -339,6 +340,24 @@ function OnCommand(text)
                         Loops.Goto[DaPlayer.UserId] = nil
                         Notif("Successfully", "UnLoop Goto "..DaPlayer.DisplayName)
                 end
+        elseif cm("view") then
+                local DaPlayer = PlrFromArgs(Args[2], false)
+                if DaPlayer then
+                        ViewPlr[DaPlayer.UserId] = DaPlayer
+                        Notif("Successfully", "View "..DaPlayer.DisplayName)
+                else
+                        Notif("Error", "Not Player in Server")
+                end
+        elseif cm("unview") then
+                local DaPlayer = PlrFromArgs(Args[2], false)
+                if DaPlayer then
+                        ViewPlr[DaPlayer.UserId] = nil
+                        wait(.25)
+                        workspace.CurrentCamera.CameraSubject = LocalPlayer.Character
+                        Notif("Successfully", "UnView "..DaPlayer.DisplayName)
+                else
+                        Notif("Error", "Not Player in Server")
+                end
         else
                 Notif("Error", tostring(Args[1]).." is a valid command.")
         end
@@ -355,6 +374,9 @@ Players.PlayerAdded:Connect(function(plr)
         end
         if Loops.Goto[plr.UserId] then
                 Loops.Goto[plr.UserId] = plr
+        end
+        if ViewPlr[plr.UserId] then
+                ViewPlr[plr.UserId] = plr
         end
 end)
 LocalPlayer.Chatted:Connect(function(t)
@@ -418,6 +440,11 @@ task.spawn(function()
                 if Loops.Goto then
                         for _,Target in next, Loops.Goto do
                                 LocalPlayer.Character.HumanoidRootPart.CFrame = Target.Character.HumanoidRootPart.CFrame
+                        end
+                end
+                if ViewPlr then
+                        for _,b in next, ViewPlr do
+                                workspace.CurrentCamera.CameraSubject = b.Character
                         end
                 end
         end
