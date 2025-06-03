@@ -11,6 +11,9 @@ print([[
         unload | Unloaded The Script
         prefix [Prefix] | Change Prefix
         goto [plr] | Goto Player
+        slap | get the slap
+        autoslap [hostile]
+        unautoslap [hostile]
 ]])
 local Prefix = ";"
 local Players = game.Players
@@ -49,6 +52,8 @@ local Loops = {
       },
       Goto = {},
 }
+local SavedPositions = {};
+local States = {};
 local ScreenGui = Instance.new("ScreenGui", game.Players.LocalPlayer.PlayerGui)
 ScreenGui.Name = "ScreenGui"
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
@@ -68,16 +73,12 @@ ExecBar.TextSize = 23.000
 ExecBar.ClearTextOnFocus = false
 ExecBar.Draggable = true
 
-function getRemote()
-        local char = LocalPlayer.Character
-        local back = LocalPlayer.Backpack
-
-        local tool = char:FindFirstChild("GoldSlapTool") or char:FindFirstChild("BlueSlapTool") or char:FindFirstChild("SlapTool") or back:FindFirstChild("GoldSlapTool") or back:FindFirstChild("BlueSlapTool") or back:FindFirstChild("SlapTool")
-        if not tool then
-                return Notif("Error", "Not Tool")
-        elseif tool:IsA("Tool") and tool:FindFirstChild("Event") then
-                return tool.Event
-        end
+function getSlap()
+        SavedPositions.OldCFrame = LocalPlayer.Character.HumanoidRootPart.CFrame
+        repeat wait()
+           LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-74.6737823, 27.9878864, -23.4574356, -0.192965299, -0.000979838311, 0.981205106, 3.97876107e-11, 0.999999523, 0.000998606556, -0.981205583, 0.000192696447, -0.192965195)
+        until LocalPlayer.Backpack:FindFirstChild("SlapTool")
+        LocalPlayer.Character.HumanoidRootPart.CFrame = SavedPositions.OldCFrame
 end
 
 function CheckWhitelist(args)
@@ -119,13 +120,15 @@ local PlrFromArgs = function(plr, args)
 end
 
 function Slap(arg)
-        local remote = getRemote()
+        local char = LocalPlayer.Character
+        local back = LocalPlayer.Backpack
+        local tool = char:FindFirstChild("GoldSlapTool") or char:FindFirstChild("BlueSlapTool") or char:FindFirstChild("SlapTool") or back:FindFirstChild("GoldSlapTool") or back:FindFirstChild("BlueSlapTool") or back:FindFirstChild("SlapTool")
         local targetPart = arg.Character and arg.Character:FindFirstChild("HumanoidRootPart")
                 if targetPart then
                         coroutine.wrap(function()
                             pcall(function()
                                 -- Fire remote with extreme upward force
-                                remote:FireServer("slash", arg.Character, targetPart.Position, Vector3.new(0, 500000, 0))
+                                tool.Event:FireServer("slash", arg.Character, targetPart.Position, Vector3.new(0, 500000, 0))
                                 -- Apply massive upward velocity to target
                                 if targetPart and targetPart.Parent:FindFirstChild("BodyVelocity") == nil then
                                     local bodyVelocity = Instance.new("BodyVelocity")
@@ -140,7 +143,9 @@ function Slap(arg)
 end
 
 function SlapAll()
-        local remote = getRemote()
+        local char = LocalPlayer.Character
+        local back = LocalPlayer.Backpack
+        local tool = char:FindFirstChild("GoldSlapTool") or char:FindFirstChild("BlueSlapTool") or char:FindFirstChild("SlapTool") or back:FindFirstChild("GoldSlapTool") or back:FindFirstChild("BlueSlapTool") or back:FindFirstChild("SlapTool")
         for _, arg in pairs(game.Players:GetPlayers()) do
                   if arg ~= LocalPlayer and CheckWhitelist(arg) then
         local targetPart = arg.Character and arg.Character:FindFirstChild("HumanoidRootPart")
@@ -148,7 +153,7 @@ function SlapAll()
                         coroutine.wrap(function()
                             pcall(function()
                                 -- Fire remote with extreme upward force
-                                remote:FireServer("slash", arg.Character, targetPart.Position, targetPart.Position)
+                                tool.Event:FireServer("slash", arg.Character, targetPart.Position, targetPart.Position)
                                 -- Apply massive upward velocity to target
                                 if targetPart and targetPart.Parent:FindFirstChild("BodyVelocity") == nil then
                                     local bodyVelocity = Instance.new("BodyVelocity")
@@ -164,6 +169,33 @@ function SlapAll()
                       end
 end
 
+Tasks = {
+	AutoSlap = function(args)
+		if args == "hostile" then
+			if not States.SlapHostile then
+				States.SlapHostile = true
+				task.spawn(function()
+					while States.SlapHostile do task.wait()
+						pcall(function()
+							for i,v in pairs(Players:GetPlayers()) do
+								if v.Character and CheckWhitelist(v) and v ~= LocalPlayer then
+									if v.Character:FindFirstChildOfClass("Humanoid") then
+										local ch = v.Character
+										if ch:FindFirstChild("GoldSlapTool") or ch:FindFirstChild("BlueSlapTool") or ch:FindFirstChild("SlapTool") then
+											Slap(v)
+										end
+									end
+								end
+							end
+						end)
+					end
+				end)
+			else
+				Notif("Error", "Already killing hostiles.")
+			end
+                end
+        end;
+};
 local chatdebounce = false
 function OnCommand(text)
         if Unloaded then return end
@@ -283,6 +315,21 @@ function OnCommand(text)
                         Notif("Successfully", "Goto "..DaPlayer.DisplayName)
                 else
                         Notif("Error", "Not Player in Server")
+                end
+        elseif cm("slaptool") then
+                getSlap()
+                Notif("Successfully", "Get Slap")
+        elseif cm("autoslap") then
+                local ar = Args[2] and Args[2]:lower()
+                if ar == "hostile" then
+                        Tasks.AutoSlap("hostile")
+                        Notif("Successfully", "Automatically killing hostile player(s)")
+                end
+        elseif cm("unautoslap") then
+                local ar = Args[2] and Args[2]:lower()
+                if ar == "hostile" then
+                        States.SlapHostile = false
+                        Notif("Successfully", "Stopped kill hostile")
                 end
         else
                 Notif("Error", tostring(Args[1]).." is a valid command.")
