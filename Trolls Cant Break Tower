@@ -42,8 +42,9 @@ local Loops = {
       Slaps = {
       All = false,
       Plr = {},
-      Auras = {},
+      Aura = {},
       },
+      Goto = {},
 }
 local ScreenGui = Instance.new("ScreenGui", game.Players.LocalPlayer.PlayerGui)
 ScreenGui.Name = "ScreenGui"
@@ -68,7 +69,7 @@ function getRemote()
         local char = LocalPlayer.Character
         local back = LocalPlayer.Backpack
 
-        local tool = char:FindFirstChild("GoldSlapTool") or char:FindFirstChild("BlueSlapTool") or back:FindFirstChild("GoldSlapTool") or back:FindFirstChild("BlueSlapTool")
+        local tool = char:FindFirstChild("GoldSlapTool") or char:FindFirstChild("BlueSlapTool") or char:FindFirstChild("SlapTool") or back:FindFirstChild("GoldSlapTool") or back:FindFirstChild("BlueSlapTool") or back:FindFirstChild("SlapTool")
         if not tool then
                 return Notif("Error", "Not Tool")
         elseif tool:IsA("Tool") and tool:FindFirstChild("Event") then
@@ -160,16 +161,6 @@ function SlapAll()
                       end
 end
 
-function SlapAura(Plr)
-        for i,v in pairs(game.Players:GetPlayers()) do
-                if v ~= Plr and CheckWhitelist(Plr) and v ~= LocalPlayer then
-                        if (v.Character.HumanoidRootPart.Position - Plr.Character.HumanoidRootPart.Position).Magnitude < 10 then
-                                Slap(v)
-                        end
-                end
-        end
-end
-
 local chatdebounce = false
 function OnCommand(text)
         local Args = text:split(" ")
@@ -251,7 +242,7 @@ function OnCommand(text)
         elseif cm("slapaura") then
                 local DaPlayer = PlrFromArgs(Args[2], LocalPlayer)
                 if DaPlayer then
-                        Loops.Slaps.Auras[DaPlayer.UserId] = DaPlayer
+                        Loops.Slaps.Aura[DaPlayer.UserId] = DaPlayer
                         Notif("Successfully", "Give slapaura "..DaPlayer.DisplayName)
                 else
                         Notif("Error", "Not Player in Server")
@@ -259,13 +250,18 @@ function OnCommand(text)
         elseif cm("unslapaura") then
                 local DaPlayer = PlrFromArgs(Args[2], LocalPlayer)
                 if DaPlayer then
-                        Loops.Slaps.Auras[DaPlayer.UserId] = nil
+                        Loops.Slaps.Aura[DaPlayer.UserId] = nil
                         Notif("Successfully", "Revoke slapaura "..DaPlayer.DisplayName)
                 else
                         Notif("Error", "Not Player in Server")
                 end
         elseif cm("rejoin") or cm("rj") then
+                game.Players.LocalPlayer:Kick("You were banned")
+                wait(.5)
                 game:FindService("TeleportService"):Teleport(game.PlaceId)
+        elseif cm("unload") then
+                Unloaded = true
+                ScreenGui:Destroy()
         else
                 Notif("Error", tostring(Args[1]).." is a valid command.")
         end
@@ -279,6 +275,9 @@ Players.PlayerAdded:Connect(function(plr)
         end
         if Loops.Slaps.Auras[plr.UserId] then
                 Loops.Slaps.Auras[plr.UserId] = plr
+        end
+        if Loops.Goto[plr.UserId] then
+                Loops.Goto[plr.UserId] = plr
         end
 end)
 LocalPlayer.Chatted:Connect(function(t)
@@ -316,29 +315,37 @@ task.spawn(function()
                 if Unloaded then return end
                 if Loops.Slaps.All then
                         SlapAll()
-                else
-                        if Loops.Slaps.Plr then
-				for i,v in next, Loops.Slaps.Plr do
-					Slap(v)
+                end
+                if Loops.Slaps.Plr then
+			for i,v in next, Loops.Slaps.Plr do
+				Slap(v)
+			end
+                end
+                if Loops.Slaps.Aura then
+                        for i,v in next, Loops.Slaps.Aura do
+				if v.Character then
+					local VPart = v.Character:FindFirstChildWhichIsA("BasePart")
+					for _, Targets in pairs(Players:GetPlayers()) do
+						if Targets ~= v and Targets.Character then
+							local TPart = Targets.Character:FindFirstChildWhichIsA("BasePart")
+							if VPart and TPart and CheckWhitelist(Targets) and Targets ~= LocalPlayer then
+								if (TPart.Position-VPart.Position).Magnitude <= 10 then
+									Slap(Targets)
+								end
+							end
+						end
+					end
 				end
 			end
                 end
-        end
-        while wait() do
-                pcall(task0)
-        end
-end)
-task.spawn(function()
-        task1 = function()
-                if Unloaded then return end
-                if Loops.Slaps.Auras then 
-                        for _,PlayerGui in next, Loops.Slaps.Auras do
-                                SlapAura(PlayerGui)
+                if Loops.Goto then
+                        for _,Target in next, Loops.Goto do
+                                LocalPlayer.Character.HumanoidRootPart.CFrame = Target.Character.HumanoidRootPart.CFrame
                         end
                 end
         end
-        while wait() do
-                pcall(task1)
+        while task.wait() do
+                pcall(task0)
         end
 end)
 end
