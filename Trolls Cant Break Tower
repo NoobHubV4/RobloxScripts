@@ -41,8 +41,6 @@ Notif("Checking", "Check Id Game")
 wait(.1)
 if game.PlaceId == 14493533447 or game.PlaceId == 126778923293974 then
         Unloaded = false
-        Notif("Successfully", "Game Support", 2)
-        wait(.5)
         Notif("Trolls Cant Break Tower", "Press M to load script")
 else
         Notif("Error", "Game Not Support")
