@@ -31,12 +31,12 @@ local Notif = function(Title, Text, Duration)
 end
 
 Notif("Checking", "Check Id Game")
-if game.PlaceId == 14493533447 then
+wait(.1)
+if game.PlaceId == 14493533447 or game.PlaceId == 126778923293974 then
         Unloaded = false
         Notif("Successfully", "Game Support", 10)
 else
         Notif("Error", "Game Not Support")
-        game:FindService("TeleportService"):Teleport(14493533447)
 end
 
 if not Unloaded then
@@ -166,6 +166,7 @@ end
 
 local chatdebounce = false
 function OnCommand(text)
+        if Unloaded then return end
         local Args = text:split(" ")
 	if not Args[1] then
 		chatdebounce = nil
@@ -265,6 +266,7 @@ function OnCommand(text)
         elseif cm("unload") then
                 Unloaded = true
                 ScreenGui:Destroy()
+                Notif("Unload", "Unload the Scripter")
         elseif cm("prefix") then
                 local New = Args[2]
 		if New and tostring(New) then
