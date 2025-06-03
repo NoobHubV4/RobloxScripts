@@ -48,7 +48,6 @@ else
 end
 
 function LocalScript()
-if not Unloaded then return end
 local Whitelisted = {}
 local Loops = {
       Slaps = {
@@ -61,11 +60,11 @@ local Loops = {
 local SavedPositions = {};
 local States = {};
 local ViewPlr = {};
-local ScreenGui = Instance.new("ScreenGui", game.Players.LocalPlayer.PlayerGui)
-ScreenGui.Name = "ScreenGui"
-ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-ScreenGui.ResetOnSpawn = false
-local ExecBar = Instance.new("TextBox", ScreenGui)
+local Tower = Instance.new("ScreenGui", game.Players.LocalPlayer.PlayerGui)
+Tower.Name = "Tower"
+Tower.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+Tower.ResetOnSpawn = false
+local ExecBar = Instance.new("TextBox", Tower)
 ExecBar.Name = "ExecBar"
 ExecBar.BackgroundColor3 = Color3.fromRGB(172, 172, 172)
 ExecBar.BackgroundTransparency = 0.400
@@ -467,3 +466,33 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
                 end
 	end
 end)
+
+if not Unloaded then
+local VirtualInputManager = game:GetService("VirtualInputManager") or game:FindFirstDescendant("VirtualInputManager")
+
+local ScreenGui = Instance.new("ScreenGui")
+local SpamBtn = Instance.new("TextButton")
+
+ScreenGui.Parent = game.CoreGui
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+ScreenGui.ResetOnSpawn = true
+
+SpamBtn.Name = "SpamBtn"
+SpamBtn.Parent = ScreenGui
+SpamBtn.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+SpamBtn.Position = UDim2.new(0, 0, 0.395768493, 0)
+SpamBtn.Size = UDim2.new(0, 100, 0, 45)
+SpamBtn.Font = Enum.Font.Arcade
+SpamBtn.Text = "Scam Press M"
+SpamBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+SpamBtn.TextScaled = true
+SpamBtn.TextSize = 14.000
+SpamBtn.TextStrokeTransparency = 0.000
+SpamBtn.TextWrapped = true
+SpamBtn.Visible = true
+SpamBtn.Draggable = true
+SpamBtn.MouseButton1Click:Connect(function()
+      VirtualInputManager:SendKeyEvent(true,"M",false,game)
+      ScreenGui:Destroy()
+end)
+end
