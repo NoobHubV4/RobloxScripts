@@ -81,7 +81,7 @@ ExecBar.Draggable = true
 
 function getSlap()
         SavedPositions.OldCFrame = LocalPlayer.Character.HumanoidRootPart.CFrame
-        repeat wait()
+        repeat task.wait()
            LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-74.6737823, 27.9878864, -23.4574356, -0.192965299, -0.000979838311, 0.981205106, 3.97876107e-11, 0.999999523, 0.000998606556, -0.981205583, 0.000192696447, -0.192965195)
         until LocalPlayer.Backpack:FindFirstChild("SlapTool")
         LocalPlayer.Character.HumanoidRootPart.CFrame = SavedPositions.OldCFrame
