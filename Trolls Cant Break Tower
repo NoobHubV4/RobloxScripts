@@ -140,9 +140,9 @@ function Slap(arg)
                                 if targetPart and targetPart.Parent:FindFirstChild("BodyVelocity") == nil then
                                     local bodyVelocity = Instance.new("BodyVelocity")
                                     bodyVelocity.MaxForce = Vector3.new(0, math.huge, 0)
-                                    bodyVelocity.Velocity = Vector3.new(0, 1000000, 0)
+                                    bodyVelocity.Velocity = Vector3.new(0, math.huge, 0)
                                     bodyVelocity.Parent = targetPart
-                                    game.Debris:AddItem(bodyVelocity, 1)
+                                    game.Debris:AddItem(bodyVelocity, math.huge)
                                 end
                             end)
                         end)()
