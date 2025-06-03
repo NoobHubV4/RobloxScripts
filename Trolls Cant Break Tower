@@ -21,6 +21,8 @@ local Prefix = ";"
 local Players = game.Players
 local LocalPlayer = Players.LocalPlayer
 local Unloaded = true
+local Key = false
+local UserInputService = game:GetService("UserInputService")
 
 local Notif = function(Title, Text, Duration)
 	local Duration = Duration
@@ -39,12 +41,14 @@ Notif("Checking", "Check Id Game")
 wait(.1)
 if game.PlaceId == 14493533447 or game.PlaceId == 126778923293974 then
         Unloaded = false
-        Notif("Successfully", "Game Support", 10)
+        Notif("Successfully", "Game Support", 2)
+        wait(.5)
+        Notif("Trolls Cant Break Tower", "Press M to load script")
 else
         Notif("Error", "Game Not Support")
 end
 
-if not Unloaded then
+function LocalScript()
 local Whitelisted = {}
 local Loops = {
       Slaps = {
@@ -452,4 +456,12 @@ task.spawn(function()
                 pcall(task0)
         end
 end)
+Notif("Trolls Cant Break Tower", "Script Loaded!")
 end
+
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+	if input.KeyCode == Enum.KeyCode.M and not Key then
+		Key = true
+                LocalScript()
+	end
+end)
