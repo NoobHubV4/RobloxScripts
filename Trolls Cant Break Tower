@@ -11,9 +11,11 @@ print([[
         unload | Unloaded The Script
         prefix [Prefix] | Change Prefix
         goto [plr] | Goto Player
-        slap | get the slap
-        autoslap [hostile]
-        unautoslap [hostile]
+        slaptool | get the slap
+        autoslap | Auto Slap (if Player Equip Tool)
+        unautoslap | Stop Auto Slap
+        loopgoto / loopto [plr] | Loop Goto Player
+        unloopgoto / unloopto [plr] | UnLoop Goto Player
 ]])
 local Prefix = ";"
 local Players = game.Players
@@ -320,16 +322,22 @@ function OnCommand(text)
                 getSlap()
                 Notif("Successfully", "Get Slap")
         elseif cm("autoslap") then
-                local ar = Args[2] and Args[2]:lower()
-                if ar == "hostile" then
-                        Tasks.AutoSlap("hostile")
-                        Notif("Successfully", "Automatically killing hostile player(s)")
-                end
+                Tasks.AutoSlap("hostile")
+                Notif("Successfully", "Automatically slaping hostile player(s)")
         elseif cm("unautoslap") then
-                local ar = Args[2] and Args[2]:lower()
-                if ar == "hostile" then
-                        States.SlapHostile = false
-                        Notif("Successfully", "Stopped kill hostile")
+                States.SlapHostile = false
+                Notif("Successfully", "Stopped slap hostile")
+        elseif cm("loopgoto") or cm("loopto") then
+                local DaPlayer = PlrFromArgs(Args[2], false)
+                if DaPlayer then
+                        Loops.Goto[DaPlayer.UserId] = DaPlayer
+                        Notif("Successfully", "Loop Goto "..DaPlayer.DisplayName)
+                end
+        elseif cm("unloopgoto") or cm("unloopto") then
+                local DaPlayer = PlrFromArgs(Args[2], false)
+                if DaPlayer then
+                        Loops.Goto[DaPlayer.UserId] = nil
+                        Notif("Successfully", "UnLoop Goto "..DaPlayer.DisplayName)
                 end
         else
                 Notif("Error", tostring(Args[1]).." is a valid command.")
