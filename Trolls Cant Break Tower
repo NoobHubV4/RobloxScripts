@@ -8,6 +8,9 @@ print([[
         slapaura [plr] | Give Slap Aura Player
         unslapaura [plr] | Revoke Slap Aura Player
         rejoin / rj | Rejoin the server
+        unload | Unloaded The Script
+        prefix [Prefix] | Change Prefix
+        goto [plr] | Goto Player
 ]])
 local Prefix = ";"
 local Players = game.Players
@@ -145,7 +148,7 @@ function SlapAll()
                         coroutine.wrap(function()
                             pcall(function()
                                 -- Fire remote with extreme upward force
-                                remote:FireServer("slash", arg.Character, targetPart.Position, Vector3.new(0, 500000, 0))
+                                remote:FireServer("slash", arg.Character, targetPart.Position, targetPart.Position)
                                 -- Apply massive upward velocity to target
                                 if targetPart and targetPart.Parent:FindFirstChild("BodyVelocity") == nil then
                                     local bodyVelocity = Instance.new("BodyVelocity")
@@ -262,6 +265,23 @@ function OnCommand(text)
         elseif cm("unload") then
                 Unloaded = true
                 ScreenGui:Destroy()
+        elseif cm("prefix") then
+                local New = Args[2]
+		if New and tostring(New) then
+			local Prefixn = tostring(New)
+			Prefix = Prefixn
+			Notif("Successfully", "prefix set to "..New)
+		else
+			Notif("Error", "no prefix selected?")
+		end
+        elseif cm("goto") or cm("to") then
+                local DaPlayer = PlrFromArgs(Args[2], false)
+                if DaPlayer then
+                        LocalPlayer.Character.HumanoidRootPart.CFrame = DaPlayer.Character.HumanoidRootPart.CFrame
+                        Notif("Successfully", "Goto "..DaPlayer.DisplayName)
+                else
+                        Notif("Error", "Not Player in Server")
+                end
         else
                 Notif("Error", tostring(Args[1]).." is a valid command.")
         end
