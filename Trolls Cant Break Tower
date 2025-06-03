@@ -43,10 +43,12 @@ if game.PlaceId == 14493533447 or game.PlaceId == 126778923293974 then
         Unloaded = false
         Notif("Trolls Cant Break Tower", "Press M to load script")
 else
+        Unloaded = true
         Notif("Error", "Game Not Support")
 end
 
 function LocalScript()
+if not Unloaded then return end
 local Whitelisted = {}
 local Loops = {
       Slaps = {
@@ -458,8 +460,10 @@ Notif("Trolls Cant Break Tower", "Script Loaded!")
 end
 
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
-	if input.KeyCode == Enum.KeyCode.M and not Key then
-		Key = true
-                LocalScript()
+        if not Unloaded then
+	        if input.KeyCode == Enum.KeyCode.M and not Key then
+		        Key = true
+                        LocalScript()
+                end
 	end
 end)
