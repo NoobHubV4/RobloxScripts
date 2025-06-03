@@ -60,6 +60,7 @@ local Loops = {
 local SavedPositions = {};
 local States = {};
 local ViewPlr = {};
+local Connections = {};
 local Tower = Instance.new("ScreenGui", game.Players.LocalPlayer.PlayerGui)
 Tower.Name = "Tower"
 Tower.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
@@ -80,11 +81,11 @@ ExecBar.ClearTextOnFocus = false
 ExecBar.Draggable = true
 
 function getSlap()
-        SavedPositions.OldCFrame = LocalPlayer.Character.HumanoidRootPart.CFrame
+        SavedPositions.OldPos = LocalPlayer.Character.HumanoidRootPart.CFrame
         repeat task.wait()
            LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-74.6737823, 27.9878864, -23.4574356, -0.192965299, -0.000979838311, 0.981205106, 3.97876107e-11, 0.999999523, 0.000998606556, -0.981205583, 0.000192696447, -0.192965195)
         until LocalPlayer.Backpack:FindFirstChild("SlapTool")
-        LocalPlayer.Character.HumanoidRootPart.CFrame = SavedPositions.OldCFrame
+        LocalPlayer.Character.HumanoidRootPart.CFrame = SavedPositions.OldPos
 end
 
 function CheckWhitelist(args)
@@ -134,14 +135,14 @@ function Slap(arg)
                         coroutine.wrap(function()
                             pcall(function()
                                 -- Fire remote with extreme upward force
-                                tool.Event:FireServer("slash", arg.Character, targetPart.Position, Vector3.new(0, 500000, 0))
+                                tool.Event:FireServer("slash", arg.Character, targetPart.Position, Vector3.new(0, 1000000, 0))
                                 -- Apply massive upward velocity to target
                                 if targetPart and targetPart.Parent:FindFirstChild("BodyVelocity") == nil then
                                     local bodyVelocity = Instance.new("BodyVelocity")
                                     bodyVelocity.MaxForce = Vector3.new(0, math.huge, 0)
-                                    bodyVelocity.Velocity = Vector3.new(0, SLAP_POWER, 0)
+                                    bodyVelocity.Velocity = Vector3.new(0, 1000000, 0)
                                     bodyVelocity.Parent = targetPart
-                                    game.Debris:AddItem(bodyVelocity, 0.5)
+                                    game.Debris:AddItem(bodyVelocity, 1)
                                 end
                             end)
                         end)()
@@ -159,14 +160,14 @@ function SlapAll()
                         coroutine.wrap(function()
                             pcall(function()
                                 -- Fire remote with extreme upward force
-                                tool.Event:FireServer("slash", arg.Character, targetPart.Position, targetPart.Position)
+                                tool.Event:FireServer("slash", arg.Character, targetPart.Position, Vector3.new(0, 1000000, 0))
                                 -- Apply massive upward velocity to target
                                 if targetPart and targetPart.Parent:FindFirstChild("BodyVelocity") == nil then
                                     local bodyVelocity = Instance.new("BodyVelocity")
                                     bodyVelocity.MaxForce = Vector3.new(0, math.huge, 0)
-                                    bodyVelocity.Velocity = Vector3.new(0, SLAP_POWER, 0)
+                                    bodyVelocity.Velocity = Vector3.new(0, 1000000, 0)
                                     bodyVelocity.Parent = targetPart
-                                    game.Debris:AddItem(bodyVelocity, 0.5)
+                                    game.Debris:AddItem(bodyVelocity, 1)
                                 end
                             end)
                         end)()
@@ -334,14 +335,21 @@ function OnCommand(text)
         elseif cm("loopgoto") or cm("loopto") then
                 local DaPlayer = PlrFromArgs(Args[2], false)
                 if DaPlayer then
+                        SavedPositions.OldCFrame = LocalPlayer.Character.HumanoidRootPart.CFrame
+                        wait(.05)
                         Loops.Goto[DaPlayer.UserId] = DaPlayer
                         Notif("Successfully", "Loop Goto "..DaPlayer.DisplayName)
+                else
+                        Notif("Error", "Not Player in Server")
                 end
         elseif cm("unloopgoto") or cm("unloopto") then
                 local DaPlayer = PlrFromArgs(Args[2], false)
                 if DaPlayer then
                         Loops.Goto[DaPlayer.UserId] = nil
+                        LocalPlayer.Character.HumanoidRootPart.CFrame = SavedPositions.OldCFrame
                         Notif("Successfully", "UnLoop Goto "..DaPlayer.DisplayName)
+                else
+                       Notif("Error", "Not Player in Server")
                 end
         elseif cm("view") then
                 local DaPlayer = PlrFromArgs(Args[2], false)
@@ -352,10 +360,10 @@ function OnCommand(text)
                         Notif("Error", "Not Player in Server")
                 end
         elseif cm("unview") then
-                local DaPlayer = PlrFromArgs(Args[2], false)
+                local DaPlayer = PlrFromArgs(Args[2], LocalPlayer)
                 if DaPlayer then
                         ViewPlr[DaPlayer.UserId] = nil
-                        wait(.25)
+                        wait(.05)
                         workspace.CurrentCamera.CameraSubject = LocalPlayer.Character
                         Notif("Successfully", "UnView "..DaPlayer.DisplayName)
                 else
@@ -365,24 +373,50 @@ function OnCommand(text)
                 Notif("Error", tostring(Args[1]).." is a valid command.")
         end
 end
-Players.PlayerAdded:Connect(function(plr)
+Connections.PlayerAdded = Players.PlayerAdded:Connect(function(plr)
         if Loops.Slaps.Plr[plr.UserId] then
 		Loops.Slaps.Plr[plr.UserId] = plr
+                Notif("Successfully", "Player in joined")
 	end
         if Whitelisted[plr.UserId] then
                 Whitelisted[plr.UserId] = plr
+                Notif("Successfully", "Player in joined")
         end
-        if Loops.Slaps.Auras[plr.UserId] then
-                Loops.Slaps.Auras[plr.UserId] = plr
+        if Loops.Slaps.Aura[plr.UserId] then
+                Loops.Slaps.Aura[plr.UserId] = plr
+                Notif("Successfully", "Player in joined")
         end
         if Loops.Goto[plr.UserId] then
                 Loops.Goto[plr.UserId] = plr
+                Notif("Successfully", "Player in joined")
         end
         if ViewPlr[plr.UserId] then
                 ViewPlr[plr.UserId] = plr
+                Notif("Successfully", "Player in joined")
         end
 end)
-LocalPlayer.Chatted:Connect(function(t)
+Connections.PlayerRemoving = Players.PlayerRemoving:Connect(function(tar)
+        if ViewPlr[tar.UserId] then
+                wait(.05)
+                workspace.CurrentCamera.CameraSubject = LocalPlayer.Character
+                Notif("Error", "Player in left")
+	end
+        if Loops.Slaps.Aura[tar.UserId] then
+                Notif("Error", "Player in left")
+        end
+        if Loops.Goto[tar.UserId] then
+                wait(.05)
+                LocalPlayer.Character.HumanoidRootPart.CFrame = SavedPositions.OldCFrame
+                Notif("Error", "Player in left")
+        end
+        if Whitelisted[plr.UserId] then
+                Notif("Error", "Player in left")
+        end
+        if Loops.Slaps.Plr[plr.UserId] then
+                Notif("Error", "Player in left")
+	end
+end)
+Connections.Chatted = LocalPlayer.Chatted:Connect(function(t)
 	if not chatdebounce then
 		chatdebounce = true
 		local success, errors = pcall(function()
@@ -393,7 +427,7 @@ LocalPlayer.Chatted:Connect(function(t)
 		task.wait(.6);chatdebounce = nil
 	end
 end)
-ExecBar.FocusLost:Connect(function(enterPressed, inputObj)
+Connections.Focus = ExecBar.FocusLost:Connect(function(enterPressed, inputObj)
 	if ExecBar.Text == "" then
 		return
 	end
