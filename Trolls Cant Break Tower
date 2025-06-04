@@ -98,6 +98,16 @@ function getSlap()
         LocalPlayer.Character.HumanoidRootPart.CFrame = SavedPositions.OldPos
 end
 
+function getEvent(targetTool)
+        local char = targetTool.Character
+        local back = targetTool.Backpack
+
+        local tool = char:FindFirstChild("GoldSlapTool") or char:FindFirstChild("BlueSlapTool") or char:FindFirstChild("SlapTool") or back:FindFirstChild("GoldSlapTool") or back:FindFirstChild("BlueSlapTool") or back:FindFirstChild("SlapTool")
+        if tool and tool:FindFirstChild("Event") then
+                return tool.Event
+        end
+end
+
 function CheckWhitelist(args)
         return not (Whitelisted[args.UserId])
 end
@@ -136,16 +146,18 @@ local PlrFromArgs = function(plr, args)
 	return foundplr
 end
 
-function Slap(arg)
-        local char = LocalPlayer.Character
-        local back = LocalPlayer.Backpack
-        local tool = char:FindFirstChild("GoldSlapTool") or char:FindFirstChild("BlueSlapTool") or char:FindFirstChild("SlapTool") or back:FindFirstChild("GoldSlapTool") or back:FindFirstChild("BlueSlapTool") or back:FindFirstChild("SlapTool")
+function Slap(arg, target)
+        local target = target
+        if not target then
+                target = LocalPlayer
+        end
+        local Event = getEvent(target)
         local targetPart = arg.Character and arg.Character:FindFirstChild("HumanoidRootPart")
                 if targetPart then
                         coroutine.wrap(function()
                             pcall(function()
                                 -- Fire remote with extreme upward force
-                                tool.Event:FireServer("slash", arg.Character, targetPart.Position, Vector3.new(math.huge, math.huge, math.huge))
+                                Event:FireServer("slash", arg.Character, targetPart.Position, Vector3.new(math.huge, math.huge, math.huge))
                                 -- Apply massive upward velocity to target
                                 if targetPart and targetPart.Parent:FindFirstChild("BodyVelocity") == nil then
                                     local bodyVelocity = Instance.new("BodyVelocity")
@@ -167,16 +179,18 @@ function SlapAll()
         end
 end
 
-function Kill(arg)
-        local char = LocalPlayer.Character
-        local back = LocalPlayer.Backpack
-        local tool = char:FindFirstChild("GoldSlapTool") or char:FindFirstChild("BlueSlapTool") or char:FindFirstChild("SlapTool") or back:FindFirstChild("GoldSlapTool") or back:FindFirstChild("BlueSlapTool") or back:FindFirstChild("SlapTool")
+function Kill(arg, target)
+        local target = target
+        if not target then
+                target = LocalPlayer
+        end
+        local Event = getEvent(target)
         local targetPart = arg.Character and arg.Character:FindFirstChild("HumanoidRootPart")
                 if targetPart then
                         coroutine.wrap(function()
                             pcall(function()
                                 -- Fire remote with extreme upward force
-                                tool.Event:FireServer("slash", arg.Character, Vector3.new(-math.huge, -math.huge, -math.huge), Vector3.new(-math.huge, -math.huge, -math.huge))
+                                Event:FireServer("slash", arg.Character, Vector3.new(-math.huge, -math.huge, -math.huge), Vector3.new(-math.huge, -math.huge, -math.huge))
                                 -- Apply massive upward velocity to target
                                 if targetPart and targetPart.Parent:FindFirstChild("BodyVelocity") == nil then
                                     local bodyVelocity = Instance.new("BodyVelocity")
@@ -551,7 +565,7 @@ task.spawn(function()
 							local TPart = Targets.Character:FindFirstChildWhichIsA("BasePart")
 							if VPart and TPart and CheckWhitelist(Targets) and Targets ~= LocalPlayer then
 								if (TPart.Position-VPart.Position).Magnitude <= 10 then
-									Slap(Targets)
+									Slap(Targets, v)
 								end
 							end
 						end
@@ -586,7 +600,7 @@ task.spawn(function()
 							local TPart = Targets.Character:FindFirstChildWhichIsA("BasePart")
 							if VPart and TPart and CheckWhitelist(Targets) and Targets ~= LocalPlayer then
 								if (TPart.Position-VPart.Position).Magnitude <= 10 then
-									Kill(Targets)
+									Kill(Targets, v)
 								end
 							end
 						end
