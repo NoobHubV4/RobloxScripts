@@ -119,7 +119,7 @@ local ohInstance1 = v.Character.HumanoidRootPart
 local ohInstance2 = v.Character.Humanoid
 local ohVector33 = Vector3.new(game.Players.LocalPlayer.Character.HumanoidRootPart.Position)
 local char = game.Players.LocalPlayer.Character
-local tool = char:FindFirstChild("Bat") or char:FindFirstChild("Metal  Bat")
+local tool = char:FindFirstChildOfClass("Tool")
 
 tool.Remote.Hit:FireServer(ohInstance1, ohInstance2, ohVector33)
 end
@@ -169,8 +169,7 @@ local ohInstance1 = v.Character.HumanoidRootPart
 local ohInstance2 = v.Character.Humanoid
 local ohVector33 = Vector3.new(game.Players.LocalPlayer.Character.HumanoidRootPart.Position)
 local char = game.Players.LocalPlayer.Character
-local back = game.Players.LocalPlayer.Backpack
-local tool = char:FindFirstChild("Bat") or char:FindFirstChild("Metal  Bat") or back:FindFirstChild("Bat") or back:FindFirstChild("Metal  Bat")
+local tool = char:FindFirstChildOfClass("Tool")
 
 tool.Remote.Hit:FireServer(ohInstance1, ohInstance2, ohVector33)
 end
@@ -220,8 +219,7 @@ local ohInstance1 = v.Character.HumanoidRootPart
 local ohInstance2 = v.Character.Humanoid
 local ohVector33 = Vector3.new(game.Players.LocalPlayer.Character.HumanoidRootPart.Position)
 local char = game.Players.LocalPlayer.Character
-local back = game.Players.LocalPlayer.Backpack
-local tool = char:FindFirstChild("Bat") or char:FindFirstChild("Metal  Bat") or back:FindFirstChild("Bat") or back:FindFirstChild("Metal  Bat")
+local tool = char:FindFirstChildOfClass("Tool")
 
 tool.Remote.Hit:FireServer(ohInstance1, ohInstance2, ohVector33)
 end
@@ -422,8 +420,7 @@ while _G.killall do task.wait()
                     local ohInstance2 = v.Character.Humanoid
                     local ohVector33 = Vector3.new(game.Players.LocalPlayer.Character.HumanoidRootPart.Position)
                     local char = game.Players.LocalPlayer.Character
-                    local back = game.Players.LocalPlayer.Backpack
-                    local tool = char:FindFirstChild("Bat") or char:FindFirstChild("Metal  Bat") or back:FindFirstChild("Bat") or back:FindFirstChild("Metal  Bat")
+                    local tool = char:FindFirstChildOfClass("Tool")
 
                     tool.Remote.Hit:FireServer(ohInstance1, ohInstance2, ohVector33)
                     elseif game.Players.LocalPlayer.Backpack:FindFirstChild("Bat") then
