@@ -367,6 +367,10 @@ function OnCommand(text)
         elseif cm("unload") then
                 Unloaded = true
                 Tower:Destroy()
+                Connections.PlayerAdded:Disconnect()
+                Connections.PlayerRemoving:Disconnect()
+                Connections.Chatted:Disconnect()
+                Connections.Focus:Disconnect()
                 Notif("Unload", "Unload the Scripter")
         elseif cm("prefix") then
                 local New = Args[2]
@@ -578,7 +582,6 @@ Connections.Focus = ExecBar.FocusLost:Connect(function(enterPressed, inputObj)
 end)
 task.spawn(function()
         task0 = function()
-                if Unloaded then return end
                 if Loops.Slaps.All then
                         SlapAll()
                 end
@@ -604,6 +607,16 @@ task.spawn(function()
 				end
 			end
                 end
+        end
+        while task.wait() do
+                pcall(task0)
+                if Unloaded then
+                        break
+                end
+        end
+end)
+spawn(function()
+        task1 = function()
                 if Loops.Goto then
                         for _,Target in next, Loops.Goto do
                                 LocalPlayer.Character.HumanoidRootPart.CFrame = Target.Character.HumanoidRootPart.CFrame
@@ -619,6 +632,16 @@ task.spawn(function()
                                 Kill(Target)
                         end
                 end
+        end
+        while task.wait() do
+                pcall(task1)
+                if Unloaded then
+                        break
+                end
+        end
+end)
+spawn(function()
+        task2 = function()
                 if Loops.Kills.All then
                         KillAll()
                 end
@@ -641,7 +664,10 @@ task.spawn(function()
                 end
         end
         while task.wait() do
-                pcall(task0)
+                pcall(task2)
+                if Unloaded then
+                        break
+                end
         end
 end)
 Notif("Trolls Cant Break Tower", "Script Loaded!")
