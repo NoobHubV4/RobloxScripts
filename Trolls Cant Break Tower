@@ -157,7 +157,7 @@ function Slap(arg, target)
                         coroutine.wrap(function()
                             pcall(function()
                                 -- Fire remote with extreme upward force
-                                Event:FireServer("slash", arg.Character, targetPart.Position, Vector3.new(math.huge, math.huge, math.huge))
+                                Event:FireServer("slash", arg.Character, LocalPlayer.Character.HumanoidRootPart.Position, Vector3.new(math.huge, math.huge, math.huge))
                                 -- Apply massive upward velocity to target
                                 if targetPart and targetPart.Parent:FindFirstChild("BodyVelocity") == nil then
                                     local bodyVelocity = Instance.new("BodyVelocity")
@@ -227,6 +227,31 @@ Tasks = {
 										local ch = v.Character
 										if ch:FindFirstChild("GoldSlapTool") or ch:FindFirstChild("BlueSlapTool") or ch:FindFirstChild("SlapTool") then
 											Slap(v)
+										end
+									end
+								end
+							end
+						end)
+					end
+				end)
+			else
+				Notif("Error", "Already slaping hostiles.")
+			end
+                end
+        end;
+        AutoKill = function(args)
+		if args == "hostile" then
+			if not States.KillHostile then
+				States.KillHostile = true
+				task.spawn(function()
+					while States.KillHostile do task.wait()
+						pcall(function()
+							for i,v in pairs(Players:GetPlayers()) do
+								if v.Character and CheckWhitelist(v) and v ~= LocalPlayer then
+									if v.Character:FindFirstChildOfClass("Humanoid") then
+										local ch = v.Character
+										if ch:FindFirstChild("GoldSlapTool") or ch:FindFirstChild("BlueSlapTool") or ch:FindFirstChild("SlapTool") then
+											Kill(v)
 										end
 									end
 								end
@@ -461,6 +486,12 @@ function OnCommand(text)
                 else
                         Notif("Error", "Not Player in Server")
                 end
+        elseif cm("autokill") then
+                Tasks.AutoKill("hostile")
+                Notif("Successfully", "Automatically killing hostile player(s)")
+        elseif cm("unautokill") then
+                States.KillHostile = false
+                Notif("Successfully", "Stopped kill hostile")
         else
                 Notif("Error", tostring(Args[1]).." is a valid command.")
         end
@@ -564,7 +595,7 @@ task.spawn(function()
 						if Targets ~= v and Targets.Character then
 							local TPart = Targets.Character:FindFirstChildWhichIsA("BasePart")
 							if VPart and TPart and CheckWhitelist(Targets) and Targets ~= LocalPlayer then
-								if (TPart.Position-VPart.Position).Magnitude <= 10 then
+								if (TPart.Position-VPart.Position).Magnitude <= 15 then
 									Slap(Targets, v)
 								end
 							end
@@ -599,7 +630,7 @@ task.spawn(function()
 						if Targets ~= v and Targets.Character then
 							local TPart = Targets.Character:FindFirstChildWhichIsA("BasePart")
 							if VPart and TPart and CheckWhitelist(Targets) and Targets ~= LocalPlayer then
-								if (TPart.Position-VPart.Position).Magnitude <= 10 then
+								if (TPart.Position-VPart.Position).Magnitude <= 15 then
 									Kill(Targets, v)
 								end
 							end
