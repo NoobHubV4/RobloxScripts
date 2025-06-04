@@ -671,7 +671,6 @@ spawn(function()
         end
 end)
 Notif("Trolls Cant Break Tower", "Script Loaded!")
-ScreenGui:Destroy()
 end
 
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
@@ -709,5 +708,6 @@ SpamBtn.Visible = true
 SpamBtn.Draggable = true
 SpamBtn.MouseButton1Click:Connect(function()
       VirtualInputManager:SendKeyEvent(true,"M",false,game)
+      ScreenGui:Destroy()
 end)
 end
