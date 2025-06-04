@@ -375,8 +375,8 @@ function OnCommand(text)
         elseif cm("prefix") then
                 local New = Args[2]
 		if New and tostring(New) then
-			local Prefixn = tostring(New)
-			Prefix = Prefixn
+			local PrefixNew = tostring(New)
+			Prefix = PrefixNew
 			Notif("Successfully", "prefix set to "..New)
 		else
 			Notif("Error", "no prefix selected?")
@@ -598,7 +598,7 @@ task.spawn(function()
 						if Targets ~= v and Targets.Character then
 							local TPart = Targets.Character:FindFirstChildWhichIsA("BasePart")
 							if VPart and TPart and CheckWhitelist(Targets) and Targets ~= LocalPlayer then
-								if (TPart.Position-VPart.Position).Magnitude <= 15 then
+								if (TPart.Position-VPart.Position).Magnitude <= 10 then
 									Slap(Targets, v)
 								end
 							end
@@ -653,7 +653,7 @@ spawn(function()
 						if Targets ~= v and Targets.Character then
 							local TPart = Targets.Character:FindFirstChildWhichIsA("BasePart")
 							if VPart and TPart and CheckWhitelist(Targets) and Targets ~= LocalPlayer then
-								if (TPart.Position-VPart.Position).Magnitude <= 15 then
+								if (TPart.Position-VPart.Position).Magnitude <= 10 then
 									Kill(Targets, v)
 								end
 							end
