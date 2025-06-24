@@ -73,7 +73,7 @@ local Loops = {
 };
 local SavedPositions = {};
 local States = {};
-local ViewPlr = {};
+local ViewPlr = nil;
 local Connections = {};
 local Tower = Instance.new("ScreenGui", game.Players.LocalPlayer.PlayerGui)
 Tower.Name = "Tower"
@@ -277,7 +277,7 @@ function OnCommand(text)
         if Unloaded then return end
         local Args = text:split(" ")
 	if not Args[1] then
-		chatdebounce = nil
+		chatdebounce = false
 		return
 	end
 	if Args[1] == "/e" or Args[1] == "/c" or Args[1] == "/t" or Args[1] == "/" then
@@ -290,7 +290,7 @@ function OnCommand(text)
 		end
 	end
 	if not (Args[1]:sub(1, #Prefix) == Prefix) then
-		chatdebounce = nil
+		chatdebounce = false
 		return
 	end
 	local function cm(args)
@@ -426,22 +426,30 @@ function OnCommand(text)
                 end
         elseif cm("view") then
                 local DaPlayer = PlrFromArgs(Args[2], false)
-                if DaPlayer then
-                        ViewPlr[DaPlayer.UserId] = DaPlayer
+		if DaPlayer then
+			if ViewPlr then
+				ViewPlr = nil
+				wait(.4)
+			end
+			ViewPlr = DaPlayer
                         Notif("Successfully", "View "..DaPlayer.DisplayName)
-                else
-                        Notif("Error", "Not Player in Server")
-                end
+			task.spawn(function()
+				while wait(.1) do
+					pcall(function()
+						workspace.CurrentCamera.CameraSubject = DaPlayer.Character:FindFirstChildOfClass("Humanoid")
+					end)
+					if not DaPlayer or not ViewPlr then
+						workspace.CurrentCamera.CameraSubject = game:GetService("Players").LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+						break
+					end
+				end
+			end)
+		end
         elseif cm("unview") then
-                local DaPlayer = PlrFromArgs(Args[2], LocalPlayer)
-                if DaPlayer then
-                        ViewPlr[DaPlayer.UserId] = nil
-                        wait(.05)
-                        workspace.CurrentCamera.CameraSubject = LocalPlayer.Character
-                        Notif("Successfully", "UnView "..DaPlayer.DisplayName)
-                else
-                        Notif("Error", "Not Player in Server")
-                end
+                ViewPlr = nil
+		wait()
+		game:GetService("Workspace").Camera.CameraSubject = LocalPlayer.Character.Humanoid
+                Notif("Successfully", "View "..LocalPlayer.DisplayName)
         elseif cm("kill") then
                 local DaPlayer = PlrFromArgs(Args[2], LocalPlayer)
                 if DaPlayer then
@@ -634,11 +642,6 @@ spawn(function()
                 if Loops.Goto then
                         for _,Target in next, Loops.Goto do
                                 LocalPlayer.Character.HumanoidRootPart.CFrame = Target.Character.HumanoidRootPart.CFrame
-                        end
-                end
-                if ViewPlr then
-                        for _,b in next, ViewPlr do
-                                workspace.CurrentCamera.CameraSubject = b.Character
                         end
                 end
                 if Loops.Kills.Plr then
