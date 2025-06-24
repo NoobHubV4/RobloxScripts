@@ -21,6 +21,8 @@ print([[
         unloopkill / unlk [plr,all] | UnLoop Kill Player or all
         killaura [plr] | Give killaura Player
         unkillaura [plr] | Remove killaura player
+        autokill | Auto Kill Player (If Player Equip Slap)
+        unautokill | Stopped kill hostiles
         refresh / re | Refresh Your Character
         respawn / res | Respawn Your Character
 ]])
@@ -565,7 +567,11 @@ Connections.Chatted = LocalPlayer.Chatted:Connect(function(t)
 	if not chatdebounce then
 		chatdebounce = true
 		local success, errors = pcall(function()
-			OnCommand(t)
+			if string.sub(t, 0, 1) == Prefix then
+				OnCommand(t)
+			else
+				OnCommand(Prefix .. t)
+			end
 		end); if not success then
 			-- nothing
 		end
