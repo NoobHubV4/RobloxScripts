@@ -21,6 +21,8 @@ print([[
         unloopkill / unlk [plr,all] | UnLoop Kill Player or all
         killaura [plr] | Give killaura Player
         unkillaura [plr] | Remove killaura player
+        refresh / re | Refresh Your Character
+        respawn / res | Respawn Your Character
 ]])
 local Prefix = ":"
 local Players = game.Players
@@ -168,6 +170,14 @@ local PlrFromArgs = function(plr, args)
 end
 
 function Slap(targets)
+        local char = LocalPlayer.Character
+        local back = LocalPlayer.Backpack
+        if char:FindFirstChild("GoldSlapTool") or char:FindFirstChild("BlueSlapTool") or char:FindFirstChild("SlapTool") or back:FindFirstChild("GoldSlapTool") or back:FindFirstChild("BlueSlapTool") or back:FindFirstChild("SlapTool") then
+                -- nothing
+        else
+                getSlap()
+                wait(.25)
+        end
         SlapEvent(targets, LocalPlayer.Character.HumanoidRootPart.Position, Vector3.new(0, 1000000, 0))
 end
 
@@ -180,6 +190,14 @@ function SlapAll()
 end
 
 function Kill(targets)
+        local char = LocalPlayer.Character
+        local back = LocalPlayer.Backpack
+        if char:FindFirstChild("GoldSlapTool") or char:FindFirstChild("BlueSlapTool") or char:FindFirstChild("SlapTool") or back:FindFirstChild("GoldSlapTool") or back:FindFirstChild("BlueSlapTool") or back:FindFirstChild("SlapTool") then
+                -- nothing
+        else
+                getSlap()
+                wait(.25)
+        end
         SlapEvent(targets, Vector3.new(-math.huge, -math.huge, -math.huge), Vector3.new(-math.huge, -math.huge, -math.huge))
 end
 
@@ -244,6 +262,14 @@ Tasks = {
                 end
         end;
 };
+function Refresh()
+        SavedPositions.OldCFrame = LocalPlayer.Character.HumanoidRootPart.CFrame
+        Kill(LocalPlayer)
+        LocalPlayer.CharacterAdded:Wait() wait(.1)
+        for i = 1,2 do
+                LocalPlayer.Character.HumanoidRootPart.CFrame = SavedPositions.OldCFrame
+        end
+end
 local chatdebounce = false
 function OnCommand(text)
         if Unloaded then return end
@@ -475,6 +501,12 @@ function OnCommand(text)
         elseif cm("unautokill") then
                 States.KillHostile = false
                 Notif("Successfully", "Stopped kill hostile")
+        elseif cm("refresh") or cm("re") then
+                Refresh()
+                Notif("Successfully", "Refresh Character")
+        elseif cm("respawn") or cm("res") then
+                Kill(LocalPlayer)
+                Notif("Successfully", "Respawn Character")
         else
                 Notif("Error", tostring(Args[1]).." is a valid command.")
         end
