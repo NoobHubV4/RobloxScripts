@@ -98,14 +98,35 @@ function getSlap()
         LocalPlayer.Character.HumanoidRootPart.CFrame = SavedPositions.OldPos
 end
 
-function getEvent(targetTool)
-        local char = targetTool.Character
-        local back = targetTool.Backpack
+function getEvent()
+        local char = LocalPlayer.Character
+        local back = LocalPlayer.Backpack
 
         local tool = char:FindFirstChild("GoldSlapTool") or char:FindFirstChild("BlueSlapTool") or char:FindFirstChild("SlapTool") or back:FindFirstChild("GoldSlapTool") or back:FindFirstChild("BlueSlapTool") or back:FindFirstChild("SlapTool")
         if tool and tool:FindFirstChild("Event") then
                 return tool.Event
         end
+end
+
+function SlapEvent(target, Pos, Pos2)
+        local Event = getEvent()
+        local targetPart = target.Character and target.Character:FindFirstChild("HumanoidRootPart")
+                if targetPart then
+                        coroutine.wrap(function()
+                            pcall(function()
+                                -- Fire remote with extreme upward force
+                                Event:FireServer("slash", target.Character, Pos, Pos2)
+                                -- Apply massive upward velocity to target
+                                if targetPart and targetPart.Parent:FindFirstChild("BodyVelocity") == nil then
+                                    local bodyVelocity = Instance.new("BodyVelocity")
+                                    bodyVelocity.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+                                    bodyVelocity.Velocity = Vector3.new(math.huge, math.huge, math.huge)
+                                    bodyVelocity.Parent = targetPart
+                                    game.Debris:AddItem(bodyVelocity, math.huge)
+                                end
+                            end)
+                        end)()
+                end
 end
 
 function CheckWhitelist(args)
@@ -146,29 +167,8 @@ local PlrFromArgs = function(plr, args)
 	return foundplr
 end
 
-function Slap(arg, target)
-        local target = target
-        if not target then
-                target = LocalPlayer
-        end
-        local Event = getEvent(target)
-        local targetPart = arg.Character and arg.Character:FindFirstChild("HumanoidRootPart")
-                if targetPart then
-                        coroutine.wrap(function()
-                            pcall(function()
-                                -- Fire remote with extreme upward force
-                                Event:FireServer("slash", arg.Character, LocalPlayer.Character.HumanoidRootPart.Position, Vector3.new(math.huge, math.huge, math.huge))
-                                -- Apply massive upward velocity to target
-                                if targetPart and targetPart.Parent:FindFirstChild("BodyVelocity") == nil then
-                                    local bodyVelocity = Instance.new("BodyVelocity")
-                                    bodyVelocity.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
-                                    bodyVelocity.Velocity = Vector3.new(math.huge, math.huge, math.huge)
-                                    bodyVelocity.Parent = targetPart
-                                    game.Debris:AddItem(bodyVelocity, math.huge)
-                                end
-                            end)
-                        end)()
-                end
+function Slap(targets)
+        SlapEvent(targets, LocalPlayer.Character.HumanoidRootPart.Position, Vector3.new(0, 1000000, 0))
 end
 
 function SlapAll()
@@ -179,29 +179,8 @@ function SlapAll()
         end
 end
 
-function Kill(arg, target)
-        local target = target
-        if not target then
-                target = LocalPlayer
-        end
-        local Event = getEvent(target)
-        local targetPart = arg.Character and arg.Character:FindFirstChild("HumanoidRootPart")
-                if targetPart then
-                        coroutine.wrap(function()
-                            pcall(function()
-                                -- Fire remote with extreme upward force
-                                Event:FireServer("slash", arg.Character, Vector3.new(-math.huge, -math.huge, -math.huge), Vector3.new(-math.huge, -math.huge, -math.huge))
-                                -- Apply massive upward velocity to target
-                                if targetPart and targetPart.Parent:FindFirstChild("BodyVelocity") == nil then
-                                    local bodyVelocity = Instance.new("BodyVelocity")
-                                    bodyVelocity.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
-                                    bodyVelocity.Velocity = Vector3.new(math.huge, math.huge, math.huge)
-                                    bodyVelocity.Parent = targetPart
-                                    game.Debris:AddItem(bodyVelocity, math.huge)
-                                end
-                            end)
-                        end)()
-                end
+function Kill(targets)
+        SlapEvent(targets, Vector3.new(-math.huge, -math.huge, -math.huge), Vector3.new(-math.huge, -math.huge, -math.huge))
 end
 
 function KillAll()
