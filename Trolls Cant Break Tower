@@ -566,17 +566,14 @@ end)
 Connections.Chatted = LocalPlayer.Chatted:Connect(function(t)
 	if not chatdebounce then
 		chatdebounce = true
-		local success, errors = pcall(function()
-			if string.sub(t, 0, 1) == Prefix then
-				OnCommand(t)
-			else
-				OnCommand(Prefix .. t)
-			end
-		end); if not success then
-			-- nothing
+		if string.sub(t, 0, 1) == Prefix then
+			OnCommand(t)
+		else
+			OnCommand(Prefix .. t)
 		end
-		task.wait(.6);chatdebounce = nil
 	end
+        task.wait(.6)
+        chatdebounce = false
 end)
 Connections.Focus = ExecBar.FocusLost:Connect(function(enterPressed, inputObj)
 	if ExecBar.Text == "" then
@@ -695,6 +692,7 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
 	        if input.KeyCode == Enum.KeyCode.M and not Key then
 		        Key = true
                         LocalScript()
+                        game.Players.LocalPlayer.Character.Humanoid.Health = 0
                 end
 	end
 end)
