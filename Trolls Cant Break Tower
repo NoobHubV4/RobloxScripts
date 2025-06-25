@@ -28,6 +28,7 @@ print([[
         autorefresh / autore [on/off] | Auto Respawn Player (Save Position)
         clickslap [on/off] | Click To Slap Player
         clickkill [on/off] | Click To Kill Player
+        autoslaptool [on/off] | Auto Get Slap
 ]])
 local Prefix = ":"
 local Players = game.Players
@@ -78,6 +79,7 @@ local States = {
       AutoRespawn = true;
       ClickSlap = false;
       ClickKill = false;
+      AutoSlapTool = false;
 };
 local ViewPlr = nil;
 local Connections = {};
@@ -538,12 +540,25 @@ function OnCommand(text)
                        States.ClickKill = not States.ClickKill
                 end
                 Notif('Successfully', "Click To Kill set to "..tostring(States.ClickKill))
+        elseif cm("autoslaptool") then
+                if Args[2] == "on" or Args[2] == "true" then
+                       States.AutoSlapTool = true
+                elseif Args[2] == "off" or Args[2] == "false" then
+                       States.AutoSlapTool = false
+                elseif not Args[2] then
+                       States.AutoSlapTool = not States.AutoSlapTool
+                end
+                Notif('Successfully', "Auto Get Slap set to "..tostring(States.AutoSlapTool))
         else
                 Notif("Error", tostring(Args[1]).." is a valid command.")
         end
 end
 Connections.CharacterAdded = LocalPlayer.CharacterAdded:Connect(function(NewCharacter)
         if Unloaded then return end
+        if States.AutoSlapTool then
+              wait(.25)
+              getSlap()
+        end
         repeat game.RunService.Stepped:Wait() until NewCharacter
         NewCharacter:WaitForChild("HumanoidRootPart")
         NewCharacter:WaitForChild("Head")
@@ -612,13 +627,9 @@ Connections.PlayerRemoving = Players.PlayerRemoving:Connect(function(tar)
         end
 end)
 Connections.Chatted = LocalPlayer.Chatted:Connect(function(t)
-	if not chatdebounce and not Unloaded then
+	if not chatdebounce then
 		chatdebounce = true
-		if string.sub(t, 0, 1) == Prefix then
-			OnCommand(t)
-		else
-			OnCommand(Prefix .. t)
-		end
+		OnCommand(t)
 	end
         task.wait(.5)
         chatdebounce = false
