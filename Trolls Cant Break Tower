@@ -75,6 +75,7 @@ local Loops = {
 local SavedPositions = {};
 local States = {
       AutoRespawn = true;
+      ClickSlap = true;
 };
 local ViewPlr = nil;
 local Connections = {};
@@ -621,6 +622,13 @@ Connections.Focus = ExecBar.FocusLost:Connect(function(enterPressed, inputObj)
 		end
 		task.wait(.2)
 		ExecBar.Text = ""
+	end
+end)
+Connections.Button1Up = LocalPlayer:GetMouse().Button1Up:Connect(function()
+	local target = LocalPlayer:GetMouse().Target
+	if not Unloaded and target and target.Parent:FindFirstChildOfClass("Humanoid") and game:GetService("Players"):FindFirstChild(target.Parent.Name) and States.ClickSlap then
+		local Vic = game:GetService("Players"):FindFirstChild(target.Parent.Name)
+		Slap(Vic)
 	end
 end)
 task.spawn(function()
