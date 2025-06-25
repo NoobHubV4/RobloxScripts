@@ -222,7 +222,7 @@ Tasks = {
 								if v.Character and CheckWhitelist(v) and v ~= LocalPlayer then
 									if v.Character:FindFirstChildOfClass("Humanoid") then
 										local ch = v.Character
-										if ch:FindFirstChild("GoldSlapTool") or ch:FindFirstChild("BlueSlapTool") or ch:FindFirstChild("SlapTool") then
+										if ch:FindFirstChild("GoldSlapTool") or ch:FindFirstChild("BlueSlapTool") or ch:FindFirstChild("SlapTool") or ch:FindFirstChild("GlichSlapTool") then
 											Slap(v)
 										end
 									end
@@ -247,7 +247,7 @@ Tasks = {
 								if v.Character and CheckWhitelist(v) and v ~= LocalPlayer then
 									if v.Character:FindFirstChildOfClass("Humanoid") then
 										local ch = v.Character
-										if ch:FindFirstChild("GoldSlapTool") or ch:FindFirstChild("BlueSlapTool") or ch:FindFirstChild("SlapTool") then
+										if ch:FindFirstChild("GoldSlapTool") or ch:FindFirstChild("BlueSlapTool") or ch:FindFirstChild("SlapTool") or ch:FindFirstChild('GlichSlapTool') then
 											Kill(v)
 										end
 									end
@@ -556,7 +556,7 @@ end
 Connections.CharacterAdded = LocalPlayer.CharacterAdded:Connect(function(NewCharacter)
         if Unloaded then return end
         if States.AutoSlapTool then
-              wait(.25)
+              wait(.2)
               getSlap()
         end
         repeat game.RunService.Stepped:Wait() until NewCharacter
