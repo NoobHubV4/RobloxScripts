@@ -105,13 +105,13 @@ ExecBar.Draggable = true
 function getSlap()
         local char = LocalPlayer.Character
         local back = LocalPlayer.Backpack
-        if char:FindFirstChild("GoldSlapTool") or char:FindFirstChild("BlueSlapTool") or char:FindFirstChild("SlapTool") or back:FindFirstChild("GoldSlapTool") or back:FindFirstChild("BlueSlapTool") or back:FindFirstChild("SlapTool") then
+        if char:FindFirstChild("GoldSlapTool") or char:FindFirstChild("BlueSlapTool") or char:FindFirstChild("SlapTool") or char:FindFirstChild('GlichSlapTool') or back:FindFirstChild("GoldSlapTool") or back:FindFirstChild("BlueSlapTool") or back:FindFirstChild("SlapTool") or back:FindFirstChild('GlichSlapTool') then
                 --
         else
                 SavedPositions.OldPos = LocalPlayer.Character.HumanoidRootPart.CFrame
                 repeat task.wait()
-                        LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-74.6737823, 27.9878864, -23.4574356, -0.192965299, -0.000979838311, 0.981205106, 3.97876107e-11, 0.999999523, 0.000998606556, -0.981205583, 0.000192696447, -0.192965195)
-                until LocalPlayer.Backpack:FindFirstChild("SlapTool")
+                        LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(479.653442, 15.8912525, 4.14005041, -0.0112610189, -0.0141247334, 0.999836802, -3.18337058e-11, 0.999900222, 0.0141256293, -0.999936581, 0.00015906895, -0.0112598957)
+                until LocalPlayer.Backpack:FindFirstChild("GlichSlapTool")
                 LocalPlayer.Character.HumanoidRootPart.CFrame = SavedPositions.OldPos
         end
 end
@@ -120,7 +120,7 @@ function getEvent()
         local char = LocalPlayer.Character
         local back = LocalPlayer.Backpack
 
-        local tool = char:FindFirstChild("GoldSlapTool") or char:FindFirstChild("BlueSlapTool") or char:FindFirstChild("SlapTool") or back:FindFirstChild("GoldSlapTool") or back:FindFirstChild("BlueSlapTool") or back:FindFirstChild("SlapTool")
+        local tool = char:FindFirstChild("GoldSlapTool") or char:FindFirstChild("BlueSlapTool") or char:FindFirstChild("SlapTool") or char:FindFirstChild("GlichSlapTool") or back:FindFirstChild("GoldSlapTool") or back:FindFirstChild("BlueSlapTool") or back:FindFirstChild("SlapTool") or back:FindFirstChild("GlichSlapTool")
         if tool and tool:FindFirstChild("Event") then
                 return tool.Event
         end
