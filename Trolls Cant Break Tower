@@ -103,13 +103,14 @@ ExecBar.Draggable = true
 function getSlap()
         local char = LocalPlayer.Character
         local back = LocalPlayer.Backpack
-        if not char:FindFirstChild("GoldSlapTool") or not char:FindFirstChild("BlueSlapTool") or not char:FindFirstChild("SlapTool") or not back:FindFirstChild("GoldSlapTool") or not back:FindFirstChild("BlueSlapTool") or not back:FindFirstChild("SlapTool") then
+        if char:FindFirstChild("GoldSlapTool") or char:FindFirstChild("BlueSlapTool") or char:FindFirstChild("SlapTool") or back:FindFirstChild("GoldSlapTool") or back:FindFirstChild("BlueSlapTool") or back:FindFirstChild("SlapTool") then
+                --
+        else
                 SavedPositions.OldPos = LocalPlayer.Character.HumanoidRootPart.CFrame
                 repeat task.wait()
                         LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-74.6737823, 27.9878864, -23.4574356, -0.192965299, -0.000979838311, 0.981205106, 3.97876107e-11, 0.999999523, 0.000998606556, -0.981205583, 0.000192696447, -0.192965195)
                 until LocalPlayer.Backpack:FindFirstChild("SlapTool")
                 LocalPlayer.Character.HumanoidRootPart.CFrame = SavedPositions.OldPos
-                wait(.05)
         end
 end
 
@@ -188,8 +189,8 @@ function Slap(targets)
 end
 
 function SlapAll()
-        for _, v in pairs(game.Players:GetPlayers()) do
-                if v ~= LocalPlayer and CheckWhitelist(v) then
+        for i,v in pairs(game.Players:GetPlayers()) do
+		if not (v == LocalPlayer) and CheckWhitelist(v) then
                         Slap(v)
                 end
         end
@@ -200,13 +201,12 @@ function Kill(targets)
 end
 
 function KillAll()
-        for _,v in pairs(game.Players:GetPlayers()) do
-                if v ~= LocalPlayer and CheckWhitelist(v) then
+        for i,v in pairs(game.Players:GetPlayers()) do
+		if not (v == LocalPlayer) and CheckWhitelist(v) then
                         Kill(v)
                 end
         end
 end
-
 
 Tasks = {
 	AutoSlap = function(args)
