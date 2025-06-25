@@ -26,6 +26,8 @@ print([[
         refresh / re | Refresh Your Character
         respawn / res | Respawn Your Character
         autorefresh / autore [on/off] | Auto Respawn Player (Save Position)
+        clickslap [on/off] | Click To Slap Player
+        clickkill [on/off] | Click To Kill Player
 ]])
 local Prefix = ":"
 local Players = game.Players
@@ -48,12 +50,11 @@ local Notif = function(Title, Text, Duration)
 end
 
 Notif("Checking", "Check Id Game")
-wait(.1)
-if game.PlaceId == 14493533447 or game.PlaceId == 126778923293974 then
+wait(1)
+if game.PlaceId == 14493533447 then
         Unloaded = false
         Notif("Trolls Cant Break Tower", "Press M to load script")
 else
-        Unloaded = true
         Notif("Error", "Game Not Support")
 end
 
@@ -75,7 +76,8 @@ local Loops = {
 local SavedPositions = {};
 local States = {
       AutoRespawn = true;
-      ClickSlap = true;
+      ClickSlap = false;
+      ClickKill = false;
 };
 local ViewPlr = nil;
 local Connections = {};
@@ -101,15 +103,13 @@ ExecBar.Draggable = true
 function getSlap()
         local char = LocalPlayer.Character
         local back = LocalPlayer.Backpack
-        if char:FindFirstChild("GoldSlapTool") or char:FindFirstChild("BlueSlapTool") or char:FindFirstChild("SlapTool") or back:FindFirstChild("GoldSlapTool") or back:FindFirstChild("BlueSlapTool") or back:FindFirstChild("SlapTool") then
-                -- nothing
-        else
+        if not char:FindFirstChild("GoldSlapTool") or not char:FindFirstChild("BlueSlapTool") or not char:FindFirstChild("SlapTool") or not back:FindFirstChild("GoldSlapTool") or not back:FindFirstChild("BlueSlapTool") or not back:FindFirstChild("SlapTool") then
                 SavedPositions.OldPos = LocalPlayer.Character.HumanoidRootPart.CFrame
                 repeat task.wait()
                         LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-74.6737823, 27.9878864, -23.4574356, -0.192965299, -0.000979838311, 0.981205106, 3.97876107e-11, 0.999999523, 0.000998606556, -0.981205583, 0.000192696447, -0.192965195)
                 until LocalPlayer.Backpack:FindFirstChild("SlapTool")
                 LocalPlayer.Character.HumanoidRootPart.CFrame = SavedPositions.OldPos
-                wait(.1)
+                wait(.05)
         end
 end
 
@@ -520,6 +520,24 @@ function OnCommand(text)
                        States.AutoRespawn = not States.AutoRespawn
                 end
                 Notif('Successfully', "Auto Respawn set to "..tostring(States.AutoRespawn))
+        elseif cm("clickslap") then
+                if Args[2] == "on" or Args[2] == "true" then
+                       States.ClickSlap = true
+                elseif Args[2] == "off" or Args[2] == "false" then
+                       States.ClickSlap = false
+                elseif not Args[2] then
+                       States.ClickSlap = not States.ClickSlap
+                end
+                Notif('Successfully', "Click To Slap set to "..tostring(States.ClickSlap))
+        elseif cm("clickkill") then
+                if Args[2] == "on" or Args[2] == "true" then
+                       States.ClickKill = true
+                elseif Args[2] == "off" or Args[2] == "false" then
+                       States.ClickKill = false
+                elseif not Args[2] then
+                       States.ClickKill = not States.ClickKill
+                end
+                Notif('Successfully', "Click To Kill set to "..tostring(States.ClickKill))
         else
                 Notif("Error", tostring(Args[1]).." is a valid command.")
         end
@@ -629,6 +647,11 @@ Connections.Button1Up = LocalPlayer:GetMouse().Button1Up:Connect(function()
 	if not Unloaded and target and target.Parent:FindFirstChildOfClass("Humanoid") and game:GetService("Players"):FindFirstChild(target.Parent.Name) and States.ClickSlap then
 		local Vic = game:GetService("Players"):FindFirstChild(target.Parent.Name)
 		Slap(Vic)
+	else
+                if not Unloaded and target and target.Parent:FindFirstChildOfClass("Humanoid") and game:GetService("Players"):FindFirstChild(target.Parent.Name) and States.ClickKill then
+		        local Vic = game:GetService("Players"):FindFirstChild(target.Parent.Name)
+		        Kill(Vic)
+                end
 	end
 end)
 task.spawn(function()
