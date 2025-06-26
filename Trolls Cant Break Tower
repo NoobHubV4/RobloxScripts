@@ -29,6 +29,7 @@ print([[
         clickslap [on/off] | Click To Slap Player
         clickkill [on/off] | Click To Kill Player
         autoslaptool [on/off] | Auto Get Slap
+        void [plr,all] | Tp player the void
 ]])
 local Prefix = ":"
 local Players = game.Players
@@ -73,6 +74,11 @@ local Loops = {
             Plr = {};
             Aura = {};
       };
+      Voids = {
+            All = false;
+            Plr = {};
+            Aura = {};
+      };
 };
 local SavedPositions = {};
 local States = {
@@ -113,6 +119,8 @@ function getSlap()
                         LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(479.653442, 15.8912525, 4.14005041, -0.0112610189, -0.0141247334, 0.999836802, -3.18337058e-11, 0.999900222, 0.0141256293, -0.999936581, 0.00015906895, -0.0112598957)
                 until LocalPlayer.Backpack:FindFirstChild("GlichSlapTool")
                 LocalPlayer.Character.HumanoidRootPart.CFrame = SavedPositions.OldPos
+                wait(.05)
+                SavedPositions.OldPos = nil
         end
 end
 
@@ -206,6 +214,18 @@ function KillAll()
         for i,v in pairs(game.Players:GetPlayers()) do
 		if not (v == LocalPlayer) and CheckWhitelist(v) then
                         Kill(v)
+                end
+        end
+end
+
+function Void(targets)
+        SlapEvent(targets, Vector3.new(math.huge, math.huge, math.huge), Vector3.new(math.huge, math.huge, math.huge))
+end
+
+function VoidAll()
+        for i,v in pairs(game.Players:GetPlayers()) do
+		if not (v == LocalPlayer) and CheckWhitelist(v) then
+                        Void(v)
                 end
         end
 end
@@ -505,10 +525,12 @@ function OnCommand(text)
         elseif cm("refresh") or cm("re") then
                 SavedPositions.OldCFrame = LocalPlayer.Character.HumanoidRootPart.CFrame
                 Kill(LocalPlayer)
-                LocalPlayer.CharacterAdded:Wait() wait(.1)
-                for i = 1,2 do
+                LocalPlayer.CharacterAdded:Wait() wait(.05)
+                for i = 1,4 do
                         LocalPlayer.Character.HumanoidRootPart.CFrame = SavedPositions.OldCFrame
                 end
+                wait(.05)
+                SavedPositions.OldCFrame = nil
                 Notif("Successfully", "Refresh Character")
         elseif cm("respawn") or cm("res") then
                 Kill(LocalPlayer)
@@ -549,6 +571,19 @@ function OnCommand(text)
                        States.AutoSlapTool = not States.AutoSlapTool
                 end
                 Notif('Successfully', "Auto Get Slap set to "..tostring(States.AutoSlapTool))
+        elseif cm("void") then
+                local DaPlayer = PlrFromArgs(Args[2], false)
+                if DaPlayer then
+                        Void(DaPlayer)
+                        Notif("Successfully", "Void "..DaPlayer.DisplayName)
+                end
+                local ar = Args[2] and Args[2]:lower()
+                if ar == "all" then
+                        VoidAll()
+                        Notif('Successfully', "Void All")
+                elseif not DaPlayer then
+                        Notif("Error", 'Not Player in Server')
+                end
         else
                 Notif("Error", tostring(Args[1]).." is a valid command.")
         end
@@ -569,7 +604,7 @@ Connections.CharacterAdded = LocalPlayer.CharacterAdded:Connect(function(NewChar
 	      end
         end)
         if SavedPositions.OldCFramePos then
-              for i = 1,3 do
+              for i = 1,4 do
                      LocalPlayer.Character.HumanoidRootPart.CFrame = SavedPositions.OldCFramePos
               end
               wait(.05)
@@ -603,26 +638,9 @@ Connections.PlayerAdded = Players.PlayerAdded:Connect(function(plr)
         end
 end)
 Connections.PlayerRemoving = Players.PlayerRemoving:Connect(function(tar)
-        if ViewPlr[tar.UserId] then
+        if ViewPlr then
                 wait(.05)
                 workspace.CurrentCamera.CameraSubject = LocalPlayer.Character
-                Notif("Error", "Player in left")
-	end
-        if Loops.Slaps.Aura[tar.UserId] then
-                Notif("Error", "Player in left")
-        end
-        if Loops.Goto[tar.UserId] then
-                wait(.05)
-                LocalPlayer.Character.HumanoidRootPart.CFrame = SavedPositions.OldCFrame
-                Notif("Error", "Player in left")
-        end
-        if Whitelisted[plr.UserId] then
-                Notif("Error", "Player in left")
-        end
-        if Loops.Slaps.Plr[plr.UserId] then
-                Notif("Error", "Player in left")
-	end
-        if Loops.Kills.Plr[plr.UserId] then
                 Notif("Error", "Player in left")
         end
 end)
@@ -684,7 +702,7 @@ task.spawn(function()
 							local TPart = Targets.Character:FindFirstChildWhichIsA("BasePart")
 							if VPart and TPart and CheckWhitelist(Targets) and Targets ~= LocalPlayer then
 								if (TPart.Position-VPart.Position).Magnitude <= 10 then
-									Slap(Targets, v)
+									Slap(Targets)
 								end
 							end
 						end
@@ -712,6 +730,9 @@ spawn(function()
                                 Kill(Target)
                         end
                 end
+                if Loops.Voids.All then
+                        VoidAll()
+                end
         end
         while task.wait() do
                 pcall(task1)
@@ -734,7 +755,24 @@ spawn(function()
 							local TPart = Targets.Character:FindFirstChildWhichIsA("BasePart")
 							if VPart and TPart and CheckWhitelist(Targets) and Targets ~= LocalPlayer then
 								if (TPart.Position-VPart.Position).Magnitude <= 10 then
-									Kill(Targets, v)
+									Kill(Targets)
+								end
+							end
+						end
+					end
+				end
+			end
+                end
+                if Loops.Voids.Aura then
+                        for i,v in next, Loops.Voids.Aura do
+				if v.Character then
+					local VPart = v.Character:FindFirstChildWhichIsA("BasePart")
+					for _, Targets in pairs(Players:GetPlayers()) do
+						if Targets ~= v and Targets.Character then
+							local TPart = Targets.Character:FindFirstChildWhichIsA("BasePart")
+							if VPart and TPart and CheckWhitelist(Targets) and Targets ~= LocalPlayer then
+								if (TPart.Position-VPart.Position).Magnitude <= 10 then
+									Void(Targets)
 								end
 							end
 						end
@@ -745,6 +783,21 @@ spawn(function()
         end
         while task.wait() do
                 pcall(task2)
+                if Unloaded then
+                        break
+                end
+        end
+end)
+spawn(function()
+        task3 = function()
+                if Loops.Voids.Plr then
+			for i,v in next, Loops.Voids.Plr do
+				Void(v)
+			end
+                end
+        end
+        while task.wait() do
+                pcall(task3)
                 if Unloaded then
                         break
                 end
