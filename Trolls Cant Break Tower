@@ -171,14 +171,6 @@ end
 local PlrFromArgs = function(plr, args)
 	if plr and plr:lower() == "me" then
 		return args
-        elseif plr and plr:lower() == "random" then
-        local DaPlayers = Players:GetPlayers()
-	local DaIndex = math.random(1, #DaPlayers)
-	local ToReturn = DaPlayers[DaIndex]
-	if args and ToReturn.UserId == args.UserId then
-		DaPlayers = Players:GetPlayers(); DaIndex = math.random(1, #DaPlayers); ToReturn = DaPlayers[DaIndex]
-	end
-	return ToReturn
 	elseif not plr and not args then
 		return false
 	elseif not plr and args then
@@ -194,43 +186,47 @@ local PlrFromArgs = function(plr, args)
 	return foundplr
 end
 
+function GetRandomPlr()
+        local DaPlayers = Players:GetPlayers()
+	local DaIndex = math.random(1, #DaPlayers)
+	local ToReturn = DaPlayers[DaIndex]
+	if args and ToReturn.UserId == args.UserId then
+		DaPlayers = Players:GetPlayers(); DaIndex = math.random(1, #DaPlayers); ToReturn = DaPlayers[DaIndex]
+	end
+	return ToReturn
+end
+
 function Slap(targets)
-        if targets ~= LocalPlayer then
-                SlapEvent(targets, LocalPlayer.Character.HumanoidRootPart.Position, Vector3.new(0, 1000000, 0))
-        end
+        SlapEvent(targets, LocalPlayer.Character.HumanoidRootPart.Position, Vector3.new(0, 1000000, 0))
 end
 
 function SlapAll()
         for i,v in pairs(game.Players:GetPlayers()) do
-		if CheckWhitelist(v) then
+		if v ~= LocalPlayer and CheckWhitelist(v) then
                         Slap(v)
                 end
         end
 end
 
 function Kill(targets)
-        if targets ~= LocalPlayer then
-                SlapEvent(targets, Vector3.new(-math.huge, -math.huge, -math.huge), Vector3.new(-math.huge, -math.huge, -math.huge))
-        end
+        SlapEvent(targets, Vector3.new(-math.huge, -math.huge, -math.huge), Vector3.new(-math.huge, -math.huge, -math.huge))
 end
 
 function KillAll()
         for i,v in pairs(game.Players:GetPlayers()) do
-		if CheckWhitelist(v) then
+		if v ~= LocalPlayer and CheckWhitelist(v) then
                         Kill(v)
                 end
         end
 end
 
 function Void(targets)
-        if targets ~= LocalPlayer then
-                SlapEvent(targets, Vector3.new(math.huge, math.huge, math.huge), Vector3.new(math.huge, math.huge, math.huge))
-        end
+        SlapEvent(targets, Vector3.new(math.huge, math.huge, math.huge), Vector3.new(math.huge, math.huge, math.huge))
 end
 
 function VoidAll()
         for i,v in pairs(game.Players:GetPlayers()) do
-		if CheckWhitelist(v) then
+		if v ~= LocalPlayer and CheckWhitelist(v) then
                         Void(v)
                 end
         end
@@ -246,7 +242,7 @@ Tasks = {
 						pcall(function()
 							for i,v in pairs(Players:GetPlayers()) do
 								if v.Character and CheckWhitelist(v) then
-									if v.Character:FindFirstChildOfClass("Humanoid") then
+									if v.Character:FindFirstChildOfClass("Humanoid") and v ~= LocalPlayer then
 										local ch = v.Character
 										if ch:FindFirstChild("GoldSlapTool") or ch:FindFirstChild("BlueSlapTool") or ch:FindFirstChild("SlapTool") or ch:FindFirstChild("GlichSlapTool") then
 											Slap(v)
@@ -271,7 +267,7 @@ Tasks = {
 						pcall(function()
 							for i,v in pairs(Players:GetPlayers()) do
 								if v.Character and CheckWhitelist(v) then
-									if v.Character:FindFirstChildOfClass("Humanoid") then
+									if v.Character:FindFirstChildOfClass("Humanoid") and v ~= LocalPlayer then
 										local ch = v.Character
 										if ch:FindFirstChild("GoldSlapTool") or ch:FindFirstChild("BlueSlapTool") or ch:FindFirstChild("SlapTool") or ch:FindFirstChild('GlichSlapTool') then
 											Kill(v)
@@ -322,6 +318,12 @@ function OnCommand(text)
                 if ar == "all" then
                         SlapAll()
                         Notif("Successfully", "Slap All")
+                elseif ar == "random" then
+                        local DaRandom = GetRandomPlr()
+                        if DaRandom ~= LocalPlayer then
+                                Slap(DaRandom)
+                                Notif('Successfully', "Slap "..DaRandom.DisplayName)
+                        end
                 elseif not DaPlayer then
                         Notif("Error", "Not Player in Server")
                 end
@@ -410,7 +412,15 @@ function OnCommand(text)
                 if DaPlayer then
                         LocalPlayer.Character.HumanoidRootPart.CFrame = DaPlayer.Character.HumanoidRootPart.CFrame
                         Notif("Successfully", "Goto "..DaPlayer.DisplayName)
-                else
+                end
+                local ar = Args[2] and Args[2]:lower()
+                if ar == "random" then
+                        local DaRandom = GetRandomPlr()
+                        if DaRandom ~= LocalPlayer then
+                                LocalPlayer.Character.HumanoidRootPart.CFrame = DaRandom.Character.HumanoidRootPart.CFrame
+                                Notif('Successfully', "Slap "..DaRandom.DisplayName)
+                        end
+                elseif not DaPlayer then
                         Notif("Error", "Not Player in Server")
                 end
         elseif cm("slaptool") then
@@ -477,6 +487,12 @@ function OnCommand(text)
                 if ar == "all" then
                         KillAll()
                         Notif("Successfully", "Kill All")
+                elseif ar == "random" then
+                        local DaRandom = GetRandomPlr()
+                        if DaRandom ~= LocalPlayer then
+                                Kill(DaRandom)
+                                Notif('Successfully', "Kill "..DaRandom.DisplayName)
+                        end
                 elseif not DaPlayer then
                         Notif("Error", "Not Player in Server")
                 end
@@ -587,6 +603,12 @@ function OnCommand(text)
                 if ar == "all" then
                         VoidAll()
                         Notif('Successfully', "Void All")
+                elseif ar == "random" then
+                        local DaRandom = GetRandomPlr()
+                        if DaRandom ~= LocalPlayer then
+                                Void(DaRandom)
+                                Notif('Successfully', "Void "..DaRandom.DisplayName)
+                        end
                 elseif not DaPlayer then
                         Notif("Error", 'Not Player in Server')
                 end
@@ -710,7 +732,7 @@ task.spawn(function()
 					for _, Targets in pairs(Players:GetPlayers()) do
 						if Targets ~= v and Targets.Character then
 							local TPart = Targets.Character:FindFirstChildWhichIsA("BasePart")
-							if VPart and TPart and CheckWhitelist(Targets) then
+							if VPart and TPart and CheckWhitelist(Targets) and Targets ~= LocalPlayer then
 								if (TPart.Position-VPart.Position).Magnitude <= 10 then
 									Slap(Targets)
 								end
@@ -763,7 +785,7 @@ spawn(function()
 					for _, Targets in pairs(Players:GetPlayers()) do
 						if Targets ~= v and Targets.Character then
 							local TPart = Targets.Character:FindFirstChildWhichIsA("BasePart")
-							if VPart and TPart and CheckWhitelist(Targets) then
+							if VPart and TPart and CheckWhitelist(Targets) and Targets ~= LocalPlayer then
 								if (TPart.Position-VPart.Position).Magnitude <= 10 then
 									Kill(Targets)
 								end
@@ -780,7 +802,7 @@ spawn(function()
 					for _, Targets in pairs(Players:GetPlayers()) do
 						if Targets ~= v and Targets.Character then
 							local TPart = Targets.Character:FindFirstChildWhichIsA("BasePart")
-							if VPart and TPart and CheckWhitelist(Targets) then
+							if VPart and TPart and CheckWhitelist(Targets) and Targets ~= LocalPlayer then
 								if (TPart.Position-VPart.Position).Magnitude <= 10 then
 									Void(Targets)
 								end
