@@ -195,36 +195,42 @@ local PlrFromArgs = function(plr, args)
 end
 
 function Slap(targets)
-        SlapEvent(targets, LocalPlayer.Character.HumanoidRootPart.Position, Vector3.new(0, 1000000, 0))
+        if targets ~= LocalPlayer then
+                SlapEvent(targets, LocalPlayer.Character.HumanoidRootPart.Position, Vector3.new(0, 1000000, 0))
+        end
 end
 
 function SlapAll()
         for i,v in pairs(game.Players:GetPlayers()) do
-		if not (v == LocalPlayer) and CheckWhitelist(v) then
+		if CheckWhitelist(v) then
                         Slap(v)
                 end
         end
 end
 
 function Kill(targets)
-        SlapEvent(targets, Vector3.new(-math.huge, -math.huge, -math.huge), Vector3.new(-math.huge, -math.huge, -math.huge))
+        if targets ~= LocalPlayer then
+                SlapEvent(targets, Vector3.new(-math.huge, -math.huge, -math.huge), Vector3.new(-math.huge, -math.huge, -math.huge))
+        end
 end
 
 function KillAll()
         for i,v in pairs(game.Players:GetPlayers()) do
-		if not (v == LocalPlayer) and CheckWhitelist(v) then
+		if CheckWhitelist(v) then
                         Kill(v)
                 end
         end
 end
 
 function Void(targets)
-        SlapEvent(targets, Vector3.new(math.huge, math.huge, math.huge), Vector3.new(math.huge, math.huge, math.huge))
+        if targets ~= LocalPlayer then
+                SlapEvent(targets, Vector3.new(math.huge, math.huge, math.huge), Vector3.new(math.huge, math.huge, math.huge))
+        end
 end
 
 function VoidAll()
         for i,v in pairs(game.Players:GetPlayers()) do
-		if not (v == LocalPlayer) and CheckWhitelist(v) then
+		if CheckWhitelist(v) then
                         Void(v)
                 end
         end
@@ -239,7 +245,7 @@ Tasks = {
 					while States.SlapHostile do task.wait()
 						pcall(function()
 							for i,v in pairs(Players:GetPlayers()) do
-								if v.Character and CheckWhitelist(v) and v ~= LocalPlayer then
+								if v.Character and CheckWhitelist(v) then
 									if v.Character:FindFirstChildOfClass("Humanoid") then
 										local ch = v.Character
 										if ch:FindFirstChild("GoldSlapTool") or ch:FindFirstChild("BlueSlapTool") or ch:FindFirstChild("SlapTool") or ch:FindFirstChild("GlichSlapTool") then
@@ -264,7 +270,7 @@ Tasks = {
 					while States.KillHostile do task.wait()
 						pcall(function()
 							for i,v in pairs(Players:GetPlayers()) do
-								if v.Character and CheckWhitelist(v) and v ~= LocalPlayer then
+								if v.Character and CheckWhitelist(v) then
 									if v.Character:FindFirstChildOfClass("Humanoid") then
 										local ch = v.Character
 										if ch:FindFirstChild("GoldSlapTool") or ch:FindFirstChild("BlueSlapTool") or ch:FindFirstChild("SlapTool") or ch:FindFirstChild('GlichSlapTool') then
@@ -636,6 +642,10 @@ Connections.PlayerAdded = Players.PlayerAdded:Connect(function(plr)
                 Loops.Kills.Plr[plr.UserId] = plr
                 Notif("Successfully", "Player in joined")
         end
+        if Loops.Voids.Plr[plr.UserId] then
+                Loops.Voids.Plr[plr.UserId] = plr
+                Notif("Successfully", "Player in joined")
+        end
 end)
 Connections.PlayerRemoving = Players.PlayerRemoving:Connect(function(tar)
         if ViewPlr then
@@ -700,7 +710,7 @@ task.spawn(function()
 					for _, Targets in pairs(Players:GetPlayers()) do
 						if Targets ~= v and Targets.Character then
 							local TPart = Targets.Character:FindFirstChildWhichIsA("BasePart")
-							if VPart and TPart and CheckWhitelist(Targets) and Targets ~= LocalPlayer then
+							if VPart and TPart and CheckWhitelist(Targets) then
 								if (TPart.Position-VPart.Position).Magnitude <= 10 then
 									Slap(Targets)
 								end
@@ -753,7 +763,7 @@ spawn(function()
 					for _, Targets in pairs(Players:GetPlayers()) do
 						if Targets ~= v and Targets.Character then
 							local TPart = Targets.Character:FindFirstChildWhichIsA("BasePart")
-							if VPart and TPart and CheckWhitelist(Targets) and Targets ~= LocalPlayer then
+							if VPart and TPart and CheckWhitelist(Targets) then
 								if (TPart.Position-VPart.Position).Magnitude <= 10 then
 									Kill(Targets)
 								end
@@ -770,7 +780,7 @@ spawn(function()
 					for _, Targets in pairs(Players:GetPlayers()) do
 						if Targets ~= v and Targets.Character then
 							local TPart = Targets.Character:FindFirstChildWhichIsA("BasePart")
-							if VPart and TPart and CheckWhitelist(Targets) and Targets ~= LocalPlayer then
+							if VPart and TPart and CheckWhitelist(Targets) then
 								if (TPart.Position-VPart.Position).Magnitude <= 10 then
 									Void(Targets)
 								end
