@@ -53,7 +53,6 @@ local Notif = function(Title, Text, Duration)
 		Duration = Duration;
 	})
 end
--- 139.906082, 290.181061, -49.6262054, -0.013800065, 0.0627218783, 0.997935653, -1.77467083e-10, 0.998030663, -0.0627278537, -0.999904752, -0.000865648617, -0.0137728881
 Notif("Checking", "Check Id Game")
 wait(1)
 if game.PlaceId == 14493533447 then
@@ -90,6 +89,7 @@ local States = {
       ClickKill = false;
       AutoSlapTool = false;
       AutoFlyingCarpet = false;
+      SlapPower = true;
 };
 local ViewPlr = nil;
 local Connections = {};
