@@ -91,7 +91,7 @@ local States = {
       AutoFlyingCarpet = false;
       SlapPower = true;
 };
-local ViewPlr = nil;
+local ViewPlr = {};
 local Connections = {};
 local Tower = Instance.new("ScreenGui", game.Players.LocalPlayer.PlayerGui)
 Tower.Name = "Tower"
@@ -165,6 +165,11 @@ function SlapEvent(target, Pos, Pos2)
                                 Event:FireServer("slash", target.Character, Pos, Pos2)
                                 -- Apply massive upward velocity to target
                                 if targetPart and targetPart.Parent:FindFirstChild("BodyVelocity") == nil then
+                                    for _, v in pairs(targetPart:GetChildren()) do  
+                                             if v:IsA("BodyVelocity") or v:IsA("BodyGyro") or v:IsA("VectorForce") or v:IsA("AlignPosition") then  
+                                                        v:Destroy()  
+                                             end  
+                                    end  
                                     local bodyVelocity = Instance.new("BodyVelocity")
                                     bodyVelocity.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
                                     bodyVelocity.Velocity = Vector3.new(math.huge, math.huge, math.huge)
@@ -474,18 +479,22 @@ function OnCommand(text)
         elseif cm("view") then
                 local DaPlayer = PlrFromArgs(Args[2], false)
 		if DaPlayer then
-			if ViewPlr then
-				ViewPlr = nil
+			if ViewPlr[DaPlayer.UserId] then
+				ViewPlr[DaPlayer.UserId] = nil
 				wait(.4)
 			end
-			ViewPlr = DaPlayer
+			ViewPlr[DaPlayer.UserId] = DaPlayer
                         Notif("Successfully", "View "..DaPlayer.DisplayName)
 			task.spawn(function()
 				while wait(.1) do
 					pcall(function()
-						workspace.CurrentCamera.CameraSubject = DaPlayer.Character:FindFirstChildOfClass("Humanoid")
+                                                if ViewPlr then
+                                                        for _,target in next, ViewPlr do
+						                workspace.CurrentCamera.CameraSubject = DaPlayer.Character:FindFirstChildOfClass("Humanoid")
+                                                        end
+                                                end
 					end)
-					if not DaPlayer or not ViewPlr then
+					if not DaPlayer or not ViewPlr[DaPlayer.UserId] then
 						workspace.CurrentCamera.CameraSubject = game:GetService("Players").LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
 						break
 					end
@@ -493,7 +502,9 @@ function OnCommand(text)
 			end)
 		end
         elseif cm("unview") then
-                ViewPlr = nil
+                for i,v in pairs(game.Players:GetPlayers()) do
+                        ViewPlr[v.UserId] = nil
+                end
 		wait()
 		game:GetService("Workspace").Camera.CameraSubject = LocalPlayer.Character.Humanoid
                 Notif("Successfully", "View "..LocalPlayer.DisplayName)
@@ -735,7 +746,7 @@ Connections.PlayerAdded = Players.PlayerAdded:Connect(function(plr)
         end
 end)
 Connections.PlayerRemoving = Players.PlayerRemoving:Connect(function(tar)
-        if ViewPlr then
+        if ViewPlr[tar.UserId] then
                 wait(.05)
                 workspace.CurrentCamera.CameraSubject = LocalPlayer.Character
                 Notif("Error", "Player in left")
