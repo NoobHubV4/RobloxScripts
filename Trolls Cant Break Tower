@@ -1,5 +1,5 @@
 print([[
-     Commands:
+Commands:
         slap [plr,all,random] | Slap the Player
         loopslap [plr,all] | Loop Slap the Player
         unloopslap [plr,all] | Unloop Slap the Player
@@ -33,6 +33,7 @@ print([[
         loopvoid [plr,all] | Loop Tp player the void
         unloopvoid [plr,all] | Stopped Loop Tp player the void
         autoflyingcarpet / autocarpet [on/off] | Auto Get Item Flying Carpet
+        flyingcarpet / carpet | Get Item Flying Carpet
 ]])
 local Prefix = ":"
 local Players = game.Players
@@ -89,7 +90,6 @@ local States = {
       ClickKill = false;
       AutoSlapTool = false;
       AutoFlyingCarpet = false;
-      SlapPower = true;
 };
 local ViewPlr = {};
 local Connections = {};
@@ -154,31 +154,35 @@ function getEvent()
         end
 end
 
+function TargetVelocity(player)
+        local targetPart = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+        if targetPart then
+                if targetPart and targetPart.Parent:FindFirstChild("BodyVelocity") == nil then
+                        for _, v in pairs(targetPart:GetChildren()) do  
+                                if v:IsA("BodyVelocity") or v:IsA("BodyGyro") or v:IsA("VectorForce") or v:IsA("AlignPosition") then  
+                                        v:Destroy()  
+                                end  
+                        end  
+                        local bodyVelocity = Instance.new("BodyVelocity")
+                        bodyVelocity.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+                        bodyVelocity.Velocity = Vector3.new(math.huge, math.huge, math.huge)
+                        bodyVelocity.Parent = targetPart
+                        game.Debris:AddItem(bodyVelocity, math.huge)
+                end
+        end
+end
+
 function SlapEvent(target, Pos, Pos2)
         getSlap()
         local Event = getEvent()
-        local targetPart = target.Character and target.Character:FindFirstChild("HumanoidRootPart")
-                if targetPart then
-                        coroutine.wrap(function()
-                            pcall(function()
-                                -- Fire remote with extreme upward force
-                                Event:FireServer("slash", target.Character, Pos, Pos2)
-                                -- Apply massive upward velocity to target
-                                if targetPart and targetPart.Parent:FindFirstChild("BodyVelocity") == nil then
-                                    for _, v in pairs(targetPart:GetChildren()) do  
-                                             if v:IsA("BodyVelocity") or v:IsA("BodyGyro") or v:IsA("VectorForce") or v:IsA("AlignPosition") then  
-                                                        v:Destroy()  
-                                             end  
-                                    end  
-                                    local bodyVelocity = Instance.new("BodyVelocity")
-                                    bodyVelocity.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
-                                    bodyVelocity.Velocity = Vector3.new(math.huge, math.huge, math.huge)
-                                    bodyVelocity.Parent = targetPart
-                                    game.Debris:AddItem(bodyVelocity, math.huge)
-                                end
-                            end)
-                        end)()
-                end
+        coroutine.wrap(function()
+                pcall(function()
+                -- Fire remote with extreme upward force
+                Event:FireServer("slash", target.Character, Pos, Pos2)
+                -- Apply massive upward velocity to target
+                TargetVelocity(target)
+                end)
+        end)()
 end
 
 function CheckWhitelist(args)
@@ -255,6 +259,30 @@ function VoidAll()
                         Void(v)
                 end
         end
+end
+
+function SlapPower()
+        local char = LocalPlayer.Character
+        local back = LocalPlayer.Backpack
+        local tool = char:FindFirstChild("GoldSlapTool") or char:FindFirstChild("BlueSlapTool") or char:FindFirstChild("SlapTool") or char:FindFirstChild("GlichSlapTool") or back:FindFirstChild("GoldSlapTool") or back:FindFirstChild("BlueSlapTool") or back:FindFirstChild("SlapTool") or back:FindFirstChild("GlichSlapTool")
+        if tool:FindFirstChild("Power") then
+        tool.Power.Value = math.huge
+        end
+        if tool:FindFirstChild("Cooldown") then
+        tool.Cooldown.Value = 0
+        end
+        tool.Activated:Connect(function()
+          if States.SlapPower then
+             for _, plr in pairs(Players:GetPlayers()) do  
+                 if plr ~= lp and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then  
+                     local dist = (plr.Character.HumanoidRootPart.Position - lp.Character.HumanoidRootPart.Position).Magnitude  
+                     if dist <= 10 then  
+                         TargetVelocity(plr)
+                     end  
+                 end  
+             end
+          end
+        end)
 end
 
 Tasks = {
@@ -684,6 +712,9 @@ function OnCommand(text)
                        getFlyingCarpet()
                 end
                 Notif('Successfully', "Auto Get Flying Carpet set to "..tostring(States.AutoFlyingCarpet))
+        elseif cm("flyingcarpet") or cm("carpet") then
+                getFlyingCarpet()
+                Notif("Successfully", "Get Flying Carpet")
         else
                 Notif("Error", tostring(Args[1]).." is a valid command.")
         end
@@ -911,6 +942,38 @@ spawn(function()
                 end
         end
 end)
+local ScreenGui = Instance.new("ScreenGui")
+local SpamBtn = Instance.new("TextButton")
+
+ScreenGui.Parent = game.CoreGui
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+ScreenGui.ResetOnSpawn = true
+
+SpamBtn.Name = "SpamBtn"
+SpamBtn.Parent = ScreenGui
+SpamBtn.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+SpamBtn.Position = UDim2.new(0, 0, 0.395768493, 0)
+SpamBtn.Size = UDim2.new(0, 100, 0, 45)
+SpamBtn.Font = Enum.Font.Arcade
+SpamBtn.Text = "Slap Power"
+SpamBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+SpamBtn.TextScaled = true
+SpamBtn.TextSize = 14.000
+SpamBtn.TextStrokeTransparency = 0.000
+SpamBtn.TextWrapped = true
+SpamBtn.Visible = true
+SpamBtn.Draggable = false
+SpamBtn.MouseButton1Click:Connect(function()
+      local char = LocalPlayer.Character
+      local back = LocalPlayer.Backpack
+      local tool = char:FindFirstChild("GoldSlapTool") or char:FindFirstChild("BlueSlapTool") or char:FindFirstChild("SlapTool") or char:FindFirstChild("GlichSlapTool")
+      if tool then
+        SlapPower()
+        Notif("Successfully", "Activated Slap Power")
+      else
+        Notif("Error", "Not Slap Gloves")
+      end
+end)
 Notif("Trolls Cant Break Tower", "Script Loaded!")
 end
 
@@ -919,7 +982,6 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
 	        if input.KeyCode == Enum.KeyCode.M and not Key then
 		        Key = true
                         LocalScript()
-                        game.Players.LocalPlayer.Character.Humanoid.Health = 0
                 end
 	end
 end)
@@ -947,7 +1009,7 @@ SpamBtn.TextSize = 14.000
 SpamBtn.TextStrokeTransparency = 0.000
 SpamBtn.TextWrapped = true
 SpamBtn.Visible = true
-SpamBtn.Draggable = true
+SpamBtn.Draggable = false
 SpamBtn.MouseButton1Click:Connect(function()
       VirtualInputManager:SendKeyEvent(true,"M",false,game)
       ScreenGui:Destroy()
