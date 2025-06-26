@@ -32,6 +32,7 @@ print([[
         void [plr,all,random] | Tp player the void
         loopvoid [plr,all] | Loop Tp player the void
         unloopvoid [plr,all] | Stopped Loop Tp player the void
+        autoflyingcarpet / autocarpet [on/off] | Auto Get Item Flying Carpet
 ]])
 local Prefix = ":"
 local Players = game.Players
@@ -52,7 +53,7 @@ local Notif = function(Title, Text, Duration)
 		Duration = Duration;
 	})
 end
-
+-- 139.906082, 290.181061, -49.6262054, -0.013800065, 0.0627218783, 0.997935653, -1.77467083e-10, 0.998030663, -0.0627278537, -0.999904752, -0.000865648617, -0.0137728881
 Notif("Checking", "Check Id Game")
 wait(1)
 if game.PlaceId == 14493533447 then
@@ -88,6 +89,7 @@ local States = {
       ClickSlap = false;
       ClickKill = false;
       AutoSlapTool = false;
+      AutoFlyingCarpet = false;
 };
 local ViewPlr = nil;
 local Connections = {};
@@ -120,6 +122,22 @@ function getSlap()
                 repeat task.wait()
                         LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(479.653442, 15.8912525, 4.14005041, -0.0112610189, -0.0141247334, 0.999836802, -3.18337058e-11, 0.999900222, 0.0141256293, -0.999936581, 0.00015906895, -0.0112598957)
                 until LocalPlayer.Backpack:FindFirstChild("GlichSlapTool")
+                LocalPlayer.Character.HumanoidRootPart.CFrame = SavedPositions.OldPos
+                wait(.05)
+                SavedPositions.OldPos = nil
+        end
+end
+
+function getFlyingCarpet()
+        local char = LocalPlayer.Character
+        local back = LocalPlayer.Backpack
+        if char:FindFirstChild("FlyingCarpet") or back:FindFirstChild("FlyingCarpet") then
+                --
+        else
+                SavedPositions.OldPos = LocalPlayer.Character.HumanoidRootPart.CFrame
+                repeat task.wait()
+                        LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(139.906082, 290.181061, -49.6262054, -0.013800065, 0.0627218783, 0.997935653, -1.77467083e-10, 0.998030663, -0.0627278537, -0.999904752, -0.000865648617, -0.0137728881)
+                until LocalPlayer.Backpack:FindFirstChild("FlyingCarpet")
                 LocalPlayer.Character.HumanoidRootPart.CFrame = SavedPositions.OldPos
                 wait(.05)
                 SavedPositions.OldPos = nil
@@ -594,6 +612,9 @@ function OnCommand(text)
                 elseif not Args[2] then
                        States.AutoSlapTool = not States.AutoSlapTool
                 end
+                if States.AutoSlapTool == true then
+                       getSlap()
+                end
                 Notif('Successfully', "Auto Get Slap set to "..tostring(States.AutoSlapTool))
         elseif cm("void") then
                 local DaPlayer = PlrFromArgs(Args[2], false)
@@ -640,6 +661,18 @@ function OnCommand(text)
                 elseif not DaPlayer then
                         Notif("Error", "Not Player in Server")
                 end
+        elseif cm("autoflyingcarpet") or cm("autocarpet") then
+                if Args[2] == "on" or Args[2] == "true" then
+                       States.AutoFlyingCarpet = true
+                elseif Args[2] == "off" or Args[2] == "false" then
+                       States.AutoFlyingCarpet = false
+                elseif not Args[2] then
+                       States.AutoFlyingCarpet = not States.AutoFlyingCarpet
+                end
+                if States.AutoFlyingCarpet == true then
+                       getFlyingCarpet()
+                end
+                Notif('Successfully', "Auto Get Flying Carpet set to "..tostring(States.AutoFlyingCarpet))
         else
                 Notif("Error", tostring(Args[1]).." is a valid command.")
         end
@@ -647,8 +680,12 @@ end
 Connections.CharacterAdded = LocalPlayer.CharacterAdded:Connect(function(NewCharacter)
         if Unloaded then return end
         if States.AutoSlapTool then
-              wait(.2)
+              wait(.1)
               getSlap()
+        end
+        if States.AutoFlyingCarpet then
+              wait(.2)
+              getFlyingCarpet()
         end
         repeat game.RunService.Stepped:Wait() until NewCharacter
         NewCharacter:WaitForChild("HumanoidRootPart")
