@@ -1,6 +1,6 @@
 print([[
      Commands:
-        slap [plr,all] | Slap the Player
+        slap [plr,all,random] | Slap the Player
         loopslap [plr,all] | Loop Slap the Player
         unloopslap [plr,all] | Unloop Slap the Player
         whitelist / wl [plr] | Whitelisted Player
@@ -10,13 +10,13 @@ print([[
         rejoin / rj | Rejoin the server
         unload | Unloaded The Script
         prefix [Prefix] | Change Prefix
-        goto [plr] | Goto Player
+        goto [plr,random] | Goto Player
         slaptool | get the slap
         autoslap | Auto Slap (if Player Equip Tool)
         unautoslap | Stop Auto Slap
         loopgoto / loopto [plr] | Loop Goto Player
         unloopgoto / unloopto [plr] | UnLoop Goto Player
-        kill [plr,all] | Kill Player or all
+        kill [plr,all,random] | Kill Player or all
         loopkill / lk [plr,all] | Loop Kill Player or all
         unloopkill / unlk [plr,all] | UnLoop Kill Player or all
         killaura [plr] | Give killaura Player
@@ -29,7 +29,9 @@ print([[
         clickslap [on/off] | Click To Slap Player
         clickkill [on/off] | Click To Kill Player
         autoslaptool [on/off] | Auto Get Slap
-        void [plr,all] | Tp player the void
+        void [plr,all,random] | Tp player the void
+        loopvoid [plr,all] | Loop Tp player the void
+        unloopvoid [plr,all] | Stopped Loop Tp player the void
 ]])
 local Prefix = ":"
 local Players = game.Players
@@ -611,6 +613,32 @@ function OnCommand(text)
                         end
                 elseif not DaPlayer then
                         Notif("Error", 'Not Player in Server')
+                end
+        elseif cm("loopvoid") then
+                local DaPlayer = PlrFromArgs(Args[2])
+                if DaPlayer then
+                        Loops.Voids.Plr[DaPlayer.UserId] = DaPlayer
+                        Notif("Successfully", 'Loop Void '..DaPlayer.DisplayName)
+                end
+                local ar = Args[2] and Args[2]:lower()
+                if ar == "all" then
+                        Loops.Voids.All = true
+                        Notif('Successfully', "Loop Void All")
+                elseif not DaPlayer then
+                        Notif("Error", "Not Player in Server")
+                end
+        elseif cm("unloopvoid") then
+                local DaPlayer = PlrFromArgs(Args[2])
+                if DaPlayer then
+                        Loops.Voids.Plr[DaPlayer.UserId] = nil
+                        Notif("Successfully", 'Stopped loop Void '..DaPlayer.DisplayName)
+                end
+                local ar = Args[2] and Args[2]:lower()
+                if ar == "all" then
+                        Loops.Voids.All = false
+                        Notif('Successfully', "Stopped loop Void All")
+                elseif not DaPlayer then
+                        Notif("Error", "Not Player in Server")
                 end
         else
                 Notif("Error", tostring(Args[1]).." is a valid command.")
