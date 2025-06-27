@@ -7,7 +7,7 @@ local Title = Instance.new("TextLabel")
 local Toggle = Instance.new("TextButton")
 local Credit = Instance.new("TextLabel")
 local Plr = Players.LocalPlayer
-local Remote = false
+local SwingRemote = false
  
 DR.Name = "DR"
 DR.Parent = game.CoreGui
@@ -65,22 +65,22 @@ Credit.TextStrokeColor3 = Color3.new(0.196078, 0.196078, 0.196078)
 Credit.TextStrokeTransparency = 0
 Credit.TextWrapped = true
 
-local tool = game:GetService("Players").LocalPlayer.Character:FindFirstChildOfClass("Tool")
+local tool = game:GetService("Players").LocalPlayer.Character:FindFirstChild("Shovel")
  
 Toggle.MouseButton1Click:connect(function()
-    if Remote == false then
-        Remote = true
+    if SwingRemote == false then
+        SwingRemote = true
         Toggle.Text = "AURA [ON]"
-        Stepped = game:GetService("RunService").Stepped:Connect(function()
-            if not Remote == false then
+        Stepped = game.RunService.Stepped:Connect(function()
+            if not SwingRemote == false then
                     
-game:GetService("ReplicatedStorage"):WaitForChild("Shared"):WaitForChild("Network"):WaitForChild("RemoteEvent"):WaitForChild("SwingMelee"):FireServer(tool, 1750996010.674691, vector.create(-0.5236235857009888, -0.3940219581127167, -0.7553574442863464))
-                else
+game:GetService("ReplicatedStorage"):WaitForChild("Shared"):WaitForChild("Network"):WaitForChild("RemoteEvent"):WaitForChild("SwingMelee"):FireServer(tool, 1750996010.674691, game.Players.LocalPlayer.Character.HumanoidRootPart.Position)
+            else
                     Stepped:Disconnect()
             end
         end)
-    elseif Remote then
-        Remote = false
+    elseif SwingRemote then
+        SwingRemote = false
         Toggle.Text = "AURA [OFF]"
     end
 end)
