@@ -285,6 +285,17 @@ function SlapPower()
         end)
 end
 
+function Refresh()
+        SavedPositions.OldCFrame = LocalPlayer.Character.HumanoidRootPart.CFrame
+        game.Players.LocalPlayer.Character.Humanoid.Health = 0
+        LocalPlayer.CharacterAdded:Wait() wait(.05)
+        for i = 1,10 do
+                LocalPlayer.Character.HumanoidRootPart.CFrame = SavedPositions.OldCFrame
+        end
+        wait(.05)
+        SavedPositions.OldCFrame = nil
+end
+
 Tasks = {
 	AutoSlap = function(args)
 		if args == "hostile" then
@@ -604,17 +615,18 @@ function OnCommand(text)
                 States.KillHostile = false
                 Notif("Successfully", "Stopped kill hostile")
         elseif cm("refresh") or cm("re") then
-                SavedPositions.OldCFrame = LocalPlayer.Character.HumanoidRootPart.CFrame
-                Kill(LocalPlayer)
-                LocalPlayer.CharacterAdded:Wait() wait(.05)
-                for i = 1,4 do
-                        LocalPlayer.Character.HumanoidRootPart.CFrame = SavedPositions.OldCFrame
-                end
+                States.AutoRespawn = false
                 wait(.05)
-                SavedPositions.OldCFrame = nil
+                Refresh()
+                wait(.1)
+                States.AutoRespawn = true
                 Notif("Successfully", "Refresh Character")
         elseif cm("respawn") or cm("res") then
-                Kill(LocalPlayer)
+                States.AutoRespawn = false
+                wait(.1)
+                LocalPlayer.Character.Humanoid.Health = 0
+                wait(.1)
+                States.AutoRespawn = true
                 Notif("Successfully", "Respawn Character")
         elseif cm("autorefresh") or cm("autore") then
                 if Args[2] == "on" or Args[2] == "true" then
@@ -721,14 +733,6 @@ function OnCommand(text)
 end
 Connections.CharacterAdded = LocalPlayer.CharacterAdded:Connect(function(NewCharacter)
         if Unloaded then return end
-        if States.AutoSlapTool then
-              wait(.1)
-              getSlap()
-        end
-        if States.AutoFlyingCarpet then
-              wait(.2)
-              getFlyingCarpet()
-        end
         repeat game.RunService.Stepped:Wait() until NewCharacter
         NewCharacter:WaitForChild("HumanoidRootPart")
         NewCharacter:WaitForChild("Head")
@@ -739,11 +743,19 @@ Connections.CharacterAdded = LocalPlayer.CharacterAdded:Connect(function(NewChar
 	      end
         end)
         if SavedPositions.OldCFramePos then
-              for i = 1,4 do
+              for i = 1,10 do
                      LocalPlayer.Character.HumanoidRootPart.CFrame = SavedPositions.OldCFramePos
               end
               wait(.05)
               SavedPositions.OldCFramePos = nil
+        end
+        if States.AutoSlapTool then
+              wait(.1)
+              getSlap()
+        end
+        if States.AutoFlyingCarpet then
+              wait(.2)
+              getFlyingCarpet()
         end
 end)
 Connections.PlayerAdded = Players.PlayerAdded:Connect(function(plr)
@@ -975,6 +987,7 @@ SpamBtn.MouseButton1Click:Connect(function()
       end
 end)
 Notif("Trolls Cant Break Tower", "Script Loaded!")
+Refresh()
 end
 
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
