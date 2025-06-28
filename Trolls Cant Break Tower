@@ -288,7 +288,7 @@ end
 function Refresh()
         SavedPositions.OldCFrame = LocalPlayer.Character.HumanoidRootPart.CFrame
         game.Players.LocalPlayer.Character.Humanoid.Health = 0
-        LocalPlayer.CharacterAdded:Wait() wait(.05)
+        LocalPlayer.CharacterAdded:Wait()
         for i = 1,10 do
                 LocalPlayer.Character.HumanoidRootPart.CFrame = SavedPositions.OldCFrame
         end
@@ -616,7 +616,7 @@ function OnCommand(text)
                 Notif("Successfully", "Stopped kill hostile")
         elseif cm("refresh") or cm("re") then
                 States.AutoRespawn = false
-                wait(.05)
+                wait(.1)
                 Refresh()
                 wait(.1)
                 States.AutoRespawn = true
