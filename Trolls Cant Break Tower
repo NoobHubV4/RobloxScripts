@@ -288,7 +288,7 @@ end
 function Refresh()
         SavedPositions.OldCFrame = LocalPlayer.Character.HumanoidRootPart.CFrame
         game.Players.LocalPlayer.Character.Humanoid.Health = 0
-        LocalPlayer.CharacterAdded:Wait()
+        LocalPlayer.CharacterAdded:Wait() wait(.05)
         for i = 1,10 do
                 LocalPlayer.Character.HumanoidRootPart.CFrame = SavedPositions.OldCFrame
         end
@@ -615,11 +615,7 @@ function OnCommand(text)
                 States.KillHostile = false
                 Notif("Successfully", "Stopped kill hostile")
         elseif cm("refresh") or cm("re") then
-                States.AutoRespawn = false
-                wait(.1)
                 Refresh()
-                wait(.1)
-                States.AutoRespawn = true
                 Notif("Successfully", "Refresh Character")
         elseif cm("respawn") or cm("res") then
                 States.AutoRespawn = false
@@ -754,7 +750,7 @@ Connections.CharacterAdded = LocalPlayer.CharacterAdded:Connect(function(NewChar
               getSlap()
         end
         if States.AutoFlyingCarpet then
-              wait(.2)
+              wait(.15)
               getFlyingCarpet()
         end
 end)
