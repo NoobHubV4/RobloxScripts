@@ -34,6 +34,7 @@ Commands:
         unloopvoid [plr,all] | Stopped Loop Tp player the void
         autoflyingcarpet / autocarpet [on/off] | Auto Get Item Flying Carpet
         flyingcarpet / carpet | Get Item Flying Carpet
+        commands / cmds | Show a commands list
 ]])
 local Prefix = ":"
 local Players = game.Players
@@ -122,7 +123,9 @@ function getSlap()
                 repeat task.wait()
                         LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(479.653442, 15.8912525, 4.14005041, -0.0112610189, -0.0141247334, 0.999836802, -3.18337058e-11, 0.999900222, 0.0141256293, -0.999936581, 0.00015906895, -0.0112598957)
                 until LocalPlayer.Backpack:FindFirstChild("GlichSlapTool")
-                LocalPlayer.Character.HumanoidRootPart.CFrame = SavedPositions.OldPos
+                for i = 1,5 do
+                        LocalPlayer.Character.HumanoidRootPart.CFrame = SavedPositions.OldPos
+                end
                 wait(.05)
                 SavedPositions.OldPos = nil
         end
@@ -138,7 +141,9 @@ function getFlyingCarpet()
                 repeat task.wait()
                         LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(139.906082, 290.181061, -49.6262054, -0.013800065, 0.0627218783, 0.997935653, -1.77467083e-10, 0.998030663, -0.0627278537, -0.999904752, -0.000865648617, -0.0137728881)
                 until LocalPlayer.Backpack:FindFirstChild("FlyingCarpet")
-                LocalPlayer.Character.HumanoidRootPart.CFrame = SavedPositions.OldPos
+                for i = 1,5 do
+                        LocalPlayer.Character.HumanoidRootPart.CFrame = SavedPositions.OldPos
+                end
                 wait(.05)
                 SavedPositions.OldPos = nil
         end
@@ -159,8 +164,10 @@ function TargetVelocity(player)
         if targetPart then
                 if targetPart and targetPart.Parent:FindFirstChild("BodyVelocity") == nil then
                         for _, v in pairs(targetPart:GetChildren()) do  
-                                if v:IsA("BodyVelocity") or v:IsA("BodyGyro") or v:IsA("VectorForce") or v:IsA("AlignPosition") then  
-                                        v:Destroy()  
+                                if v ~= LocalPlayer and v == player then
+                                        if v:IsA("BodyVelocity") or v:IsA("BodyGyro") or v:IsA("VectorForce") or v:IsA("AlignPosition") then  
+                                                v:Destroy()
+                                        end
                                 end  
                         end  
                         local bodyVelocity = Instance.new("BodyVelocity")
@@ -274,8 +281,8 @@ function SlapPower()
         tool.Activated:Connect(function()
           if States.SlapPower then
              for _, plr in pairs(Players:GetPlayers()) do  
-                 if plr ~= lp and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then  
-                     local dist = (plr.Character.HumanoidRootPart.Position - lp.Character.HumanoidRootPart.Position).Magnitude  
+                 if plr ~= LocalPlayer and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then  
+                     local dist = (plr.Character.HumanoidRootPart.Position - LocalPlayer.Character.HumanoidRootPart.Position).Magnitude  
                      if dist <= 10 then  
                          TargetVelocity(plr)
                      end  
@@ -445,7 +452,7 @@ function OnCommand(text)
                 local DaPlayer = PlrFromArgs(Args[2], LocalPlayer)
                 if DaPlayer then
                         Loops.Slaps.Aura[DaPlayer.UserId] = nil
-                        Notif("Successfully", "Revoke slapaura "..DaPlayer.DisplayName)
+                        Notif("Successfully", "Remove slapaura "..DaPlayer.DisplayName)
                 else
                         Notif("Error", "Not Player in Server")
                 end
@@ -723,6 +730,9 @@ function OnCommand(text)
         elseif cm("flyingcarpet") or cm("carpet") then
                 getFlyingCarpet()
                 Notif("Successfully", "Get Flying Carpet")
+        elseif cm("cmds") or cm("commands") then
+                game:FindService("StarterGui"):SetCore("DevConsoleVisible", true)
+                Notif("Successfully", "Show a commands")
         else
                 Notif("Error", tostring(Args[1]).." is a valid command.")
         end
@@ -739,7 +749,7 @@ Connections.CharacterAdded = LocalPlayer.CharacterAdded:Connect(function(NewChar
 	      end
         end)
         if SavedPositions.OldCFramePos then
-              for i = 1,10 do
+              for i = 1,15 do
                      LocalPlayer.Character.HumanoidRootPart.CFrame = SavedPositions.OldCFramePos
               end
               wait(.05)
@@ -757,31 +767,21 @@ end)
 Connections.PlayerAdded = Players.PlayerAdded:Connect(function(plr)
         if Loops.Slaps.Plr[plr.UserId] then
 		Loops.Slaps.Plr[plr.UserId] = plr
-                Notif("Successfully", "Player in joined")
 	end
         if Whitelisted[plr.UserId] then
                 Whitelisted[plr.UserId] = plr
-                Notif("Successfully", "Player in joined")
         end
         if Loops.Slaps.Aura[plr.UserId] then
                 Loops.Slaps.Aura[plr.UserId] = plr
-                Notif("Successfully", "Player in joined")
         end
         if Loops.Goto[plr.UserId] then
                 Loops.Goto[plr.UserId] = plr
-                Notif("Successfully", "Player in joined")
-        end
-        if ViewPlr[plr.UserId] then
-                ViewPlr[plr.UserId] = plr
-                Notif("Successfully", "Player in joined")
         end
         if Loops.Kills.Plr[plr.UserId] then
                 Loops.Kills.Plr[plr.UserId] = plr
-                Notif("Successfully", "Player in joined")
         end
         if Loops.Voids.Plr[plr.UserId] then
                 Loops.Voids.Plr[plr.UserId] = plr
-                Notif("Successfully", "Player in joined")
         end
 end)
 Connections.PlayerRemoving = Players.PlayerRemoving:Connect(function(tar)
@@ -983,7 +983,6 @@ SpamBtn.MouseButton1Click:Connect(function()
       end
 end)
 Notif("Trolls Cant Break Tower", "Script Loaded!")
-Refresh()
 end
 
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
