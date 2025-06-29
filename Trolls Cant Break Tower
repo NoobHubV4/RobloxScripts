@@ -91,6 +91,7 @@ local States = {
       ClickKill = false;
       AutoSlapTool = false;
       AutoFlyingCarpet = false;
+      LessCooldown = true;
 };
 local ViewPlr = {};
 local Connections = {};
@@ -983,6 +984,12 @@ SpamBtn.MouseButton1Click:Connect(function()
       end
 end)
 Notif("Trolls Cant Break Tower", "Script Loaded!")
+wait(.5)
+g = hookfunction(wait, function(seconds)
+if States.LessCooldown then
+return g(0)
+end
+end)
 end
 
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
