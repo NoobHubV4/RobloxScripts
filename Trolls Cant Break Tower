@@ -416,7 +416,7 @@ function OnCommand(text)
                 local DaPlayer = PlrFromArgs(Args[2], false)
                 if DaPlayer then
                         Loops.Slaps.Plr[DaPlayer.UserId] = nil
-                        Notif("Successfully", "Loop Slap "..DaPlayer.DisplayName)
+                        Notif("Successfully", "UnLoop Slap "..DaPlayer.DisplayName)
                 end
                 local ar = Args[2] and Args[2]:lower()
                 if ar == "all" then
