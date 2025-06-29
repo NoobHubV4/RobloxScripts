@@ -96,7 +96,8 @@ Toggles:AddToggle({
                 _G.killaura = false
                 notify("Furry Infection NoobHubV1","KillAura Off NoobHubV1")
             end
-while _G.killaura do
+game.RunService.Stepped:Connect(function()
+if _G.killaura then
 for i = 1, 1 do
 pcall(function()
 for i,v in pairs(game.Players:GetPlayers()) do
@@ -112,7 +113,7 @@ for i,v in pairs(game.Players:GetPlayers()) do
         
         if (lp.Character and lp.Character:FindFirstChild("HumanoidRootPart") and character:FindFirstChild("HumanoidRootPart")) then
             local mag = (v.Character.HumanoidRootPart.Position - lp.Character.HumanoidRootPart.Position).Magnitude
-                  if mag < 15 then
+                  if mag < 20 then
 
 
 local ohInstance1 = v.Character.HumanoidRootPart
@@ -128,111 +129,11 @@ end
 end
 end)
 end
-task.wait()
 end
+end)
 end)
 end
 })
-
-Toggles:AddToggle({
-    Name = "KillAura (X2 Damage) (IT'S LAG)",
-    Default = false,
-    Callback = function(kaura)
-        spawn(function()
-            if kaura then
-                _G.killaura = true
-                notify("Furry Infection NoobHubV1","KillAura On NoobHubV1")
-            else
-                _G.killaura = false
-                notify("Furry Infection NoobHubV1","KillAura Off NoobHubV1")
-            end
-while _G.killaura do
-for i = 1, 2 do
-pcall(function()
-for i,v in pairs(game.Players:GetPlayers()) do
-
-        
-    local lp = game.Players.LocalPlayer
-    local character = v.Character
-    local charactername = v.Name
-    
-	if v:IsFriendsWith(game:GetService("Players").LocalPlayer.UserId) then
-		--- nothing
-	else
-        
-        if (lp.Character and lp.Character:FindFirstChild("HumanoidRootPart") and character:FindFirstChild("HumanoidRootPart")) then
-            local mag = (v.Character.HumanoidRootPart.Position - lp.Character.HumanoidRootPart.Position).Magnitude
-                  if mag < 15 then
-
-
-local ohInstance1 = v.Character.HumanoidRootPart
-local ohInstance2 = v.Character.Humanoid
-local ohVector33 = Vector3.new(game.Players.LocalPlayer.Character.HumanoidRootPart.Position)
-local char = game.Players.LocalPlayer.Character
-local tool = char:FindFirstChildOfClass("Tool")
-
-tool.Remote.Hit:FireServer(ohInstance1, ohInstance2, ohVector33)
-end
-end
-end
-end
-end)
-end
-task.wait()
-end
-end)
-end
-}) 
-
-Toggles:AddToggle({
-    Name = "KillAura (X3 Damage) (IT'S LAG)",
-    Default = false,
-    Callback = function(kaura)
-        spawn(function()
-            if kaura then
-                _G.killaura = true
-                notify("Furry Infection NoobHubV1","KillAura On NoobHubV1")
-            else
-                _G.killaura = false
-                notify("Furry Infection NoobHubV1","KillAura Off NoobHubV1")
-            end
-while _G.killaura do
-for i = 1, 3 do
-pcall(function()
-for i,v in pairs(game.Players:GetPlayers()) do
-
-        
-    local lp = game.Players.LocalPlayer
-    local character = v.Character
-    local charactername = v.Name
-    
-	if v:IsFriendsWith(game:GetService("Players").LocalPlayer.UserId) then
-		--- nothing
-	else
-        
-        if (lp.Character and lp.Character:FindFirstChild("HumanoidRootPart") and character:FindFirstChild("HumanoidRootPart")) then
-            local mag = (v.Character.HumanoidRootPart.Position - lp.Character.HumanoidRootPart.Position).Magnitude
-                  if mag < 15 then
-
-
-local ohInstance1 = v.Character.HumanoidRootPart
-local ohInstance2 = v.Character.Humanoid
-local ohVector33 = Vector3.new(game.Players.LocalPlayer.Character.HumanoidRootPart.Position)
-local char = game.Players.LocalPlayer.Character
-local tool = char:FindFirstChildOfClass("Tool")
-
-tool.Remote.Hit:FireServer(ohInstance1, ohInstance2, ohVector33)
-end
-end
-end
-end
-end)
-end
-task.wait()
-end
-end)
-end
-}) 
 
 Toggles:AddToggle({
     Name = "AutoGetBat",
