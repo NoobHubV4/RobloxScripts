@@ -176,9 +176,6 @@ function TargetVelocity(player, Power, Item, Force)
         local targetPart = player.Character and player.Character:FindFirstChildOfClass("Part")
         if targetPart then
                 if targetPart and targetPart.Parent:FindFirstChild("BodyVelocity") == nil then
-                        if targetPart:IsA("BodyVelocity") or targetPart:IsA("BodyGyro") or targetPart:IsA("VectorForce") or targetPart:IsA("AlignPosition") then  
-                                targetPart:Destroy()
-                        end
                         local arah = Vector3.new(math.huge, math.huge, math.huge).Unit
                         local bodyVelocity = Instance.new("BodyVelocity")
                         bodyVelocity.MaxForce = Force
@@ -205,14 +202,6 @@ end
 
 function CheckWhitelist(args)
         return not (Whitelisted[args.UserId])
-end
-
-function CPing(ConvertToHuman, OneWayTrip)
-	if ConvertToHuman then
-		return OneWayTrip and LocalPlayer:GetNetworkPing() * 1000 or game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValue()
-	else
-		return OneWayTrip and LocalPlayer:GetNetworkPing() or game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValue() / 1000
-	end
 end
 
 local PlrFromArgs = function(plr, args)
@@ -292,8 +281,8 @@ function SlapPower()
              for _, plr in pairs(Players:GetPlayers()) do  
                  if plr ~= LocalPlayer and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then  
                      local dist = (plr.Character.HumanoidRootPart.Position - LocalPlayer.Character.HumanoidRootPart.Position).Magnitude  
-                     if dist <= 10 then  
-                         TargetVelocity(plr, math.huge, math.huge, Vector3.new(math.huge, math.huge, math.huge))
+                     if dist <= 10 then
+                            TargetVelocity(plr, math.huge, math.huge, Vector3.new(math.huge, math.huge, math.huge))
                      end  
                  end  
              end
@@ -534,12 +523,14 @@ function OnCommand(text)
         elseif cm("view") then
                 local DaPlayer = PlrFromArgs(Args[2], false)
 		if DaPlayer then
-			if ViewPlr[DaPlayer.UserId] then
-				for i,v in pairs(game.Players:GetPlayers()) do
-                                        ViewPlr[v.UserId] = nil
-                                end
-				wait(.3)
-			end
+                        for i,v in pairs(Players:GetPlayers()) do
+                                if v ~= LocalPlayer then
+			                if ViewPlr[v.UserId] then
+				                ViewPlr[v.UserId] = nil
+				                wait(.3)
+                                        end
+			        end
+                        end
 			ViewPlr[DaPlayer.UserId] = DaPlayer
                         Notif("Successfully", "View "..DaPlayer.DisplayName)
 			task.spawn(function()
