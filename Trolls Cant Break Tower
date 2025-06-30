@@ -226,7 +226,7 @@ local PlrFromArgs = function(plr, args)
 	local foundplr = false
 	for i,v in pairs(Players:GetPlayers()) do
 		local Name, DisplayName = v.Name:lower(), v.DisplayName:lower()
-		if Name:sub(1, #plr) == plr:lower() or DisplayName:sub(1, #plr) == plr:lower() then
+		if Name:sub(1, #plr) == plr:lower() or plr:sub(1, #plr) == plr:lower() then
 			foundplr = v
 		end
 	end
