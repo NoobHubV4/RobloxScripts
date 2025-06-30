@@ -130,6 +130,17 @@ function FindSlapTool()
      end
 end
 
+function FindCharacterSlapTool()
+        local char = LocalPlayer.Character
+        if char then
+            for _, tool in pairs(char:GetChildren()) do
+                if tool:IsA("Tool") and tool.Name:lower():find("slap") then
+                    return tool
+                end
+            end
+        end
+end
+
 function getSlap()
         local tool = FindSlapTool()
         if tool then
@@ -976,9 +987,7 @@ SpamBtn.TextWrapped = true
 SpamBtn.Visible = true
 SpamBtn.Draggable = false
 SpamBtn.MouseButton1Click:Connect(function()
-      local char = LocalPlayer.Character
-      local back = LocalPlayer.Backpack
-      local tool = char:FindFirstChild("GoldSlapTool") or char:FindFirstChild("BlueSlapTool") or char:FindFirstChild("SlapTool") or char:FindFirstChild("GlichSlapTool")
+      local tool = FindCharacterSlapTool()
       if tool then
         SlapPower()
         Notif("Successfully", "Activated Slap Power")
