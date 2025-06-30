@@ -114,10 +114,25 @@ ExecBar.TextSize = 23.000
 ExecBar.ClearTextOnFocus = false
 ExecBar.Draggable = true
 
+function FindSlapTool()
+        for _, tool in pairs(LocalPlayer.Backpack:GetChildren()) do
+        if tool:IsA("Tool") and tool.Name:lower():find("slap") then
+            return tool
+        end
+    end
+    local char = LocalPlayer.Character
+    if char then
+        for _, tool in pairs(char:GetChildren()) do
+            if tool:IsA("Tool") and tool.Name:lower():find("slap") then
+                return tool
+            end
+        end
+     end
+end
+
 function getSlap()
-        local char = LocalPlayer.Character
-        local back = LocalPlayer.Backpack
-        if char:FindFirstChild("GoldSlapTool") or char:FindFirstChild("BlueSlapTool") or char:FindFirstChild("SlapTool") or char:FindFirstChild('GlichSlapTool') or back:FindFirstChild("GoldSlapTool") or back:FindFirstChild("BlueSlapTool") or back:FindFirstChild("SlapTool") or back:FindFirstChild('GlichSlapTool') then
+        local tool = FindSlapTool()
+        if tool then
                 --
         else
                 SavedPositions.OldPos = LocalPlayer.Character.HumanoidRootPart.CFrame
@@ -151,10 +166,7 @@ function getFlyingCarpet()
 end
 
 function getEvent()
-        local char = LocalPlayer.Character
-        local back = LocalPlayer.Backpack
-
-        local tool = char:FindFirstChild("GoldSlapTool") or char:FindFirstChild("BlueSlapTool") or char:FindFirstChild("SlapTool") or char:FindFirstChild("GlichSlapTool") or back:FindFirstChild("GoldSlapTool") or back:FindFirstChild("BlueSlapTool") or back:FindFirstChild("SlapTool") or back:FindFirstChild("GlichSlapTool")
+        local tool = FindSlapTool()
         if tool and tool:FindFirstChild("Event") then
                 return tool.Event
         end
@@ -167,11 +179,11 @@ function TargetVelocity(player, Power, Item, Force)
                         if targetPart:IsA("BodyVelocity") or targetPart:IsA("BodyGyro") or targetPart:IsA("VectorForce") or targetPart:IsA("AlignPosition") then  
                                 targetPart:Destroy()
                         end
-                        local arah = Vector3.new(math.random(-2, 2), math.random(8, 12), math.random(-2, 2)).Unit
+                        local arah = Vector3.new(math.huge, math.huge, math.huge).Unit
                         local bodyVelocity = Instance.new("BodyVelocity")
                         bodyVelocity.MaxForce = Force
                         bodyVelocity.Velocity = arah * Power -- Power set to value
-                        bodyVelocity.P = 1e15
+                        bodyVelocity.P = math.huge
                         bodyVelocity.Parent = targetPart
                         game.Debris:AddItem(bodyVelocity, Item)
                 end
@@ -268,11 +280,9 @@ function VoidAll()
 end
 
 function SlapPower()
-        local char = LocalPlayer.Character
-        local back = LocalPlayer.Backpack
-        local tool = char:FindFirstChild("GoldSlapTool") or char:FindFirstChild("BlueSlapTool") or char:FindFirstChild("SlapTool") or char:FindFirstChild("GlichSlapTool") or back:FindFirstChild("GoldSlapTool") or back:FindFirstChild("BlueSlapTool") or back:FindFirstChild("SlapTool") or back:FindFirstChild("GlichSlapTool")
+        local tool = FindSlapTool()
         if tool:FindFirstChild("Power") then
-        tool.Power.Value = 9e13
+        tool.Power.Value = math.huge
         end
         if tool:FindFirstChild("Cooldown") then
         tool.Cooldown.Value = 0
@@ -283,7 +293,7 @@ function SlapPower()
                  if plr ~= LocalPlayer and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then  
                      local dist = (plr.Character.HumanoidRootPart.Position - LocalPlayer.Character.HumanoidRootPart.Position).Magnitude  
                      if dist <= 10 then  
-                         TargetVelocity(plr, 9e13, 0.3, Vector3.new(1e15, 1e15, 1e15))
+                         TargetVelocity(plr, math.huge, math.huge, Vector3.new(math.huge, math.huge, math.huge))
                      end  
                  end  
              end
@@ -525,13 +535,15 @@ function OnCommand(text)
                 local DaPlayer = PlrFromArgs(Args[2], false)
 		if DaPlayer then
 			if ViewPlr[DaPlayer.UserId] then
-				ViewPlr[DaPlayer.UserId] = nil
-				wait(.4)
+				for i,v in pairs(game.Players:GetPlayers()) do
+                                        ViewPlr[v.UserId] = nil
+                                end
+				wait(.3)
 			end
 			ViewPlr[DaPlayer.UserId] = DaPlayer
                         Notif("Successfully", "View "..DaPlayer.DisplayName)
 			task.spawn(function()
-				while wait(.1) do
+				while wait(.05) do
 					pcall(function()
                                                 if ViewPlr then
                                                         for _,target in next, ViewPlr do
@@ -545,7 +557,9 @@ function OnCommand(text)
 					end
 				end
 			end)
-		end
+		elseif not DaPlayer then
+                        Notif("Error", "Not Player in server")
+                end
         elseif cm("unview") then
                 for i,v in pairs(game.Players:GetPlayers()) do
                         ViewPlr[v.UserId] = nil
@@ -978,7 +992,7 @@ SpamBtn.MouseButton1Click:Connect(function()
         SlapPower()
         Notif("Successfully", "Activated Slap Power")
         wait(2)
-        Notif("Successfully", "Slap Power 90T")
+        Notif("Successfully", "Slap Power infinite")
       else
         Notif("Error", "Not Slap Gloves")
       end
