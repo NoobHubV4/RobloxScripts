@@ -160,22 +160,20 @@ function getEvent()
         end
 end
 
-function TargetVelocity(player)
-        local targetPart = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+function TargetVelocity(player, Power, Item, Force)
+        local targetPart = player.Character and player.Character:FindFirstChildOfClass("Part")
         if targetPart then
                 if targetPart and targetPart.Parent:FindFirstChild("BodyVelocity") == nil then
-                        for _, v in pairs(targetPart:GetChildren()) do  
-                                if v ~= LocalPlayer and v == player then
-                                        if v:IsA("BodyVelocity") or v:IsA("BodyGyro") or v:IsA("VectorForce") or v:IsA("AlignPosition") then  
-                                                v:Destroy()
-                                        end
-                                end  
-                        end  
+                        if targetPart:IsA("BodyVelocity") or targetPart:IsA("BodyGyro") or targetPart:IsA("VectorForce") or targetPart:IsA("AlignPosition") then  
+                                targetPart:Destroy()
+                        end
+                        local arah = Vector3.new(math.random(-2, 2), math.random(8, 12), math.random(-2, 2)).Unit
                         local bodyVelocity = Instance.new("BodyVelocity")
-                        bodyVelocity.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
-                        bodyVelocity.Velocity = Vector3.new(math.huge, math.huge, math.huge)
+                        bodyVelocity.MaxForce = Force
+                        bodyVelocity.Velocity = arah * Power -- Power set to value
+                        bodyVelocity.P = 1e15
                         bodyVelocity.Parent = targetPart
-                        game.Debris:AddItem(bodyVelocity, math.huge)
+                        game.Debris:AddItem(bodyVelocity, Item)
                 end
         end
 end
@@ -188,7 +186,7 @@ function SlapEvent(target, Pos, Pos2)
                 -- Fire remote with extreme upward force
                 Event:FireServer("slash", target.Character, Pos, Pos2)
                 -- Apply massive upward velocity to target
-                TargetVelocity(target)
+                TargetVelocity(target, math.huge, math.huge, Vector3.new(math.huge, math.huge, math.huge))
                 end)
         end)()
 end
@@ -274,7 +272,7 @@ function SlapPower()
         local back = LocalPlayer.Backpack
         local tool = char:FindFirstChild("GoldSlapTool") or char:FindFirstChild("BlueSlapTool") or char:FindFirstChild("SlapTool") or char:FindFirstChild("GlichSlapTool") or back:FindFirstChild("GoldSlapTool") or back:FindFirstChild("BlueSlapTool") or back:FindFirstChild("SlapTool") or back:FindFirstChild("GlichSlapTool")
         if tool:FindFirstChild("Power") then
-        tool.Power.Value = math.huge
+        tool.Power.Value = 9e13
         end
         if tool:FindFirstChild("Cooldown") then
         tool.Cooldown.Value = 0
@@ -285,7 +283,7 @@ function SlapPower()
                  if plr ~= LocalPlayer and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then  
                      local dist = (plr.Character.HumanoidRootPart.Position - LocalPlayer.Character.HumanoidRootPart.Position).Magnitude  
                      if dist <= 10 then  
-                         TargetVelocity(plr)
+                         TargetVelocity(plr, 9e13, 0.3, Vector3.new(1e15, 1e15, 1e15))
                      end  
                  end  
              end
@@ -979,6 +977,8 @@ SpamBtn.MouseButton1Click:Connect(function()
       if tool then
         SlapPower()
         Notif("Successfully", "Activated Slap Power")
+        wait(2)
+        Notif("Successfully", "Slap Power 90T")
       else
         Notif("Error", "Not Slap Gloves")
       end
