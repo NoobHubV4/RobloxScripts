@@ -983,6 +983,7 @@ SpamBtn.MouseButton1Click:Connect(function()
         Notif("Error", "Not Slap Gloves")
       end
 end)
+Refresh()
 Notif("Trolls Cant Break Tower", "Script Loaded!")
 wait(.5)
 g = hookfunction(wait, function(seconds)
