@@ -91,10 +91,10 @@ local States = {
       ClickKill = false;
       AutoSlapTool = false;
       AutoFlyingCarpet = false;
-      LessCooldown = true;
 };
 local ViewPlr = {};
 local Connections = {};
+local API = {};
 local Tower = Instance.new("ScreenGui", game.Players.LocalPlayer.PlayerGui)
 Tower.Name = "Tower"
 Tower.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
@@ -470,13 +470,7 @@ function OnCommand(text)
                 wait(.5)
                 game:FindService("TeleportService"):Teleport(game.PlaceId)
         elseif cm("unload") then
-                Unloaded = true
-                Tower:Destroy()
-                Connections.PlayerAdded:Disconnect()
-                Connections.PlayerRemoving:Disconnect()
-                Connections.Chatted:Disconnect()
-                Connections.Focus:Disconnect()
-                Connections.CharacterAdded:Disconnect()
+                API:UnloadScript()
                 Notif("Unload", "Unload the Scripter")
         elseif cm("prefix") then
                 local New = Args[2]
@@ -1001,10 +995,18 @@ Refresh()
 Notif("Trolls Cant Break Tower", "Script Loaded!")
 wait(.5)
 g = hookfunction(wait, function(seconds)
-if States.LessCooldown then
 return g(0)
-end
 end)
+function API:UnloadScript()
+        Unloaded = true
+        Tower:Destroy()
+        ScreenGui:Destroy()
+        Connections.PlayerAdded:Disconnect()
+        Connections.PlayerRemoving:Disconnect()
+        Connections.Chatted:Disconnect()
+        Connections.Focus:Disconnect()
+        Connections.CharacterAdded:Disconnect()
+end
 end
 
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
