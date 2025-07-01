@@ -87,6 +87,13 @@ local States = {
 local ViewPlr = {};
 local Connections = {};
 local API = {};
+local Camera = game:FindService("Workspace").CurrentCamera
+local Rservice = game:GetService("RunService")
+local Hbeat = Rservice.Heartbeat
+local Rstep = Rservice.RenderStepped
+local Stepped = Rservice.Stepped
+
+--Menu
 local Tower = Instance.new("ScreenGui", game.Players.LocalPlayer.PlayerGui)
 Tower.Name = "Tower"
 Tower.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
@@ -105,6 +112,29 @@ ExecBar.TextColor3 = Color3.fromRGB(255, 255, 255)
 ExecBar.TextSize = 23.000
 ExecBar.ClearTextOnFocus = false
 ExecBar.Draggable = true
+
+--Functions
+
+function SaveCamPos()
+	SavedPositions.OldCameraPos = Camera.CFrame
+end
+
+function LoadCamPos()
+	Rstep:Wait()
+	Camera.CFrame = SavedPositions.OldCameraPos or Camera.CFrame
+end
+
+function waitfor(source, args, interval)
+	local int = interval or 5
+	local timeout = tick() + int
+	repeat Stepped:Wait() until source:FindFirstChild(args) or tick() - timeout >=0
+	timeout = nil
+	if source:FindFirstChild(args) then
+		return source:FindFirstChild(args)
+	else
+		return nil
+	end
+end
 
 function FindSlapTool()
         for _, tool in pairs(LocalPlayer.Backpack:GetChildren()) do
@@ -140,7 +170,7 @@ function getSlap()
         else
                 SavedPositions.OldPos = LocalPlayer.Character.HumanoidRootPart.CFrame
                 repeat task.wait()
-                        LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(479.653442, 15.8912525, 4.14005041, -0.0112610189, -0.0141247334, 0.999836802, -3.18337058e-11, 0.999900222, 0.0141256293, -0.999936581, 0.00015906895, -0.0112598957)
+                        LocalPlayer.Character.HumanoidRootPart.CFrame = workspace:FindFirstChild("Clich SlapGiver"):FindFirstChild("Model")["Handle"].CFrame
                 until LocalPlayer.Backpack:FindFirstChild("GlichSlapTool")
                 for i = 1,5 do
                         LocalPlayer.Character.HumanoidRootPart.CFrame = SavedPositions.OldPos
@@ -299,14 +329,12 @@ function SlapPower()
 end
 
 function Refresh()
-        SavedPositions.OldCFrame = LocalPlayer.Character.HumanoidRootPart.CFrame
-        game.Players.LocalPlayer.Character.Humanoid.Health = 0
-        LocalPlayer.CharacterAdded:Wait() wait(.1)
-        for i = 1,10 do
-                LocalPlayer.Character.HumanoidRootPart.CFrame = SavedPositions.OldCFrame
-        end
-        wait(.05)
-        SavedPositions.OldCFrame = nil
+        local tmp = Position or LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame; SavedPositions.AutoRe = tmp; SaveCamPos()
+        LocalPlayer.Character.Humanoid.Health = 0
+	LocalPlayer.CharacterAdded:Wait()
+	if waitfor(LocalPlayer.Character, "HumanoidRootPart", 5) then
+		LocalPlayer.Character.HumanoidRootPart.CFrame = tmp
+	end; LoadCamPos()
 end
 
 Tasks = {
@@ -631,11 +659,8 @@ function OnCommand(text)
                 Refresh()
                 Notif("Successfully", "Refresh Character")
         elseif cm("respawn") or cm("res") then
-                States.AutoRespawn = false
-                wait(.1)
-                LocalPlayer.Character.Humanoid.Health = 0
-                wait(.1)
-                States.AutoRespawn = true
+                Kill(LocalPlayer)
+                SavedPositions.AutoRe = nil
                 Notif("Successfully", "Respawn Character")
         elseif cm("autorefresh") or cm("autore") then
                 if Args[2] == "on" or Args[2] == "true" then
@@ -739,56 +764,58 @@ function OnCommand(text)
         elseif cm("cmds") or cm("commands") then
                 game:FindService("StarterGui"):SetCore("DevConsoleVisible", true)
                 Notif("Successfully", "Show a commands")
-        elseif cm("bring") then
-                local DaPlayer = PlrFromArgs(Args[2], false)
-                if DaPlayer then
-                        Bring(DaPlayer)
-                        Notif("Successfully", "Slap "..DaPlayer.DisplayName)
-                end
-                local ar = Args[2] and Args[2]:lower()
-                if ar == "all" then
-                        BringAll()
-                        Notif("Successfully", "Slap All")
-                elseif ar == "random" then
-                        local DaRandom = GetRandomPlr()
-                        if DaRandom ~= LocalPlayer then
-                                Bring(DaRandom)
-                                Notif('Successfully', "Slap "..DaRandom.DisplayName)
-                        end
-                elseif not DaPlayer then
-                        Notif("Error", "Not Player in Server")
-                end
         else
                 Notif("Error", tostring(Args[1]).." is a valid command.")
         end
 end
-Connections.CharacterAdded = LocalPlayer.CharacterAdded:Connect(function(NewCharacter)
-        if Unloaded then return end
-        repeat game.RunService.Stepped:Wait() until NewCharacter
-        NewCharacter:WaitForChild("HumanoidRootPart")
-        NewCharacter:WaitForChild("Head")
-        NewCharacter:WaitForChild("Humanoid").BreakJointsOnDeath = true
-        NewCharacter:WaitForChild("Humanoid").Died:Connect(function()
-	      if not Unloaded and States.AutoRespawn then
-		     SavedPositions.OldCFramePos = LocalPlayer.Character.HumanoidRootPart.CFrame
-	      end
-        end)
-        if SavedPositions.OldCFramePos then
-              for i = 1,15 do
-                     LocalPlayer.Character.HumanoidRootPart.CFrame = SavedPositions.OldCFramePos
-              end
-              wait(.05)
-              SavedPositions.OldCFramePos = nil
-        end
-        if States.AutoSlapTool then
-              wait(.1)
-              getSlap()
-        end
-        if States.AutoFlyingCarpet then
-              wait(.15)
-              getFlyingCarpet()
-        end
-end)
+
+--Autorespawn
+SavedPositions.AutoRe = nil
+local diedevent
+local lochar = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+local function ondiedevent()
+	coroutine.wrap(function()
+		diedevent:Disconnect(); SaveCamPos()
+		SavedPositions.AutoRe = lochar:WaitForChild("HumanoidRootPart", 1) and LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame
+	end)()
+end
+getfenv()["\112\114\105\110\116"]("\70\73\88\69\68\32\66\89\32\72\49\55\83\51") 
+local function charaddtask()
+	diedevent:Disconnect()
+	local LHuman = lochar:WaitForChild("Humanoid", 1)
+	if LHuman then
+		diedevent = LHuman.Died:Connect(ondiedevent)
+		if Connections.CharacterChildAdded then
+			Connections.CharacterChildAdded:Disconnect(); Connections.CharacterChildAdded = nil
+		end
+		Connections.CharacterChildAdded = lochar.ChildAdded:Connect(function(tool)
+			local tool = FindSlapTool()
+                        if not tool and States.AutoSlapTool then
+                                getSlap()
+                        end
+		end)
+	end
+end
+local function oncharadded()
+	lochar = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+        coroutine.wrap(charaddtask)()
+	if SavedPositions.AutoRe and States.AutoRespawn then
+		local LRoot = lochar:WaitForChild("HumanoidRootPart", 1)
+		if LRoot then
+			LRoot.CFrame = SavedPositions.AutoRe; LoadCamPos(); LRoot.CFrame = SavedPositions.AutoRe
+			task.spawn(function()
+				for i = 1, 6 do
+					task.wait(); LRoot.CFrame = SavedPositions.AutoRe
+				end
+			end)
+		end
+	end
+	lochar:WaitForChild("Humanoid", 1):SetStateEnabled(Enum.HumanoidStateType.FallingDown, false)
+	lochar:WaitForChild("Humanoid", 1):SetStateEnabled(Enum.HumanoidStateType.Ragdoll, false)
+end
+diedevent = lochar:WaitForChild("Humanoid").Died:Connect(ondiedevent)
+Connections.CharacterAdded = LocalPlayer.CharacterAdded:Connect(oncharadded)
+
 Connections.PlayerAdded = Players.PlayerAdded:Connect(function(plr)
         if Loops.Slaps.Plr[plr.UserId] then
 		Loops.Slaps.Plr[plr.UserId] = plr
@@ -1011,9 +1038,8 @@ SpamBtn.MouseButton1Click:Connect(function()
         Notif("Error", "Not Slap Gloves")
       end
 end)
-Refresh()
+LocalPlayer.Character.Humanoid.Health = 0
 Notif("Trolls Cant Break Tower", "Script Loaded!")
-wait(.5)
 g = hookfunction(wait, function(seconds)
 return g(0)
 end)
