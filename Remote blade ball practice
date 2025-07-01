@@ -71,11 +71,7 @@ Toggle.MouseButton1Click:connect(function()
         Toggle.Text = "SPAM [ON]"
         Stepped = game:GetService("RunService").Stepped:Connect(function()
             if not Remote == false then
-                local args = {
-	                    CFrame.new(3.232388496398926, 116.74889373779297, -276.3053283691406, 0.0950884073972702, 0.3980996906757355, -0.9124006628990173, 0, 0.9165536761283875, 0.3999117612838745, 0.99546879529953, -0.038026973605155945, 0.08715363591909409),
-	                    vector.create(10.077529907226562, 107.25, -279.07415771484375)
-                }
-                game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("Block"):InvokeServer(unpack(args))
+                game:FindService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("Block"):InvokeServer(CFrame.new(3.232388496398926, 116.74889373779297, -276.3053283691406, 0.0950884073972702, 0.3980996906757355, -0.9124006628990173, 0, 0.9165536761283875, 0.3999117612838745, 0.99546879529953, -0.038026973605155945, 0.08715363591909409), Vector3.new(10.077529907226562, 107.25, -279.07415771484375))
             else
                 Stepped:Disconnect()
             end
