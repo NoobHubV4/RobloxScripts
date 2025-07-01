@@ -39,7 +39,7 @@ Commands:
 local Prefix = ":"
 local Players = game.Players
 local LocalPlayer = Players.LocalPlayer
-local Unloaded = true
+local Unloaded = false
 local Key = false
 local UserInputService = game:GetService("UserInputService")
 
@@ -54,14 +54,6 @@ local Notif = function(Title, Text, Duration)
 		Icon = "";
 		Duration = Duration;
 	})
-end
-Notif("Checking", "Check Id Game")
-wait(1)
-if game.PlaceId == 14493533447 then
-        Unloaded = false
-        Notif("Trolls Cant Break Tower", "Press M to load script")
-else
-        Notif("Error", "Game Not Support")
 end
 
 function LocalScript()
@@ -205,8 +197,6 @@ function SlapEvent(target, Pos, Pos2)
                 pcall(function()
                 -- Fire remote with extreme upward force
                 Event:FireServer("slash", target.Character, Pos, Pos2)
-                -- Apply massive upward velocity to target
-                TargetVelocity(target, math.huge, math.huge, Vector3.new(math.huge, math.huge, math.huge))
                 end)
         end)()
 end
@@ -279,16 +269,24 @@ function VoidAll()
         end
 end
 
+function Bring(targets)
+        SlapEvent(targets, LocalPlayer.Character.HumanoidRootPart.Position, LocalPlayer.Character.HumanoidRootPart.Position)
+end
+
+function BringAll()
+        for i,v in pairs(game.Players:GetPlayers()) do
+		if v ~= LocalPlayer and CheckWhitelist(v) then
+                        Bring(v)
+                end
+        end
+end
+
 function SlapPower()
         local tool = FindSlapTool()
         if tool:FindFirstChild("Power") then
         tool.Power.Value = math.huge
         end
-        if tool:FindFirstChild("Cooldown") then
-        tool.Cooldown.Value = 0
-        end
         tool.Activated:Connect(function()
-          if States.SlapPower then
              for _, plr in pairs(Players:GetPlayers()) do  
                  if plr ~= LocalPlayer and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then  
                      local dist = (plr.Character.HumanoidRootPart.Position - LocalPlayer.Character.HumanoidRootPart.Position).Magnitude  
@@ -297,14 +295,13 @@ function SlapPower()
                      end  
                  end  
              end
-          end
         end)
 end
 
 function Refresh()
         SavedPositions.OldCFrame = LocalPlayer.Character.HumanoidRootPart.CFrame
         game.Players.LocalPlayer.Character.Humanoid.Health = 0
-        LocalPlayer.CharacterAdded:Wait() wait(.05)
+        LocalPlayer.CharacterAdded:Wait() wait(.1)
         for i = 1,10 do
                 LocalPlayer.Character.HumanoidRootPart.CFrame = SavedPositions.OldCFrame
         end
@@ -742,6 +739,25 @@ function OnCommand(text)
         elseif cm("cmds") or cm("commands") then
                 game:FindService("StarterGui"):SetCore("DevConsoleVisible", true)
                 Notif("Successfully", "Show a commands")
+        elseif cm("bring") then
+                local DaPlayer = PlrFromArgs(Args[2], false)
+                if DaPlayer then
+                        Bring(DaPlayer)
+                        Notif("Successfully", "Slap "..DaPlayer.DisplayName)
+                end
+                local ar = Args[2] and Args[2]:lower()
+                if ar == "all" then
+                        BringAll()
+                        Notif("Successfully", "Slap All")
+                elseif ar == "random" then
+                        local DaRandom = GetRandomPlr()
+                        if DaRandom ~= LocalPlayer then
+                                Bring(DaRandom)
+                                Notif('Successfully', "Slap "..DaRandom.DisplayName)
+                        end
+                elseif not DaPlayer then
+                        Notif("Error", "Not Player in Server")
+                end
         else
                 Notif("Error", tostring(Args[1]).." is a valid command.")
         end
@@ -950,6 +966,10 @@ spawn(function()
 			for i,v in next, Loops.Voids.Plr do
 				Void(v)
 			end
+                end
+                local tool = FindCharacterSlapTool()
+                if tool then
+                        tool:Activate()
                 end
         end
         while task.wait() do
