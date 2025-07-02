@@ -124,6 +124,16 @@ function LoadCamPos()
 	Camera.CFrame = SavedPositions.OldCameraPos or Camera.CFrame
 end
 
+function LocTP(args, Amount)
+        local Amount = Amount
+        if not Amount then
+                Amount = 1
+        end
+        for i = 1,Amount do task.wait()
+                LocalPlayer.Character.HumanoidRootPart.CFrame = args
+        end
+end
+
 function waitfor(source, args, interval)
 	local int = interval or 5
 	local timeout = tick() + int
@@ -163,38 +173,36 @@ function FindCharacterSlapTool()
         end
 end
 
+function FindFlyingCarpet()
+        local tool = LocalPlayer.Character:FindFirstChild("FlyingCarpet") or LocalPlayer.Backpack:FindFirstChild("FlyingCarpet")
+        if tool then
+                return tool
+        end
+end
+
+function ItemGrab(workspaceItem, Tool)
+        local Item = workspaceItem
+	local lroot = LocalPlayer.Character:FindFirstChild("HumanoidRootPart"); local timeout = tick() + 5
+	if lroot then SavedPositions.GetItemOldPos = not SavedPositions.GetItemOldPos and lroot.CFrame or SavedPositions.GetItemOldPos; end
+	if lroot then LocTP(CFrame.new(Item.Position + Vector3.new(0, -2, 0))); end; repeat task.wait()
+		pcall(function()
+			LocalPlayer.Character:FindFirstChildOfClass("Humanoid").Sit = false; LocTP(CFrame.new(Item.Position + Vector3.new(0, -1, 0)))
+		end)
+	until LocalPlayer.Backpack:FindFirstChild(Tool) or LocalPlayer.Character:FindFirstChild(Tool) or tick() - timeout >=0
+	pcall(function() LocTP(SavedPositions.GetItemOldPos, 5); end); SavedPositions.GetItemOldPos = nil
+end
+
 function getSlap()
         local tool = FindSlapTool()
-        if tool then
-                --
-        else
-                SavedPositions.OldPos = LocalPlayer.Character.HumanoidRootPart.CFrame
-                repeat task.wait()
-                        LocalPlayer.Character.HumanoidRootPart.CFrame = workspace:FindFirstChild("Clich SlapGiver"):FindFirstChild("Model")["Handle"].CFrame
-                until LocalPlayer.Backpack:FindFirstChild("GlichSlapTool")
-                for i = 1,5 do
-                        LocalPlayer.Character.HumanoidRootPart.CFrame = SavedPositions.OldPos
-                end
-                wait(.05)
-                SavedPositions.OldPos = nil
+        if not tool then
+                ItemGrab(workspace:FindFirstChild("Clich SlapGiver"):FindFirstChild("Model")["Handle"], "GlichSlapTool")
         end
 end
 
 function getFlyingCarpet()
-        local char = LocalPlayer.Character
-        local back = LocalPlayer.Backpack
-        if char:FindFirstChild("FlyingCarpet") or back:FindFirstChild("FlyingCarpet") then
-                --
-        else
-                SavedPositions.OldPos = LocalPlayer.Character.HumanoidRootPart.CFrame
-                repeat task.wait()
-                        LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(139.906082, 290.181061, -49.6262054, -0.013800065, 0.0627218783, 0.997935653, -1.77467083e-10, 0.998030663, -0.0627278537, -0.999904752, -0.000865648617, -0.0137728881)
-                until LocalPlayer.Backpack:FindFirstChild("FlyingCarpet")
-                for i = 1,5 do
-                        LocalPlayer.Character.HumanoidRootPart.CFrame = SavedPositions.OldPos
-                end
-                wait(.05)
-                SavedPositions.OldPos = nil
+        local tool = FindFlyingCarpet()
+        if not tool then
+                ItemGrab(workspace:FindFirstChild("GravityCoilGiver"):FindFirstChild("Model")["Handle"], "FlyingCarpet")
         end
 end
 
@@ -328,7 +336,7 @@ function SlapPower()
         end)
 end
 
-function Refresh()
+function Refresh(Position)
         local tmp = Position or LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame; SavedPositions.AutoRe = tmp; SaveCamPos()
         LocalPlayer.Character.Humanoid.Health = 0
 	LocalPlayer.CharacterAdded:Wait()
@@ -754,13 +762,19 @@ function OnCommand(text)
                 elseif not Args[2] then
                        States.AutoFlyingCarpet = not States.AutoFlyingCarpet
                 end
-                if States.AutoFlyingCarpet == true then
+                local tool = FindFlyingCarpet()
+                if States.AutoFlyingCarpet and not tool then
                        getFlyingCarpet()
                 end
                 Notif('Successfully', "Auto Get Flying Carpet set to "..tostring(States.AutoFlyingCarpet))
         elseif cm("flyingcarpet") or cm("carpet") then
-                getFlyingCarpet()
-                Notif("Successfully", "Get Flying Carpet")
+                local tool = FindFlyingCarpet()
+                if not tool then
+                        getFlyingCarpet()
+                        Notif("Successfully", "Get Flying Carpet")
+                elseif tool then
+                        Notif("Error", "Player already Flying Carpet")
+                end
         elseif cm("cmds") or cm("commands") then
                 game:FindService("StarterGui"):SetCore("DevConsoleVisible", true)
                 Notif("Successfully", "Show a commands")
@@ -791,20 +805,25 @@ local function charaddtask()
 		Connections.CharacterChildAdded = lochar.ChildAdded:Connect(function(tool)
 			local tool = FindSlapTool()
                         if not tool and States.AutoSlapTool then
+                                wait(.1)
                                 getSlap()
+                        end
+                        local tool = FindFlyingCarpet()
+                        if not tool and States.AutoFlyingCarpet then
+                                getFlyingCarpet()
+                                wait(.2)
                         end
 		end)
 	end
 end
 local function oncharadded()
 	lochar = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
-        coroutine.wrap(charaddtask)()
 	if SavedPositions.AutoRe and States.AutoRespawn then
 		local LRoot = lochar:WaitForChild("HumanoidRootPart", 1)
 		if LRoot then
 			LRoot.CFrame = SavedPositions.AutoRe; LoadCamPos(); LRoot.CFrame = SavedPositions.AutoRe
 			task.spawn(function()
-				for i = 1, 6 do
+				for i = 1, 10 do
 					task.wait(); LRoot.CFrame = SavedPositions.AutoRe
 				end
 			end)
@@ -812,6 +831,7 @@ local function oncharadded()
 	end
 	lochar:WaitForChild("Humanoid", 1):SetStateEnabled(Enum.HumanoidStateType.FallingDown, false)
 	lochar:WaitForChild("Humanoid", 1):SetStateEnabled(Enum.HumanoidStateType.Ragdoll, false)
+        coroutine.wrap(charaddtask)()
 end
 diedevent = lochar:WaitForChild("Humanoid").Died:Connect(ondiedevent)
 Connections.CharacterAdded = LocalPlayer.CharacterAdded:Connect(oncharadded)
