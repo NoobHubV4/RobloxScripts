@@ -146,13 +146,17 @@ function waitfor(source, args, interval)
 	end
 end
 
-function FindSlapTool()
-        for _, tool in pairs(LocalPlayer.Backpack:GetChildren()) do
+function FindSlapTool(player)
+        local player = player
+        if not player then
+                player = LocalPlayer
+        end
+        for _, tool in pairs(player.Backpack:GetChildren()) do
         if tool:IsA("Tool") and tool.Name:lower():find("slap") then
             return tool
         end
     end
-    local char = LocalPlayer.Character
+    local char = player.Character
     if char then
         for _, tool in pairs(char:GetChildren()) do
             if tool:IsA("Tool") and tool.Name:lower():find("slap") then
@@ -162,8 +166,12 @@ function FindSlapTool()
      end
 end
 
-function FindCharacterSlapTool()
-        local char = LocalPlayer.Character
+function FindCharacterSlapTool(player)
+        local player = player
+        if not player then
+                player = LocalPlayer
+        end
+        local char = player.Character
         if char then
             for _, tool in pairs(char:GetChildren()) do
                 if tool:IsA("Tool") and tool.Name:lower():find("slap") then
@@ -229,12 +237,16 @@ function TargetVelocity(player, Power, Item, Force)
 end
 
 function SlapEvent(target, Pos, Pos2)
-        getSlap()
+        local tool = FindSlapTool()
+        if not tool then
+                getSlap()
+        end
         local Event = getEvent()
         coroutine.wrap(function()
                 pcall(function()
                 -- Fire remote with extreme upward force
                 Event:FireServer("slash", target.Character, Pos, Pos2)
+                TargetVelocity(target, math.huge, math.huge, Vector3.new(math.huge, math.huge, math.huge))
                 end)
         end)()
 end
@@ -356,10 +368,10 @@ Tasks = {
 							for i,v in pairs(Players:GetPlayers()) do
 								if v.Character and CheckWhitelist(v) then
 									if v.Character:FindFirstChildOfClass("Humanoid") and v ~= LocalPlayer then
-										local ch = v.Character
-										if ch:FindFirstChild("GoldSlapTool") or ch:FindFirstChild("BlueSlapTool") or ch:FindFirstChild("SlapTool") or ch:FindFirstChild("GlichSlapTool") then
-											Slap(v)
-										end
+										local tool = FindCharacterSlapTool(v)
+                                                                                if tool then
+                                                                                        Slap(v)
+                                                                                end
 									end
 								end
 							end
@@ -381,10 +393,10 @@ Tasks = {
 							for i,v in pairs(Players:GetPlayers()) do
 								if v.Character and CheckWhitelist(v) then
 									if v.Character:FindFirstChildOfClass("Humanoid") and v ~= LocalPlayer then
-										local ch = v.Character
-										if ch:FindFirstChild("GoldSlapTool") or ch:FindFirstChild("BlueSlapTool") or ch:FindFirstChild("SlapTool") or ch:FindFirstChild('GlichSlapTool') then
-											Kill(v)
-										end
+										local tool = FindCharacterSlapTool(v)
+                                                                                if tool then
+                                                                                        Kill(v)
+                                                                                end
 									end
 								end
 							end
@@ -562,11 +574,9 @@ function OnCommand(text)
                 local DaPlayer = PlrFromArgs(Args[2], false)
 		if DaPlayer then
                         for i,v in pairs(Players:GetPlayers()) do
-                                if v ~= LocalPlayer then
-			                if ViewPlr[v.UserId] then
-				                ViewPlr[v.UserId] = nil
-				                wait(.3)
-                                        end
+			        if ViewPlr[v.UserId] then
+				        ViewPlr[v.UserId] = nil
+				        wait(.3)
 			        end
                         end
 			ViewPlr[DaPlayer.UserId] = DaPlayer
@@ -785,20 +795,20 @@ end
 
 --Autorespawn
 SavedPositions.AutoRe = nil
-local diedevent
+Connections.Died = nil
 local lochar = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
 local function ondiedevent()
 	coroutine.wrap(function()
-		diedevent:Disconnect(); SaveCamPos()
+		Connections.Died:Disconnect(); SaveCamPos()
 		SavedPositions.AutoRe = lochar:WaitForChild("HumanoidRootPart", 1) and LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame
 	end)()
 end
 getfenv()["\112\114\105\110\116"]("\70\73\88\69\68\32\66\89\32\72\49\55\83\51") 
 local function charaddtask()
-	diedevent:Disconnect()
+	Connections.Died:Disconnect()
 	local LHuman = lochar:WaitForChild("Humanoid", 1)
 	if LHuman then
-		diedevent = LHuman.Died:Connect(ondiedevent)
+		Connections.Died = LHuman.Died:Connect(ondiedevent)
 		if Connections.CharacterChildAdded then
 			Connections.CharacterChildAdded:Disconnect(); Connections.CharacterChildAdded = nil
 		end
@@ -833,7 +843,7 @@ local function oncharadded()
 	lochar:WaitForChild("Humanoid", 1):SetStateEnabled(Enum.HumanoidStateType.Ragdoll, false)
         coroutine.wrap(charaddtask)()
 end
-diedevent = lochar:WaitForChild("Humanoid").Died:Connect(ondiedevent)
+Connections.Died = lochar:WaitForChild("Humanoid").Died:Connect(ondiedevent)
 Connections.CharacterAdded = LocalPlayer.CharacterAdded:Connect(oncharadded)
 
 Connections.PlayerAdded = Players.PlayerAdded:Connect(function(plr)
@@ -856,8 +866,8 @@ Connections.PlayerAdded = Players.PlayerAdded:Connect(function(plr)
                 Loops.Voids.Plr[plr.UserId] = plr
         end
 end)
-Connections.PlayerRemoving = Players.PlayerRemoving:Connect(function(tar)
-        if ViewPlr[tar.UserId] then
+Connections.PlayerRemoving = Players.PlayerRemoving:Connect(function(plr)
+        if ViewPlr[plr.UserId] then
                 wait(.05)
                 workspace.CurrentCamera.CameraSubject = LocalPlayer.Character
                 Notif("Error", "Player in left")
@@ -1072,6 +1082,7 @@ function API:UnloadScript()
         Connections.Chatted:Disconnect()
         Connections.Focus:Disconnect()
         Connections.CharacterAdded:Disconnect()
+        Connections.Died:Disconnect()
 end
 end
 
