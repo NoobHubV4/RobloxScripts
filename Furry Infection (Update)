@@ -119,10 +119,8 @@ for i,v in pairs(game.Players:GetPlayers()) do
 local ohInstance1 = v.Character.HumanoidRootPart
 local ohInstance2 = v.Character.Humanoid
 local ohVector33 = Vector3.new(game.Players.LocalPlayer.Character.HumanoidRootPart.Position)
-local char = game.Players.LocalPlayer.Character
-local tool = char:FindFirstChildOfClass("Tool")
 
-tool.Remote.Hit:FireServer(ohInstance1, ohInstance2, ohVector33)
+game.Players.LocalPlayer.Character:FindFirstChildOfClass("Tool").Remote.Hit:FireServer(ohInstance1, ohInstance2, ohVector33)
 end
 end
 end
@@ -183,10 +181,9 @@ Toggles:AddButton({
             if v.Character:FindFirstChild("LLeft Leg") or v.Character:FindFirstChild("Left Leg"):FindFirstChild("LLeft Leg") then
                 game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(v.Character.HumanoidRootPart.Position)
                 oldposition = game.Players.LocalPlayer.Character.HumanoidRootPart.Position
-                repeat wait()
+                repeat task.wait()
                     if game.Players.LocalPlayer.Character:FindFirstChild("Bat") or game.Players.LocalPlayer.Character:FindFirstChild("Metal  Bat") or game.Players.LocalPlayer.Character:FindFirstChild("Neon") then
-                    task.wait()
-                    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(v.Character.HumanoidRootPart.Position+Vector3.new(0,2,0))
+                    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(v.Character.HumanoidRootPart.Position+Vector3.new(0,3,0))
                     local ohInstance1 = v.Character.HumanoidRootPart
                     local ohInstance2 = v.Character.Humanoid
                     local ohVector33 = Vector3.new(game.Players.LocalPlayer.Character.HumanoidRootPart.Position)
@@ -315,15 +312,12 @@ while _G.killall do task.wait()
                 oldposition = game.Players.LocalPlayer.Character.HumanoidRootPart.Position
                 repeat task.wait()
                     if game.Players.LocalPlayer.Character:FindFirstChild("Bat") or game.Players.LocalPlayer.Character:FindFirstChild("Metal  Bat") then
-                    task.wait()
-                    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(v.Character.HumanoidRootPart.Position+Vector3.new(0,2,0))
+                    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(v.Character.HumanoidRootPart.Position+Vector3.new(0,3,0))
                     local ohInstance1 = v.Character.HumanoidRootPart
                     local ohInstance2 = v.Character.Humanoid
                     local ohVector33 = Vector3.new(game.Players.LocalPlayer.Character.HumanoidRootPart.Position)
-                    local char = game.Players.LocalPlayer.Character
-                    local tool = char:FindFirstChildOfClass("Tool")
 
-                    tool.Remote.Hit:FireServer(ohInstance1, ohInstance2, ohVector33)
+                    game.Players.LocalPlayer.Character:FindFirstChildWhichIsA("Tool").Remote.Hit:FireServer(ohInstance1, ohInstance2, ohVector33)
                     elseif game.Players.LocalPlayer.Backpack:FindFirstChild("Bat") then
                         game.Players.LocalPlayer.Character.Humanoid:EquipTool(game.Players.LocalPlayer.Backpack:FindFirstChild("Bat"))
                     elseif game.Players.LocalPlayer.Backpack:FindFirstChild("Metal  Bat") then
