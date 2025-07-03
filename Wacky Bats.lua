@@ -2,6 +2,7 @@ local Library = loadstring(Game:HttpGet('https://raw.githubusercontent.com/NoobH
 local Players = game.Players
 local LocalPlayer = Players.LocalPlayer
 local States = {}
+local Ability
 
 function FindTool(Item)
   if Item == "magnetizer" then
@@ -11,6 +12,26 @@ function FindTool(Item)
     end
   elseif Item == "batburger" then
     local tool = LocalPlayer.Character:FindFirstChild("Batburger") or LocalPlayer.Backpack:FindFirstChild("Batburger")
+    if tool then
+      return tool
+    end
+  elseif Item == "subspace tripbat" then
+    local tool = LocalPlayer.Character:FindFirstChild("Subspace Tripbat") or LocalPlayer.Backpack:FindFirstChild("Subspace Tripbat")
+    if tool then
+      return tool
+    end
+  elseif Item == "gubby bat" then
+    local tool = LocalPlayer.Character:FindFirstChild("Gubby Bat") or LocalPlayer.Backpack:FindFirstChild("Gubby Bat")
+    if tool then
+      return tool
+    end
+  elseif Item == "grug bat" then
+    local tool = LocalPlayer.Character:FindFirstChild("Grug Bat") or LocalPlayer.Backpack:FindFirstChild("Grug Bat")
+    if tool then
+      return tool
+    end
+  elseif Item == "batless" then
+    local tool = LocalPlayer.Character:FindFirstChild("Batless") or LocalPlayer.Backpack:FindFirstChild("Batless")
     if tool then
       return tool
     end
@@ -27,7 +48,6 @@ function KillAura()
     BuyItem("Magnetizer")
   end
   game:GetService("ReplicatedStorage"):WaitForChild("BatRemotes"):WaitForChild("Magnetizer"):WaitForChild("Magnetize"):FireServer(tool)
-  LocalPlayer.Character.Humanoid.WalkSpeed = 20
 end
 
 function HealPlayer()
@@ -36,7 +56,34 @@ function HealPlayer()
 		BuyItem("Batburger")
 	end
 	game:GetService("ReplicatedStorage"):WaitForChild("BatRemotes"):WaitForChild("Batburger"):WaitForChild("Snack"):FireServer(tool)
-	LocalPlayer.Character.Humanoid.WalkSpeed = 20
+end
+
+function AbilityNoCooldown(Ability)
+	if Ability == "Throw Subspace tripmine" then
+		local tool = FindTool("subspace tripbat")
+		if not tool then
+			BuyItem("Subspace Tripbat")
+		end
+		game:GetService("ReplicatedStorage"):WaitForChild("BatRemotes"):WaitForChild("Subspace Tripbat"):WaitForChild("Tripmine Throw"):FireServer(tool)
+	elseif Ability == "Gubby Dash" then
+		local tool = FindTool("gubby bat")
+		if not tool then
+			BuyItem("Gubby Bat")
+		end
+                game:GetService("ReplicatedStorage"):WaitForChild("BatRemotes"):WaitForChild("Gubby Bat"):WaitForChild("Gubby Dash"):FireServer(tool)
+	elseif Ability == "Smash" then
+		local tool = FindTool("grug bat")
+		if not tool then
+			BuyItem("Grug Bat")
+		end
+                game:GetService("ReplicatedStorage"):WaitForChild("BatRemotes"):WaitForChild("Grug Bat"):WaitForChild("Smash"):FireServer(tool)
+	elseif Ability == "Quick Kick" then
+		local tool = FindTool("batless")
+		if not tool then
+			BuyItem("Batless")
+		end
+                game:GetService("ReplicatedStorage"):WaitForChild("BatRemotes"):WaitForChild("Batless"):WaitForChild("Quick Kick"):FireServer(tool)
+	end
 end
 
 spawn(function()
@@ -61,6 +108,23 @@ spawn(function()
 	 if States.AutoSwing then
               game:GetService("ReplicatedStorage"):WaitForChild("BatRemotes"):WaitForChild("Basic Bat"):FireServer(game:GetService("Players").LocalPlayer.Character:FindFirstChildOfClass("Tool"))
 	 end
+	 if States.ThrowTripmine then
+	      AbilityNoCooldown("Throw Subspace tripmine")
+	 end
+	 if States.GubbyDash then
+	      AbilityNoCooldown("Gubby Dash")
+	      wait(1)
+	 end
+	 if States.Smash then
+	      AbilityNoCooldown("Smash")
+	 end
+	 if States.QuickKick then
+	      AbilityNoCooldown("Quick Kick")
+	 end
+	 local humanoid = LocalPlayer.Character.Humanoid
+	 if humanoid.WalkSpeed <= 19 then
+	      humanoid.WalkSpeed = 20
+	 end
     end
     while task.wait() do
 	pcall(task0)
@@ -80,4 +144,18 @@ end)
 
 Section:CreateToggle("Auto Swing", function(v)
 	States.AutoSwing = v
+end)
+Section:CreateDropdown("Select Ability", {"Throw Subspace Tripmine","Gubby Dash","Smash","Quick Kick"}, 1, function(v)
+	Ability = v
+end)
+Section:CreateToggle("Spam Ability", function(v)
+	if Ability == "Throw Subspace Tripmine" then
+		States.ThrowTripmine = v
+	elseif Ability == "Gubby Dash" then
+		States.GubbyDash = v
+	elseif Ability == "Smash" then
+		States.Smash = v
+	elseif Ability == "Quick Kick" then
+		States.QuickKick = v
+	end
 end)
