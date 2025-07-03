@@ -35,6 +35,11 @@ function FindTool(Item)
     if tool then
       return tool
     end
+  elseif Item == "shotbat" then
+    local tool = LocalPlayer.Character:FindFirstChild("Shotbat") or LocalPlayer.Backpack:FindFirstChild("Shotbat")
+    if tool then
+      return tool
+    end
   end
 end
 
@@ -83,6 +88,12 @@ function AbilityNoCooldown(Ability)
 			BuyItem("Batless")
 		end
                 game:GetService("ReplicatedStorage"):WaitForChild("BatRemotes"):WaitForChild("Batless"):WaitForChild("Quick Kick"):FireServer(tool)
+	elseif Ability == "Blast" then
+		local tool = FindTool("shotbat")
+		if not tool then
+			BuyItem("Shotbat")
+		end
+                game:GetService("ReplicatedStorage"):WaitForChild("BatRemotes"):WaitForChild("Shotbat"):WaitForChild("Blast"):FireServer(tool)
 	end
 end
 
@@ -130,6 +141,16 @@ spawn(function()
 	pcall(task0)
     end
 end)
+spawn(function()
+    task1 = function()
+	 if States.Blast then
+	      AbilityNoCooldown("Blast")
+	 end
+    end
+    while task.wait() do
+	pcall(task1)
+    end
+end)
 local Window = Library:NewWindow("NoobHubV1 Hub")
 
 local Section = Window:NewSection("Auto Farm")
@@ -145,7 +166,7 @@ end)
 Section:CreateToggle("Auto Swing", function(v)
 	States.AutoSwing = v
 end)
-Section:CreateDropdown("Select Ability", {"Throw Subspace Tripmine","Gubby Dash","Smash","Quick Kick"}, 1, function(v)
+Section:CreateDropdown("Select Ability", {"Throw Subspace Tripmine","Gubby Dash","Smash","Quick Kick","Blast"}, 1, function(v)
 	Ability = v
 end)
 Section:CreateToggle("Spam Ability", function(v)
@@ -157,5 +178,7 @@ Section:CreateToggle("Spam Ability", function(v)
 		States.Smash = v
 	elseif Ability == "Quick Kick" then
 		States.QuickKick = v
+	elseif Ability == "Blast" then
+		States.Blast = v
 	end
 end)
