@@ -2,8 +2,8 @@ local Players = game.Players
 local LocalPlayer = Players.LocalPlayer
 
 function FindTool(Item)
-  if Item == "guibat" then
-    local tool = LocalPlayer.Character:FindFirstChild("Guibat") or LocalPlayer.Backpack:FindFirstChild("Guibat")
+  if Item == "magnetizer" then
+    local tool = LocalPlayer.Character:FindFirstChild("Magnetizer") or LocalPlayer.Backpack:FindFirstChild("Magnetizer")
     if tool then
       return tool
     end
@@ -20,11 +20,12 @@ function BuyItem(Item)
 end
 
 function KillAura()
-  local tool = FindTool("guibat")
+  local tool = FindTool("magnetizer")
   if not tool then
-    BuyItem("Guibat")
+    BuyItem("Magnetizer")
   end
-  game:GetService("ReplicatedStorage"):WaitForChild("BatRemotes"):WaitForChild("Guibat"):WaitForChild("Play"):FireServer(tool)
+  game:GetService("ReplicatedStorage"):WaitForChild("BatRemotes"):WaitForChild("Magnetizer"):WaitForChild("Magnetize"):FireServer(tool)
+  LocalPlayer.Character.Humanoid.WalkSpeed = 20
 end
 
 function HealPlayer()
@@ -42,7 +43,7 @@ spawn(function()
 	     if Targets ~= v and Targets.Character and not Targets.Character:FindFirstChildWhichIsA("ForceField") and Targets.Character:FindFirstChildOfClass("Humanoid").Health ~= 0 then
 		   local TPart = Targets.Character:FindFirstChildWhichIsA("BasePart")
 		   if VPart and TPart and Targets ~= LocalPlayer then
-			  if (TPart.Position-VPart.Position).Magnitude <= 35 then
+			  if (TPart.Position-VPart.Position).Magnitude <= 30 then
 				  KillAura()
 			  end
 		   end
