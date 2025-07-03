@@ -26,17 +26,34 @@ function KillAura()
   end
   game:GetService("ReplicatedStorage"):WaitForChild("BatRemotes"):WaitForChild("Guibat"):WaitForChild("Play"):FireServer(tool)
 end
-        
-game.RunService.Stepped:Connect(function()
-    local VPart = LocalPlayer.Character.HumanoidRootPart
-    for _, Targets in pairs(Players:GetPlayers()) do
-						if Targets ~= v and Targets.Character and not Targets.Character:FindFirstChildWhichIsA("ForceField") and Targets.Character:FindFirstChildOfClass("Humanoid").Health ~= 0 then
-							local TPart = Targets.Character:FindFirstChildWhichIsA("BasePart")
-							if VPart and TPart and Targets ~= LocalPlayer then
-								if (TPart.Position-VPart.Position).Magnitude <= 35 then
-									KillAura()
-								end
-							end
-						end
+
+function HealPlayer()
+	local tool = FindTool("batburger")
+	if not tool then
+		BuyItem("Batburger")
+	end
+	game:GetService("ReplicatedStorage"):WaitForChild("BatRemotes"):WaitForChild("Batburger"):WaitForChild("Snack"):FireServer(tool)
+end
+
+spawn(function()
+    task0 = function()
+         local VPart = LocalPlayer.Character.HumanoidRootPart
+         for _, Targets in pairs(Players:GetPlayers()) do
+	     if Targets ~= v and Targets.Character and not Targets.Character:FindFirstChildWhichIsA("ForceField") and Targets.Character:FindFirstChildOfClass("Humanoid").Health ~= 0 then
+		   local TPart = Targets.Character:FindFirstChildWhichIsA("BasePart")
+		   if VPart and TPart and Targets ~= LocalPlayer then
+			  if (TPart.Position-VPart.Position).Magnitude <= 35 then
+				  KillAura()
+			  end
+		   end
+	     end
+         end
+	 local humanoid = LocalPlayer.Character.Humanoid
+         if humanoid.Health <= 99 then
+	      HealPlayer()
+	 end
+    end
+    while task.wait() do
+	pcall(task0)
     end
 end)
