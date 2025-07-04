@@ -40,6 +40,26 @@ function FindTool(Item)
     if tool then
       return tool
     end
+  elseif Item == "knockout" then
+    local tool = LocalPlayer.Character:FindFirstChild("Knockout") or LocalPlayer.Backpack:FindFirstChild("Knockout")
+    if tool then
+      return tool
+    end
+  elseif Item == "guardian" then
+    local tool = LocalPlayer.Character:FindFirstChild("Guardian") or LocalPlayer.Backpack:FindFirstChild("Guardian")
+    if tool then
+      return tool
+    end
+  elseif Item == "guibat" then
+    local tool = LocalPlayer.Character:FindFirstChild("Guibat") or LocalPlayer.Backpack:FindFirstChild("Guibat")
+    if tool then
+      return tool
+    end
+  elseif not Item then
+    local tool = LocalPlayer.Character:FindFirstChildOfClass("Tool") or LocalPlayer.Backpack:FindFirstChildOfClass("Tool")
+    if tool then
+      return tool
+    end
   end
 end
 
@@ -94,6 +114,24 @@ function AbilityNoCooldown(Ability)
 			BuyItem("Shotbat")
 		end
                 game:GetService("ReplicatedStorage"):WaitForChild("BatRemotes"):WaitForChild("Shotbat"):WaitForChild("Blast"):FireServer(tool)
+	elseif Ability == "Strike" then
+		local tool = FindTool("knockout")
+		if not tool then
+			BuyItem("Knockout")
+		end
+                game:GetService("ReplicatedStorage"):WaitForChild("BatRemotes"):WaitForChild("Knockout"):WaitForChild("Strike"):FireServer(tool)
+	elseif Ability == "Play" then
+		local tool = FindTool("guibat")
+		if not tool then
+			BuyItem("Guibat")
+		end
+                game:GetService("ReplicatedStorage"):WaitForChild("BatRemotes"):WaitForChild("Guibat"):WaitForChild("Play"):FireServer(tool)
+	elseif Ability == "Guard" then
+		local tool = FindTool("guardian")
+		if not tool then
+			BuyItem("Guardian")
+		end
+                game:GetService("ReplicatedStorage"):WaitForChild("BatRemotes"):WaitForChild("Guardian"):WaitForChild("Guard"):FireServer(tool)
 	end
 end
 
@@ -117,7 +155,8 @@ spawn(function()
 	      HealPlayer()
 	 end
 	 if States.AutoSwing then
-              game:GetService("ReplicatedStorage"):WaitForChild("BatRemotes"):WaitForChild("Basic Bat"):FireServer(game:GetService("Players").LocalPlayer.Character:FindFirstChildOfClass("Tool"))
+	      local tool = FindTool()
+              game:GetService("ReplicatedStorage"):WaitForChild("BatRemotes"):WaitForChild("Basic Bat"):FireServer(tool)
 	 end
 	 if States.ThrowTripmine then
 	      AbilityNoCooldown("Throw Subspace tripmine")
@@ -146,6 +185,15 @@ spawn(function()
 	 if States.Blast then
 	      AbilityNoCooldown("Blast")
 	 end
+	 if States.Strike then
+	      AbilityNoCooldown("Strike")
+	 end
+	 if States.Play then
+	      AbilityNoCooldown("Play")
+	 end
+	 if States.Guard then
+	      AbilityNoCooldown("Guard")
+	 end
     end
     while task.wait() do
 	pcall(task1)
@@ -166,7 +214,7 @@ end)
 Section:CreateToggle("Auto Swing", function(v)
 	States.AutoSwing = v
 end)
-Section:CreateDropdown("Select Ability", {"Throw Subspace Tripmine","Gubby Dash","Smash","Quick Kick","Blast"}, 1, function(v)
+Section:CreateDropdown("Select Ability", {"Throw Subspace Tripmine","Gubby Dash","Smash","Quick Kick","Blast","Strike","Play","Guard"}, 1, function(v)
 	Ability = v
 end)
 Section:CreateToggle("Spam Ability", function(v)
@@ -180,5 +228,11 @@ Section:CreateToggle("Spam Ability", function(v)
 		States.QuickKick = v
 	elseif Ability == "Blast" then
 		States.Blast = v
+	elseif Ability == "Strike" then
+		States.Strike = v
+	elseif Ability == "Play" then
+		States.Play = v
+	elseif Ability == "Guard" then
+		States.Guard = v
 	end
 end)
