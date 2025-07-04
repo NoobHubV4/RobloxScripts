@@ -2,7 +2,7 @@ local Library = loadstring(Game:HttpGet('https://raw.githubusercontent.com/NoobH
 local Players = game.Players
 local LocalPlayer = Players.LocalPlayer
 local States = {}
-local Ability
+local Ability = "Throw Subspace Tripmine"
 
 function FindTool(Item)
   if Item == "magnetizer" then
@@ -52,6 +52,11 @@ function FindTool(Item)
     end
   elseif Item == "guibat" then
     local tool = LocalPlayer.Character:FindFirstChild("Guibat") or LocalPlayer.Backpack:FindFirstChild("Guibat")
+    if tool then
+      return tool
+    end
+  elseif Item == "power bat" then
+    local tool = LocalPlayer.Character:FindFirstChild("Power Bat") or LocalPlayer.Backpack:FindFirstChild("Power Bat")
     if tool then
       return tool
     end
@@ -132,6 +137,25 @@ function AbilityNoCooldown(Ability)
 			BuyItem("Guardian")
 		end
                 game:GetService("ReplicatedStorage"):WaitForChild("BatRemotes"):WaitForChild("Guardian"):WaitForChild("Guard"):FireServer(tool)
+	elseif Ability == "Power Up" then
+		local tool = FindTool("power bat")
+		if not tool then
+			BuyItem("Power Bat")
+		end
+		game:GetService("ReplicatedStorage"):WaitForChild("BatRemotes"):WaitForChild("Power Bat"):WaitForChild("Power Up"):FireServer(tool)
+	end
+end
+
+function KillAll()
+	for i,v in pairs(game.Players:GetPlayers()) do
+		if v.Character and not v.Character:FindFirstChildWhichIsA("ForceField") and v.Character:FindFirstChildOfClass("Humanoid").Health ~= 0 then
+		        if v ~= LocalPlayer then
+			        repeat task.wait(.1)
+				        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.Character.HumanoidRootPart.CFrame
+				        AbilityNoCooldown("Gubby Dash")
+			        until v.Character.Humanoid.Health == 0
+		        end
+	        end
 	end
 end
 
@@ -140,7 +164,7 @@ spawn(function()
 	 if States.KillAura then
              local VPart = LocalPlayer.Character.HumanoidRootPart
              for _, Targets in pairs(Players:GetPlayers()) do
-	           if Targets ~= v and Targets.Character and not Targets.Character:FindFirstChildWhichIsA("ForceField") and Targets.Character:FindFirstChildOfClass("Humanoid").Health ~= 0 then
+	           if Targets.Character and not Targets.Character:FindFirstChildWhichIsA("ForceField") and Targets.Character:FindFirstChildOfClass("Humanoid").Health ~= 0 then
 		          local TPart = Targets.Character:FindFirstChildWhichIsA("BasePart")
 		          if VPart and TPart and Targets ~= LocalPlayer then
 			          if (TPart.Position-VPart.Position).Magnitude <= 30 then
@@ -155,8 +179,7 @@ spawn(function()
 	      HealPlayer()
 	 end
 	 if States.AutoSwing then
-	      local tool = FindTool()
-              game:GetService("ReplicatedStorage"):WaitForChild("BatRemotes"):WaitForChild("Basic Bat"):FireServer(tool)
+              game:GetService("ReplicatedStorage"):WaitForChild("BatRemotes"):WaitForChild("Basic Bat"):FireServer(FindTool())
 	 end
 	 if States.ThrowTripmine then
 	      AbilityNoCooldown("Throw Subspace tripmine")
@@ -194,6 +217,12 @@ spawn(function()
 	 if States.Guard then
 	      AbilityNoCooldown("Guard")
 	 end
+	 if States.PowerUp then
+	      AbilityNoCooldown("Power Up")
+	 end
+	 if States.Loopkillall then
+	      KillAll()
+	 end
     end
     while task.wait() do
 	pcall(task1)
@@ -214,7 +243,7 @@ end)
 Section:CreateToggle("Auto Swing", function(v)
 	States.AutoSwing = v
 end)
-Section:CreateDropdown("Select Ability", {"Throw Subspace Tripmine","Gubby Dash","Smash","Quick Kick","Blast","Strike","Play","Guard"}, 1, function(v)
+Section:CreateDropdown("Select Ability", {"Throw Subspace Tripmine","Gubby Dash","Smash","Quick Kick","Blast","Strike","Play","Guard","Power Up"}, 1, function(v)
 	Ability = v
 end)
 Section:CreateToggle("Spam Ability", function(v)
@@ -234,5 +263,14 @@ Section:CreateToggle("Spam Ability", function(v)
 		States.Play = v
 	elseif Ability == "Guard" then
 		States.Guard = v
+	elseif Ability == "Power Up" then
+		States.PowerUp = v
 	end
+end)
+Section:CreateButton("Kill All", function()
+	KillAll()
+end)
+
+Section:CreateToggle("Loop Kill All", function(v)
+	States.Loopkillall = v
 end)
