@@ -94,22 +94,6 @@ function BuyItem(Item)
         game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("UpdateLastBat"):FireServer(Item)
 end
 
-function KillAura()
-  local tool = FindTool("magnetizer")
-  if not tool then
-    BuyItem("Magnetizer")
-  end
-  game:GetService("ReplicatedStorage"):WaitForChild("BatRemotes"):WaitForChild("Magnetizer"):WaitForChild("Magnetize"):FireServer(tool)
-end
-
-function HealPlayer()
-	local tool = FindTool("batburger")
-	if not tool then
-		BuyItem("Batburger")
-	end
-	game:GetService("ReplicatedStorage"):WaitForChild("BatRemotes"):WaitForChild("Batburger"):WaitForChild("Snack"):FireServer(tool)
-end
-
 function AbilityNoCooldown(Ability)
 	if Ability == "Throw Subspace tripmine" then
 		local tool = FindTool("subspace tripbat")
@@ -189,22 +173,38 @@ function AbilityNoCooldown(Ability)
 			BuyItem("Trident Bat")
 		end
                 game:GetService("ReplicatedStorage"):WaitForChild("BatRemotes"):WaitForChild("Trident Bat"):WaitForChild("Lunge"):FireServer(tool)
+	elseif Ability == "Magnetize" then
+		local tool = FindTool("magnetizer")
+		if not tool then
+			BuyItem("Magnetizer")
+		end
+		game:GetService("ReplicatedStorage"):WaitForChild("BatRemotes"):WaitForChild("Magnetizer"):WaitForChild("Magnetize"):FireServer(tool)
 	end
 end
 
+function Kill(plr)
+  repeat task.wait()
+	LocalPlayer.Character.HumanoidRootPart.CFrame = plr.Character.HumanoidRootPart.CFrame
+	AbilityNoCooldown("Lunge")
+  until plr.Character.Humanoid.Health == 0 or plr.Character:FindFirstChildWhichIsA("ForceField")
+end
+
+function HealPlayer()
+	local tool = FindTool("batburger")
+	if not tool then
+		BuyItem("Batburger")
+	end
+	game:GetService("ReplicatedStorage"):WaitForChild("BatRemotes"):WaitForChild("Batburger"):WaitForChild("Snack"):FireServer(tool)
+end
+
 function KillAll()
-	local OldPos = LocalPlayer.Character.HumanoidRootPart.CFrame
 	for i,v in pairs(game.Players:GetPlayers()) do
 		if v.Character and not v.Character:FindFirstChildWhichIsA("ForceField") and v.Character:FindFirstChildOfClass("Humanoid").Health ~= 0 then
 		        if v ~= LocalPlayer then
-			        repeat task.wait()
-				        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.Character.HumanoidRootPart.CFrame
-				        AbilityNoCooldown("Gubby Dash")
-			        until v.Character:FindFirstChildWhichIsA("ForceField") or v.Character.Humanoid.Health == 0
+			        Kill(v)
 		        end
 	        end
 	end
-	LocalPlayer.Character.HumanoidRootPart.CFrame = OldPos
 end
 
 function Notif(Title, Text, Duration)
@@ -228,8 +228,8 @@ spawn(function()
 	           if Targets.Character and not Targets.Character:FindFirstChildWhichIsA("ForceField") and Targets.Character:FindFirstChildOfClass("Humanoid").Health ~= 0 then
 		          local TPart = Targets.Character:FindFirstChildWhichIsA("BasePart")
 		          if VPart and TPart and Targets ~= LocalPlayer then
-			          if (TPart.Position-VPart.Position).Magnitude <= 30 then
-				         KillAura()
+			          if (TPart.Position-VPart.Position).Magnitude <= 10 then
+				         Kill(Targets)
 			          end
 		          end
 	           end
@@ -284,10 +284,7 @@ spawn(function()
 	      for i,v in pairs(game.Players:GetPlayers()) do
 		      if v.Character and not v.Character:FindFirstChildWhichIsA("ForceField") and v.Character:FindFirstChildOfClass("Humanoid").Health ~= 0 then
 		              if v ~= LocalPlayer then
-			              repeat task.wait()
-				              game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.Character.HumanoidRootPart.CFrame
-				              AbilityNoCooldown("Gubby Dash")
-			              until v.Character:FindFirstChildWhichIsA("ForceField") or v.Character.Humanoid.Health == 0
+			              Kill(v)
 		              end
 	              end
 	      end
@@ -311,6 +308,9 @@ spawn(function()
 	 if States.Lunge then
 	      AbilityNoCooldown("Lunge")
 	 end
+	 if States.Magnetize then
+	      AbilityNoCooldown("Magnetize")
+	 end
     end
     while task.wait() do
 	pcall(task2)
@@ -329,7 +329,7 @@ end)
 Main:CreateToggle("Auto Swing", function(v)
 	States.AutoSwing = v
 end)
-Main:CreateDropdown("Select Ability", {"Throw Subspace Tripmine","Gubby Dash","Smash","Quick Kick","Blast","Strike","Play","Guard","Power Up","Harden","Ninja Dash","Rage","Lunge"}, 1, function(v)
+Main:CreateDropdown("Select Ability", {"Throw Subspace Tripmine","Gubby Dash","Smash","Quick Kick","Blast","Strike","Play","Guard","Power Up","Harden","Ninja Dash","Rage","Lunge","Magnetize"}, 1, function(v)
 	Ability = v
 end)
 Main:CreateToggle("Spam Ability", function(v)
@@ -359,6 +359,8 @@ Main:CreateToggle("Spam Ability", function(v)
 		States.Rage = v
 	elseif Ability == "Lunge" then
 		States.Lunge = v
+	elseif Ability == "Magnetize" then
+		States.Magnetize = v
 	end
 end)
 Kills:CreateButton("Kill All", function()
