@@ -77,6 +77,11 @@ function FindTool(Item)
     if tool then
       return tool
     end
+  elseif Item == "trident bat" then
+    local tool = LocalPlayer.Character:FindFirstChild("Trident Bat") or LocalPlayer.Backpack:FindFirstChild("Trident Bat")
+    if tool then
+      return tool
+    end
   elseif not Item then
     local tool = LocalPlayer.Character:FindFirstChildOfClass("Tool") or LocalPlayer.Backpack:FindFirstChildOfClass("Tool")
     if tool then
@@ -178,6 +183,12 @@ function AbilityNoCooldown(Ability)
 			BuyItem("Berserker")
 		end
                 game:GetService("ReplicatedStorage"):WaitForChild("BatRemotes"):WaitForChild("Berserker"):WaitForChild("Rage"):FireServer(tool)
+	elseif Ability == "Lunge" then
+		local tool = FindTool("trident bat")
+		if not tool then
+			BuyItem("Trident Bat")
+		end
+                game:GetService("ReplicatedStorage"):WaitForChild("BatRemotes"):WaitForChild("Trident Bat"):WaitForChild("Lunge"):FireServer(tool)
 	end
 end
 
@@ -297,6 +308,9 @@ spawn(function()
 	 if States.Rage then
 	      AbilityNoCooldown("Rage")
 	 end
+	 if States.Lunge then
+	      AbilityNoCooldown("Lunge")
+	 end
     end
     while task.wait() do
 	pcall(task2)
@@ -315,7 +329,7 @@ end)
 Main:CreateToggle("Auto Swing", function(v)
 	States.AutoSwing = v
 end)
-Main:CreateDropdown("Select Ability", {"Throw Subspace Tripmine","Gubby Dash","Smash","Quick Kick","Blast","Strike","Play","Guard","Power Up","Harden","Ninja Dash","Rage"}, 1, function(v)
+Main:CreateDropdown("Select Ability", {"Throw Subspace Tripmine","Gubby Dash","Smash","Quick Kick","Blast","Strike","Play","Guard","Power Up","Harden","Ninja Dash","Rage","Lunge"}, 1, function(v)
 	Ability = v
 end)
 Main:CreateToggle("Spam Ability", function(v)
@@ -343,6 +357,8 @@ Main:CreateToggle("Spam Ability", function(v)
 		States.NinjaDash = v
 	elseif Ability == "Rage" then
 		States.Rage = v
+	elseif Ability == "Lunge" then
+		States.Lunge = v
 	end
 end)
 Kills:CreateButton("Kill All", function()
