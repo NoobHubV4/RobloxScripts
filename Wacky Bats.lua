@@ -6,6 +6,17 @@ local Ability = "Throw Subspace Tripmine"
 local WalkSpeed = 20
 local DefaultSpeed = WalkSpeed
 
+function Teleport(cf)
+	local root = LocalPlayer.Character.HumanoidRootPart
+	local cf0 = (cf-cf.p) + root.Position + Vector3.new(0,4,0)
+	local diff = cf.p - root.Position
+	for i=0,diff.Magnitude,3 do task.wait()
+		root.CFrame = cf0 + diff.Unit * i
+		root.Velocity,root.RotVelocity=Vector3.new(),Vector3.new()
+	end
+	root.CFrame = cf
+end
+
 function FindTool(Item)
   if Item == "magnetizer" then
     local tool = LocalPlayer.Character:FindFirstChild("Magnetizer") or LocalPlayer.Backpack:FindFirstChild("Magnetizer")
@@ -184,8 +195,8 @@ end
 
 function Kill(plr)
   repeat task.wait()
-	LocalPlayer.Character.HumanoidRootPart.CFrame = plr.Character.HumanoidRootPart.CFrame
-	AbilityNoCooldown("Lunge")
+        LocalPlayer.Character.HumanoidRootPart.CFrame = plr.Character.HumanoidRootPart.CFrame
+	AbilityNoCooldown("Gubby Dash")
   until plr.Character.Humanoid.Health == 0 or plr.Character:FindFirstChildWhichIsA("ForceField")
 end
 
@@ -236,7 +247,7 @@ spawn(function()
               end
 	 end
 	 local humanoid = LocalPlayer.Character.Humanoid
-         if humanoid.Health <= 99 and States.AutoHeal then
+         if humanoid.Health <= 50 and States.AutoHeal then
 	      HealPlayer()
 	 end
 	 if States.AutoSwing then
