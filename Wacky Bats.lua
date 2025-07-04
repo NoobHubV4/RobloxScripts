@@ -147,16 +147,18 @@ function AbilityNoCooldown(Ability)
 end
 
 function KillAll()
+	local OldPos = LocalPlayer.Character.HumanoidRootPart.CFrame
 	for i,v in pairs(game.Players:GetPlayers()) do
 		if v.Character and not v.Character:FindFirstChildWhichIsA("ForceField") and v.Character:FindFirstChildOfClass("Humanoid").Health ~= 0 then
 		        if v ~= LocalPlayer then
 			        repeat task.wait()
 				        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.Character.HumanoidRootPart.CFrame
-				        AbilityNoCooldown("Gubby Dash")
-			        until v.Character.Humanoid.Health == 0
+				        AbilityNoCooldown("Smash")
+			        until v.Character:FindFirstChildWhichIsA("ForceField") or v.Character.Humanoid.Health == 0
 		        end
 	        end
 	end
+	LocalPlayer.Character.HumanoidRootPart.CFrame = OldPos
 end
 
 spawn(function()
@@ -221,7 +223,16 @@ spawn(function()
 	      AbilityNoCooldown("Power Up")
 	 end
 	 if States.Loopkillall then
-	      KillAll()
+	      for i,v in pairs(game.Players:GetPlayers()) do
+		      if v.Character and not v.Character:FindFirstChildWhichIsA("ForceField") and v.Character:FindFirstChildOfClass("Humanoid").Health ~= 0 then
+		              if v ~= LocalPlayer then
+			              repeat task.wait()
+				              game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.Character.HumanoidRootPart.CFrame
+				              AbilityNoCooldown("Smash")
+			              until v.Character:FindFirstChildWhichIsA("ForceField") or v.Character.Humanoid.Health == 0
+		              end
+	              end
+	      end
 	 end
     end
     while task.wait() do
@@ -229,24 +240,21 @@ spawn(function()
     end
 end)
 local Window = Library:NewWindow("NoobHubV1 Hub")
-
-local Section = Window:NewSection("Auto Farm")
-
-Section:CreateToggle("Kill Aura", function(v)
+local Main = Window:NewSection("Main")
+local Kills = Window:NewSection("Kills")
+Main:CreateToggle("Kill Aura", function(v)
 	States.KillAura = v
 end)
-
-Section:CreateToggle("Auto Heal", function(v)
+Main:CreateToggle("Auto Heal", function(v)
 	States.AutoHeal = v
 end)
-
-Section:CreateToggle("Auto Swing", function(v)
+Main:CreateToggle("Auto Swing", function(v)
 	States.AutoSwing = v
 end)
-Section:CreateDropdown("Select Ability", {"Throw Subspace Tripmine","Gubby Dash","Smash","Quick Kick","Blast","Strike","Play","Guard","Power Up"}, 1, function(v)
+Main:CreateDropdown("Select Ability", {"Throw Subspace Tripmine","Gubby Dash","Smash","Quick Kick","Blast","Strike","Play","Guard","Power Up"}, 1, function(v)
 	Ability = v
 end)
-Section:CreateToggle("Spam Ability", function(v)
+Main:CreateToggle("Spam Ability", function(v)
 	if Ability == "Throw Subspace Tripmine" then
 		States.ThrowTripmine = v
 	elseif Ability == "Gubby Dash" then
@@ -267,10 +275,9 @@ Section:CreateToggle("Spam Ability", function(v)
 		States.PowerUp = v
 	end
 end)
-Section:CreateButton("Kill All", function()
+Kills:CreateButton("Kill All", function()
 	KillAll()
 end)
-
-Section:CreateToggle("Loop Kill All", function(v)
+Kills:CreateToggle("Loop Kill All", function(v)
 	States.Loopkillall = v
 end)
