@@ -150,7 +150,7 @@ function KillAll()
 	for i,v in pairs(game.Players:GetPlayers()) do
 		if v.Character and not v.Character:FindFirstChildWhichIsA("ForceField") and v.Character:FindFirstChildOfClass("Humanoid").Health ~= 0 then
 		        if v ~= LocalPlayer then
-			        repeat task.wait(.1)
+			        repeat task.wait()
 				        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.Character.HumanoidRootPart.CFrame
 				        AbilityNoCooldown("Gubby Dash")
 			        until v.Character.Humanoid.Health == 0
