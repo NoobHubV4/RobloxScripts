@@ -146,6 +146,17 @@ function AbilityNoCooldown(Ability)
 	end
 end
 
+function Kill(plr)
+	local OldPos = LocalPlayer.Character.HumanoidRootPart.CFrame
+	if plr.Character and not plr.Character:FindFirstChildWhichIsA("ForceField") and plr.Character:FindFirstChildOfClass("Humanoid").Health ~= 0 then
+		repeat task.wait()
+			game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.Character.HumanoidRootPart.CFrame
+			AbilityNoCooldown("Smash")
+		until v.Character:FindFirstChildWhichIsA("ForceField") or v.Character.Humanoid.Health == 0
+	end
+	LocalPlayer.Character.HumanoidRootPart.CFrame = OldPos
+end
+
 function KillAll()
 	local OldPos = LocalPlayer.Character.HumanoidRootPart.CFrame
 	for i,v in pairs(game.Players:GetPlayers()) do
@@ -159,6 +170,19 @@ function KillAll()
 	        end
 	end
 	LocalPlayer.Character.HumanoidRootPart.CFrame = OldPos
+end
+
+function Notif(Title, Text, Duration)
+	local Duration = Duration
+	if not Duration then
+		Duration = 3
+	end
+	game:GetService("StarterGui"):SetCore("SendNotification", {
+		Title = Title;
+		Text = Text;
+		Icon = "";
+		Duration = Duration;
+	})
 end
 
 spawn(function()
