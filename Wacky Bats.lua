@@ -3,6 +3,8 @@ local Players = game.Players
 local LocalPlayer = Players.LocalPlayer
 local States = {}
 local Ability = "Throw Subspace Tripmine"
+local WalkSpeed = 20
+local DefaultSpeed = WalkSpeed
 
 function FindTool(Item)
   if Item == "magnetizer" then
@@ -57,6 +59,21 @@ function FindTool(Item)
     end
   elseif Item == "power bat" then
     local tool = LocalPlayer.Character:FindFirstChild("Power Bat") or LocalPlayer.Backpack:FindFirstChild("Power Bat")
+    if tool then
+      return tool
+    end
+  elseif Item == "diamond bat" then
+    local tool = LocalPlayer.Character:FindFirstChild("Diamond Bat") or LocalPlayer.Backpack:FindFirstChild("Diamond Bat")
+    if tool then
+      return tool
+    end
+  elseif Item == "ninja bat" then
+    local tool = LocalPlayer.Character:FindFirstChild("Ninja Bat") or LocalPlayer.Backpack:FindFirstChild("Ninja Bat")
+    if tool then
+      return tool
+    end
+  elseif Item == "berserker" then
+    local tool = LocalPlayer.Character:FindFirstChild("Berserker") or LocalPlayer.Backpack:FindFirstChild("Berserker")
     if tool then
       return tool
     end
@@ -143,18 +160,25 @@ function AbilityNoCooldown(Ability)
 			BuyItem("Power Bat")
 		end
 		game:GetService("ReplicatedStorage"):WaitForChild("BatRemotes"):WaitForChild("Power Bat"):WaitForChild("Power Up"):FireServer(tool)
+	elseif Ability == "Harden" then
+		local tool = FindTool("diamond bat")
+		if not tool then
+			BuyItem("Diamond Bat")
+		end
+                game:GetService("ReplicatedStorage"):WaitForChild("BatRemotes"):WaitForChild("Diamond Bat"):WaitForChild("Harden"):FireServer(tool)
+	elseif Ability == "Ninja Dash" then
+		local tool = FindTool("ninja bat")
+		if not tool then
+			BuyItem("Ninja Bat")
+		end
+                game:GetService("ReplicatedStorage"):WaitForChild("BatRemotes"):WaitForChild("Ninja Bat"):WaitForChild("Ninja Dash"):FireServer(tool)
+	elseif Ability == "Rage" then
+		local tool = FindTool("berserker")
+		if not tool then
+			BuyItem("Berserker")
+		end
+                game:GetService("ReplicatedStorage"):WaitForChild("BatRemotes"):WaitForChild("Berserker"):WaitForChild("Rage"):FireServer(tool)
 	end
-end
-
-function Kill(plr)
-	local OldPos = LocalPlayer.Character.HumanoidRootPart.CFrame
-	if plr.Character and not plr.Character:FindFirstChildWhichIsA("ForceField") and plr.Character:FindFirstChildOfClass("Humanoid").Health ~= 0 then
-		repeat task.wait()
-			game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.Character.HumanoidRootPart.CFrame
-			AbilityNoCooldown("Smash")
-		until v.Character:FindFirstChildWhichIsA("ForceField") or v.Character.Humanoid.Health == 0
-	end
-	LocalPlayer.Character.HumanoidRootPart.CFrame = OldPos
 end
 
 function KillAll()
@@ -164,7 +188,7 @@ function KillAll()
 		        if v ~= LocalPlayer then
 			        repeat task.wait()
 				        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.Character.HumanoidRootPart.CFrame
-				        AbilityNoCooldown("Smash")
+				        AbilityNoCooldown("Gubby Dash")
 			        until v.Character:FindFirstChildWhichIsA("ForceField") or v.Character.Humanoid.Health == 0
 		        end
 	        end
@@ -212,7 +236,6 @@ spawn(function()
 	 end
 	 if States.GubbyDash then
 	      AbilityNoCooldown("Gubby Dash")
-	      wait(1)
 	 end
 	 if States.Smash then
 	      AbilityNoCooldown("Smash")
@@ -220,9 +243,9 @@ spawn(function()
 	 if States.QuickKick then
 	      AbilityNoCooldown("Quick Kick")
 	 end
-	 local humanoid = LocalPlayer.Character.Humanoid
-	 if humanoid.WalkSpeed <= 19 then
-	      humanoid.WalkSpeed = 20
+	 if States.speed then
+	      local humanoid = LocalPlayer.Character.Humanoid
+	      humanoid.WalkSpeed = DefaultSpeed
 	 end
     end
     while task.wait() do
@@ -252,20 +275,37 @@ spawn(function()
 		              if v ~= LocalPlayer then
 			              repeat task.wait()
 				              game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.Character.HumanoidRootPart.CFrame
-				              AbilityNoCooldown("Smash")
+				              AbilityNoCooldown("Gubby Dash")
 			              until v.Character:FindFirstChildWhichIsA("ForceField") or v.Character.Humanoid.Health == 0
 		              end
 	              end
 	      end
+	 end
+	 if States.Harden then
+	      AbilityNoCooldown("Harden")
+	 end
+	 if States.NinjaDash then
+	      AbilityNoCooldown("Ninja Dash")
 	 end
     end
     while task.wait() do
 	pcall(task1)
     end
 end)
+spawn(function()
+    task2 = function()
+	 if States.Rage then
+	      AbilityNoCooldown("Rage")
+	 end
+    end
+    while task.wait() do
+	pcall(task2)
+    end
+end)
 local Window = Library:NewWindow("NoobHubV1 Hub")
 local Main = Window:NewSection("Main")
 local Kills = Window:NewSection("Kills")
+local Settings = Window:NewSection("Settings")
 Main:CreateToggle("Kill Aura", function(v)
 	States.KillAura = v
 end)
@@ -275,7 +315,7 @@ end)
 Main:CreateToggle("Auto Swing", function(v)
 	States.AutoSwing = v
 end)
-Main:CreateDropdown("Select Ability", {"Throw Subspace Tripmine","Gubby Dash","Smash","Quick Kick","Blast","Strike","Play","Guard","Power Up"}, 1, function(v)
+Main:CreateDropdown("Select Ability", {"Throw Subspace Tripmine","Gubby Dash","Smash","Quick Kick","Blast","Strike","Play","Guard","Power Up","Harden","Ninja Dash","Rage"}, 1, function(v)
 	Ability = v
 end)
 Main:CreateToggle("Spam Ability", function(v)
@@ -297,6 +337,12 @@ Main:CreateToggle("Spam Ability", function(v)
 		States.Guard = v
 	elseif Ability == "Power Up" then
 		States.PowerUp = v
+	elseif Ability == "Harden" then
+		States.Harden = v
+	elseif Ability == "Ninja Dash" then
+		States.NinjaDash = v
+	elseif Ability == "Rage" then
+		States.Rage = v
 	end
 end)
 Kills:CreateButton("Kill All", function()
@@ -304,4 +350,18 @@ Kills:CreateButton("Kill All", function()
 end)
 Kills:CreateToggle("Loop Kill All", function(v)
 	States.Loopkillall = v
+end)
+Settings:CreateTextbox("Speed", function(s)
+	WalkSpeed = s
+end)
+Settings:CreateToggle("Speed Hack", function(value)
+	if value == true then
+	        DefaultSpeed = WalkSpeed
+		States.speed = true
+	elseif not value then
+		DefaultSpeed = 20
+		States.speed = false
+		local humanoid = LocalPlayer.Character.Humanoid
+	        humanoid.WalkSpeed = DefaultSpeed
+	end
 end)
