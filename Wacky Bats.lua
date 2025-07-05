@@ -201,6 +201,12 @@ function AbilityNoCooldown(Ability)
 			BuyItem("Poison Bat")
 		end
 		game:GetService("ReplicatedStorage"):WaitForChild("BatRemotes"):WaitForChild("Poison Bat"):WaitForChild("Poison Cloud"):FireServer(tool)
+	elseif Ability == "Snack" then
+		local tool = FindTool("batburger")
+		if not tool then
+			BuyItem("Batburger")
+		end
+		game:GetService("ReplicatedStorage"):WaitForChild("BatRemotes"):WaitForChild("Batburger"):WaitForChild("Snack"):FireServer(tool)
 	end
 end
 
@@ -336,6 +342,9 @@ spawn(function()
 	 if States.PoisonCloud then
 	      AbilityNoCooldown("Poison Cloud")
 	 end
+	 if States.Snack then
+	      AbilityNoCooldown("Snack")
+	 end
     end
     while task.wait() do
 	pcall(task2)
@@ -354,7 +363,7 @@ end)
 Main:CreateToggle("Auto Swing", function(v)
 	States.AutoSwing = v
 end)
-Main:CreateDropdown("Select Ability", {"Tripmine Throw","Gubby Dash","Smash","Quick Kick","Blast","Strike","Play","Guard","Power Up","Harden","Ninja Dash","Rage","Lunge","Magnetize","Poison Cloud"}, 1, function(v)
+Main:CreateDropdown("Select Ability", {"Tripmine Throw","Gubby Dash","Smash","Quick Kick","Blast","Strike","Play","Guard","Power Up","Harden","Ninja Dash","Rage","Lunge","Magnetize","Poison Cloud","Snack"}, 1, function(v)
 	Ability = v
 end)
 Main:CreateToggle("Spam Ability", function(v)
@@ -388,6 +397,8 @@ Main:CreateToggle("Spam Ability", function(v)
 		States.Magnetize = v
 	elseif Ability == "Poison Cloud" then
 		States.PoisonCloud = v
+	elseif Ability == "Snack" then
+		States.Snack = v
 	end
 end)
 Kills:CreateButton("Kill All", function()
