@@ -31,6 +31,21 @@ local function orbit(user)
     end
 end
 
+local function TweenTP(cf)
+	local root = LocalPlayer.Character.HumanoidRootPart
+	local cf0 = (cf-cf.p) + root.Position + Vector3.new(0,4,0)
+	local diff = cf.p - root.Position
+	local oldg = workspace.Gravity
+	workspace.Gravity = 0
+	for i=0,diff.Magnitude,4 do
+		root.CFrame = cf0 + diff.Unit * i
+		root.Velocity,root.RotVelocity=Vector3.new(),Vector3.new()
+		task.wait()
+	end
+	root.CFrame = cf
+	workspace.Gravity = oldg
+end
+
 function FindTool(Item)
   if Item == "magnetizer" then
     local tool = LocalPlayer.Character:FindFirstChild("Magnetizer") or LocalPlayer.Backpack:FindFirstChild("Magnetizer")
@@ -224,20 +239,25 @@ function AbilityNoCooldown(Ability)
 	end
 end
 
-function Kill(plr)
-  repeat task.wait()
-	game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("UpdateMobileShiftlock"):FireServer(false)
-        rootPart.CFrame = plr.Character.HumanoidRootPart.CFrame
-	game:GetService("ReplicatedStorage"):WaitForChild("BatRemotes"):WaitForChild("Basic Bat"):FireServer(FindTool())
-  until plr.Character.Humanoid.Health == 0
-end
-
 function HealPlayer()
 	local tool = FindTool("batburger")
 	if not tool then
 		BuyItem("Batburger")
 	end
 	game:GetService("ReplicatedStorage"):WaitForChild("BatRemotes"):WaitForChild("Batburger"):WaitForChild("Snack"):FireServer(tool)
+end
+
+function Kill(Target)
+  repeat task.wait()
+	targetcframe = Target.Character.HumanoidRootPart.CFrame
+	game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = targetcframe * CFrame.new(0, 0, -3)
+	local CharPos = game.Players.LocalPlayer.Character.PrimaryPart.Position
+	local tpos = Target.Character:FindFirstChild("HumanoidRootPart").Position
+	local TPos = Vector3.new(tpos.X,CharPos.Y,tpos.Z)
+	local NewCFrame = CFrame.new(CharPos,TPos)
+	Players.LocalPlayer.Character:SetPrimaryPartCFrame(NewCFrame)
+	game:GetService("ReplicatedStorage"):WaitForChild("BatRemotes"):WaitForChild("Basic Bat"):FireServer(FindTool())
+  until Target.Character.Humanoid.Health == 0 or Target.Character:FindFirstChildWhichIsA("ForceField")
 end
 
 function KillAll()
