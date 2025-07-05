@@ -37,7 +37,7 @@ local function TweenTP(cf)
 	local diff = cf.p - root.Position
 	local oldg = workspace.Gravity
 	workspace.Gravity = 0
-	for i=0,diff.Magnitude,4 do
+	for i=0,diff.Magnitude,5 do
 		root.CFrame = cf0 + diff.Unit * i
 		root.Velocity,root.RotVelocity=Vector3.new(),Vector3.new()
 		task.wait()
@@ -252,7 +252,7 @@ function Kill(Target)
 	game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("UpdateMobileShiftlock"):FireServer(false)
 	game:GetService("ReplicatedStorage"):WaitForChild("BatRemotes"):WaitForChild("Basic Bat"):FireServer(FindTool())
 	targetcframe = Target.Character.HumanoidRootPart.CFrame
-	TweenTP(targetcframe * CFrame.new(0, 0, -2))
+	TweenTP(targetcframe * CFrame.new(0, 0, -1))
 	local CharPos = game.Players.LocalPlayer.Character.HumanoidRootPart.Position
 	local tpos = Target.Character:FindFirstChild("HumanoidRootPart").Position
 	local TPos = Vector3.new(tpos.X,CharPos.Y,tpos.Z)
@@ -292,7 +292,7 @@ spawn(function()
 	           if Targets.Character and not Targets.Character:FindFirstChildWhichIsA("ForceField") and Targets.Character:FindFirstChildOfClass("Humanoid").Health ~= 0 then
 		          local TPart = Targets.Character:FindFirstChildWhichIsA("BasePart")
 		          if VPart and TPart and Targets ~= LocalPlayer then
-			          if (TPart.Position-VPart.Position).Magnitude <= 10 then
+			          if (TPart.Position-VPart.Position).Magnitude <= 35 then
 				         Kill(Targets)
 			          end
 		          end
