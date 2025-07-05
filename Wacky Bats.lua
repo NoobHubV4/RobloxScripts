@@ -5,16 +5,30 @@ local States = {}
 local Ability = "Tripmine Throw"
 local WalkSpeed = 20
 local DefaultSpeed = WalkSpeed
+local character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+local humanoid = character:WaitForChild("Humanoid")
+local rootPart = character:WaitForChild("HumanoidRootPart")
 
-function Teleport(cf)
-	local root = LocalPlayer.Character.HumanoidRootPart
-	local cf0 = (cf-cf.p) + root.Position + Vector3.new(0,4,0)
-	local diff = cf.p - root.Position
-	for i=0,diff.Magnitude,3 do task.wait()
-		root.CFrame = cf0 + diff.Unit * i
-		root.Velocity,root.RotVelocity=Vector3.new(),Vector3.new()
-	end
-	root.CFrame = cf
+local center = rootPart.Position
+local distance = 3
+local angle = 50
+
+local function orbit(user)
+    if not user then
+      return
+    else
+        coroutine.wrap(function()
+                local angular = tick() * angle
+                local center = user.Character.HumanoidRootPart.Position
+
+                local x = center.X + distance * math.cos(angular)
+                local y = center.Y
+                local z = center.Z + distance * math.sin(angular)
+
+                rootPart.CFrame = CFrame.new(Vector3.new(x, y, z))
+                rootPart.CFrame = CFrame.new(rootPart.Position, center)
+        end)()
+    end
 end
 
 function FindTool(Item)
@@ -212,8 +226,8 @@ end
 
 function Kill(plr)
   repeat task.wait()
-        LocalPlayer.Character.HumanoidRootPart.CFrame = plr.Character.HumanoidRootPart.CFrame
-	AbilityNoCooldown("Gubby Dash")
+        orbit(plr)
+	game:GetService("ReplicatedStorage"):WaitForChild("BatRemotes"):WaitForChild("Basic Bat"):FireServer(FindTool())
   until plr.Character.Humanoid.Health == 0 or plr.Character:FindFirstChildWhichIsA("ForceField")
 end
 
