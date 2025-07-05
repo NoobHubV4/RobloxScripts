@@ -226,9 +226,10 @@ end
 
 function Kill(plr)
   repeat task.wait()
+	game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("UpdateMobileShiftlock"):FireServer(false)
         rootPart.CFrame = plr.Character.HumanoidRootPart.CFrame
 	game:GetService("ReplicatedStorage"):WaitForChild("BatRemotes"):WaitForChild("Basic Bat"):FireServer(FindTool())
-  until plr.Character.Humanoid.Health == 0 or plr.Character:FindFirstChildWhichIsA("ForceField")
+  until plr.Character.Humanoid.Health == 0
 end
 
 function HealPlayer()
