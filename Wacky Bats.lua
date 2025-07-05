@@ -2,7 +2,7 @@ local Library = loadstring(Game:HttpGet('https://raw.githubusercontent.com/NoobH
 local Players = game.Players
 local LocalPlayer = Players.LocalPlayer
 local States = {}
-local Ability = "Throw Subspace Tripmine"
+local Ability = "Tripmine Throw"
 local WalkSpeed = 20
 local DefaultSpeed = WalkSpeed
 
@@ -93,6 +93,11 @@ function FindTool(Item)
     if tool then
       return tool
     end
+  elseif Item == "poison bat" then
+    local tool = LocalPlayer.Character:FindFirstChild("Poison Bat") or LocalPlayer.Backpack:FindFirstChild("Poison Bat")
+    if tool then
+      return tool
+    end
   elseif not Item then
     local tool = LocalPlayer.Character:FindFirstChildOfClass("Tool") or LocalPlayer.Backpack:FindFirstChildOfClass("Tool")
     if tool then
@@ -106,7 +111,7 @@ function BuyItem(Item)
 end
 
 function AbilityNoCooldown(Ability)
-	if Ability == "Throw Subspace tripmine" then
+	if Ability == "Tripmine Throw" then
 		local tool = FindTool("subspace tripbat")
 		if not tool then
 			BuyItem("Subspace Tripbat")
@@ -190,6 +195,12 @@ function AbilityNoCooldown(Ability)
 			BuyItem("Magnetizer")
 		end
 		game:GetService("ReplicatedStorage"):WaitForChild("BatRemotes"):WaitForChild("Magnetizer"):WaitForChild("Magnetize"):FireServer(tool)
+	elseif Ability == "Poison Cloud" then
+		local tool = FindTool("poison bat")
+		if not tool then
+			BuyItem("Poison Bat")
+		end
+		game:GetService("ReplicatedStorage"):WaitForChild("BatRemotes"):WaitForChild("Poison Bat"):WaitForChild("Poison Cloud"):FireServer(tool)
 	end
 end
 
@@ -253,8 +264,8 @@ spawn(function()
 	 if States.AutoSwing then
               game:GetService("ReplicatedStorage"):WaitForChild("BatRemotes"):WaitForChild("Basic Bat"):FireServer(FindTool())
 	 end
-	 if States.ThrowTripmine then
-	      AbilityNoCooldown("Throw Subspace tripmine")
+	 if States.TripmineThrow then
+	      AbilityNoCooldown("Tripmine Throw")
 	 end
 	 if States.GubbyDash then
 	      AbilityNoCooldown("Gubby Dash")
@@ -322,6 +333,9 @@ spawn(function()
 	 if States.Magnetize then
 	      AbilityNoCooldown("Magnetize")
 	 end
+	 if States.PoisonCloud then
+	      AbilityNoCooldown("Poison Cloud")
+	 end
     end
     while task.wait() do
 	pcall(task2)
@@ -340,12 +354,12 @@ end)
 Main:CreateToggle("Auto Swing", function(v)
 	States.AutoSwing = v
 end)
-Main:CreateDropdown("Select Ability", {"Throw Subspace Tripmine","Gubby Dash","Smash","Quick Kick","Blast","Strike","Play","Guard","Power Up","Harden","Ninja Dash","Rage","Lunge","Magnetize"}, 1, function(v)
+Main:CreateDropdown("Select Ability", {"Tripmine Throw","Gubby Dash","Smash","Quick Kick","Blast","Strike","Play","Guard","Power Up","Harden","Ninja Dash","Rage","Lunge","Magnetize","Poison Cloud"}, 1, function(v)
 	Ability = v
 end)
 Main:CreateToggle("Spam Ability", function(v)
-	if Ability == "Throw Subspace Tripmine" then
-		States.ThrowTripmine = v
+	if Ability == "Tripmine Throw" then
+		States.TripmineThrow = v
 	elseif Ability == "Gubby Dash" then
 		States.GubbyDash = v
 	elseif Ability == "Smash" then
@@ -372,6 +386,8 @@ Main:CreateToggle("Spam Ability", function(v)
 		States.Lunge = v
 	elseif Ability == "Magnetize" then
 		States.Magnetize = v
+	elseif Ability == "Poison Cloud" then
+		States.PoisonCloud = v
 	end
 end)
 Kills:CreateButton("Kill All", function()
