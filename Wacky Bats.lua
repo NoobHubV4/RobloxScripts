@@ -226,7 +226,7 @@ end
 
 function Kill(plr)
   repeat task.wait()
-        orbit(plr)
+        rootPart.CFrame = plr.Character.HumanoidRootPart.CFrame
 	game:GetService("ReplicatedStorage"):WaitForChild("BatRemotes"):WaitForChild("Basic Bat"):FireServer(FindTool())
   until plr.Character.Humanoid.Health == 0 or plr.Character:FindFirstChildWhichIsA("ForceField")
 end
@@ -253,7 +253,7 @@ function Notif(Title, Text, Duration)
 	local Duration = Duration
 	if not Duration then
 		Duration = 3
-	end
+ 	end
 	game:GetService("StarterGui"):SetCore("SendNotification", {
 		Title = Title;
 		Text = Text;
