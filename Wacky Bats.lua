@@ -37,7 +37,7 @@ local function TweenTP(cf)
 	local diff = cf.p - root.Position
 	local oldg = workspace.Gravity
 	workspace.Gravity = 0
-	for i=0,diff.Magnitude,4 do
+	for i=0,diff.Magnitude,5 do
 		root.CFrame = cf0 + diff.Unit * i
 		root.Velocity,root.RotVelocity=Vector3.new(),Vector3.new()
 		task.wait()
@@ -250,13 +250,13 @@ end
 function Kill(Target)
   repeat task.wait()
 	targetcframe = Target.Character.HumanoidRootPart.CFrame
-	game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = targetcframe * CFrame.new(0, 0, -3)
-	local CharPos = game.Players.LocalPlayer.Character.PrimaryPart.Position
+	TweenTP(targetcframe * CFrame.new(0, 0, -3))
+	local CharPos = game.Players.LocalPlayer.Character.HumanoidRootPart.Position
 	local tpos = Target.Character:FindFirstChild("HumanoidRootPart").Position
 	local TPos = Vector3.new(tpos.X,CharPos.Y,tpos.Z)
 	local NewCFrame = CFrame.new(CharPos,TPos)
-	Players.LocalPlayer.Character:SetPrimaryPartCFrame(NewCFrame)
-	game:GetService("ReplicatedStorage"):WaitForChild("BatRemotes"):WaitForChild("Basic Bat"):FireServer(FindTool())
+	Players.LocalPlayer.Character.HumanoidRootPart.CFrame = NewCFrame
+	AbilityNoCooldown("Blast")
   until Target.Character.Humanoid.Health == 0 or Target.Character:FindFirstChildWhichIsA("ForceField")
 end
 
@@ -299,7 +299,7 @@ spawn(function()
               end
 	 end
 	 local humanoid = LocalPlayer.Character.Humanoid
-         if humanoid.Health <= 50 and States.AutoHeal then
+         if humanoid.Health <= 99 and States.AutoHeal then
 	      HealPlayer()
 	 end
 	 if States.AutoSwing then
