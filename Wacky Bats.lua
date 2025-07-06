@@ -386,7 +386,7 @@ spawn(function()
 	pcall(task2)
     end
 end)
-local Window = Library:NewWindow("NoobHubV1 Hub")
+local Window = Library:NewWindow("Wacky Bats")
 local Main = Window:NewSection("Main")
 local Kills = Window:NewSection("Kills")
 local Settings = Window:NewSection("Settings")
