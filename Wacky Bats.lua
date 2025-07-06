@@ -49,6 +49,10 @@ local function TweenTP(cf)
 	workspace.Gravity = oldg
 end
 
+function CheckFriends(player)
+	return not LocalPlayer:IsFriendsWith(player.UserId)
+end
+
 function FindTool(Item)
   if Item then
     local tool = LocalPlayer.Character:FindFirstChild(Item) or LocalPlayer.Backpack:FindFirstChild(Item)
@@ -207,7 +211,7 @@ end
 function KillAll()
 	for i,v in pairs(game.Players:GetPlayers()) do
 		if v.Character and not v.Character:FindFirstChildWhichIsA("ForceField") and v.Character:FindFirstChildOfClass("Humanoid").Health ~= 0 then
-		        if v ~= LocalPlayer then
+		        if v ~= LocalPlayer and CheckFriends(v) then
 			        Kill(v)
 		        end
 	        end
@@ -234,7 +238,7 @@ spawn(function()
              for _, Targets in pairs(Players:GetPlayers()) do
 	           if Targets.Character and not Targets.Character:FindFirstChildWhichIsA("ForceField") and Targets.Character:FindFirstChildOfClass("Humanoid").Health ~= 0 then
 		          local TPart = Targets.Character:FindFirstChildWhichIsA("BasePart")
-		          if VPart and TPart and Targets ~= LocalPlayer then
+		          if VPart and TPart and Targets ~= LocalPlayer and CheckFriends(Targets) then
 			          if (TPart.Position-VPart.Position).Magnitude <= 35 then
 				         Kill(Targets)
 			          end
@@ -290,7 +294,7 @@ spawn(function()
 	 if States.Loopkillall then
 	      for i,v in pairs(game.Players:GetPlayers()) do
 		      if v.Character and not v.Character:FindFirstChildWhichIsA("ForceField") and v.Character:FindFirstChildOfClass("Humanoid").Health ~= 0 then
-		              if v ~= LocalPlayer then
+		              if v ~= LocalPlayer and CheckFriends(v) then
 			              Kill(v)
 		              end
 	              end
