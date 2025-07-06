@@ -5,6 +5,9 @@ local States = {}
 local Ability = "Tripmine Throw"
 local WalkSpeed = 20
 local DefaultSpeed = WalkSpeed
+local Rstorage = game.ReplicatedStorage
+local BatRemotes = Rstorage.BatRemotes
+local Remotes = Rstorage.Remotes
 local character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
 local humanoid = character:WaitForChild("Humanoid")
 local rootPart = character:WaitForChild("HumanoidRootPart")
@@ -47,83 +50,8 @@ local function TweenTP(cf)
 end
 
 function FindTool(Item)
-  if Item == "magnetizer" then
-    local tool = LocalPlayer.Character:FindFirstChild("Magnetizer") or LocalPlayer.Backpack:FindFirstChild("Magnetizer")
-    if tool then
-      return tool
-    end
-  elseif Item == "batburger" then
-    local tool = LocalPlayer.Character:FindFirstChild("Batburger") or LocalPlayer.Backpack:FindFirstChild("Batburger")
-    if tool then
-      return tool
-    end
-  elseif Item == "subspace tripbat" then
-    local tool = LocalPlayer.Character:FindFirstChild("Subspace Tripbat") or LocalPlayer.Backpack:FindFirstChild("Subspace Tripbat")
-    if tool then
-      return tool
-    end
-  elseif Item == "gubby bat" then
-    local tool = LocalPlayer.Character:FindFirstChild("Gubby Bat") or LocalPlayer.Backpack:FindFirstChild("Gubby Bat")
-    if tool then
-      return tool
-    end
-  elseif Item == "grug bat" then
-    local tool = LocalPlayer.Character:FindFirstChild("Grug Bat") or LocalPlayer.Backpack:FindFirstChild("Grug Bat")
-    if tool then
-      return tool
-    end
-  elseif Item == "batless" then
-    local tool = LocalPlayer.Character:FindFirstChild("Batless") or LocalPlayer.Backpack:FindFirstChild("Batless")
-    if tool then
-      return tool
-    end
-  elseif Item == "shotbat" then
-    local tool = LocalPlayer.Character:FindFirstChild("Shotbat") or LocalPlayer.Backpack:FindFirstChild("Shotbat")
-    if tool then
-      return tool
-    end
-  elseif Item == "knockout" then
-    local tool = LocalPlayer.Character:FindFirstChild("Knockout") or LocalPlayer.Backpack:FindFirstChild("Knockout")
-    if tool then
-      return tool
-    end
-  elseif Item == "guardian" then
-    local tool = LocalPlayer.Character:FindFirstChild("Guardian") or LocalPlayer.Backpack:FindFirstChild("Guardian")
-    if tool then
-      return tool
-    end
-  elseif Item == "guibat" then
-    local tool = LocalPlayer.Character:FindFirstChild("Guibat") or LocalPlayer.Backpack:FindFirstChild("Guibat")
-    if tool then
-      return tool
-    end
-  elseif Item == "power bat" then
-    local tool = LocalPlayer.Character:FindFirstChild("Power Bat") or LocalPlayer.Backpack:FindFirstChild("Power Bat")
-    if tool then
-      return tool
-    end
-  elseif Item == "diamond bat" then
-    local tool = LocalPlayer.Character:FindFirstChild("Diamond Bat") or LocalPlayer.Backpack:FindFirstChild("Diamond Bat")
-    if tool then
-      return tool
-    end
-  elseif Item == "ninja bat" then
-    local tool = LocalPlayer.Character:FindFirstChild("Ninja Bat") or LocalPlayer.Backpack:FindFirstChild("Ninja Bat")
-    if tool then
-      return tool
-    end
-  elseif Item == "berserker" then
-    local tool = LocalPlayer.Character:FindFirstChild("Berserker") or LocalPlayer.Backpack:FindFirstChild("Berserker")
-    if tool then
-      return tool
-    end
-  elseif Item == "trident bat" then
-    local tool = LocalPlayer.Character:FindFirstChild("Trident Bat") or LocalPlayer.Backpack:FindFirstChild("Trident Bat")
-    if tool then
-      return tool
-    end
-  elseif Item == "poison bat" then
-    local tool = LocalPlayer.Character:FindFirstChild("Poison Bat") or LocalPlayer.Backpack:FindFirstChild("Poison Bat")
+  if Item then
+    local tool = LocalPlayer.Character:FindFirstChild(Item) or LocalPlayer.Backpack:FindFirstChild(Item)
     if tool then
       return tool
     end
@@ -136,121 +64,118 @@ function FindTool(Item)
 end
 
 function BuyItem(Item)
-        game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("UpdateLastBat"):FireServer(Item)
+        Remotes.UpdateLastBat:FireServer(Item)
+end
+
+function BatRemote(arg1, arg2)
+	if arg2 then
+		return BatRemotes:FindFirstChild(arg1):FindFirstChild(arg2)
+	elseif not arg2 then
+		return BatRemotes:FindFirstChild(arg1)
+	end
 end
 
 function AbilityNoCooldown(Ability)
 	if Ability == "Tripmine Throw" then
-		local tool = FindTool("subspace tripbat")
+		local tool = FindTool("Subspace Tripbat")
 		if not tool then
 			BuyItem("Subspace Tripbat")
 		end
-		game:GetService("ReplicatedStorage"):WaitForChild("BatRemotes"):WaitForChild("Subspace Tripbat"):WaitForChild("Tripmine Throw"):FireServer(tool)
+		BatRemote("Subspace Tripbat", "Tripmine Throw"):FireServer(tool)
 	elseif Ability == "Gubby Dash" then
-		local tool = FindTool("gubby bat")
+		local tool = FindTool("Gubby Bat")
 		if not tool then
 			BuyItem("Gubby Bat")
 		end
-                game:GetService("ReplicatedStorage"):WaitForChild("BatRemotes"):WaitForChild("Gubby Bat"):WaitForChild("Gubby Dash"):FireServer(tool)
+                BatRemote("Gubby Bat", "Gubby Dash"):FireServer(tool)
 	elseif Ability == "Smash" then
-		local tool = FindTool("grug bat")
+		local tool = FindTool("Grug Bat")
 		if not tool then
 			BuyItem("Grug Bat")
 		end
-                game:GetService("ReplicatedStorage"):WaitForChild("BatRemotes"):WaitForChild("Grug Bat"):WaitForChild("Smash"):FireServer(tool)
+                BatRemote("Grug Bat", "Smash"):FireServer(tool)
 	elseif Ability == "Quick Kick" then
-		local tool = FindTool("batless")
+		local tool = FindTool("Batless")
 		if not tool then
 			BuyItem("Batless")
 		end
-                game:GetService("ReplicatedStorage"):WaitForChild("BatRemotes"):WaitForChild("Batless"):WaitForChild("Quick Kick"):FireServer(tool)
+                BatRemote("Batless", "Quick Kick"):FireServer(tool)
 	elseif Ability == "Blast" then
-		local tool = FindTool("shotbat")
+		local tool = FindTool("Shotbat")
 		if not tool then
 			BuyItem("Shotbat")
 		end
-                game:GetService("ReplicatedStorage"):WaitForChild("BatRemotes"):WaitForChild("Shotbat"):WaitForChild("Blast"):FireServer(tool)
+                BatRemote("Shobat", "Blast"):FireServer(tool)
 	elseif Ability == "Strike" then
-		local tool = FindTool("knockout")
+		local tool = FindTool("Knockout")
 		if not tool then
 			BuyItem("Knockout")
 		end
-                game:GetService("ReplicatedStorage"):WaitForChild("BatRemotes"):WaitForChild("Knockout"):WaitForChild("Strike"):FireServer(tool)
+		BatRemote("Knockout", "Strike"):FireServer(tool)
 	elseif Ability == "Play" then
-		local tool = FindTool("guibat")
+		local tool = FindTool("Guibat")
 		if not tool then
 			BuyItem("Guibat")
 		end
-                game:GetService("ReplicatedStorage"):WaitForChild("BatRemotes"):WaitForChild("Guibat"):WaitForChild("Play"):FireServer(tool)
+                BatRemote("Guibat", "Play"):FireServer(tool)
 	elseif Ability == "Guard" then
-		local tool = FindTool("guardian")
+		local tool = FindTool("Guardian")
 		if not tool then
 			BuyItem("Guardian")
 		end
-                game:GetService("ReplicatedStorage"):WaitForChild("BatRemotes"):WaitForChild("Guardian"):WaitForChild("Guard"):FireServer(tool)
+                BatRemote("Guardian", "Guard"):FireServer(tool)
 	elseif Ability == "Power Up" then
-		local tool = FindTool("power bat")
+		local tool = FindTool("Power Bat")
 		if not tool then
 			BuyItem("Power Bat")
 		end
-		game:GetService("ReplicatedStorage"):WaitForChild("BatRemotes"):WaitForChild("Power Bat"):WaitForChild("Power Up"):FireServer(tool)
+		BatRemote("Power Bat", "Power Up"):FireServer(tool)
 	elseif Ability == "Harden" then
-		local tool = FindTool("diamond bat")
+		local tool = FindTool("Diamond Bat")
 		if not tool then
 			BuyItem("Diamond Bat")
 		end
-                game:GetService("ReplicatedStorage"):WaitForChild("BatRemotes"):WaitForChild("Diamond Bat"):WaitForChild("Harden"):FireServer(tool)
+                BatRemote("Diamond Bat", "Harden"):FireServer(tool)
 	elseif Ability == "Ninja Dash" then
-		local tool = FindTool("ninja bat")
+		local tool = FindTool("Ninja Bat")
 		if not tool then
 			BuyItem("Ninja Bat")
 		end
-                game:GetService("ReplicatedStorage"):WaitForChild("BatRemotes"):WaitForChild("Ninja Bat"):WaitForChild("Ninja Dash"):FireServer(tool)
+                BatRemote("Ninja Bat", "Ninja Dash"):FireServer(tool)
 	elseif Ability == "Rage" then
-		local tool = FindTool("berserker")
+		local tool = FindTool("Berserker")
 		if not tool then
 			BuyItem("Berserker")
 		end
-                game:GetService("ReplicatedStorage"):WaitForChild("BatRemotes"):WaitForChild("Berserker"):WaitForChild("Rage"):FireServer(tool)
+                BatRemote("Berserker", "Rage"):FireServer(tool)
 	elseif Ability == "Lunge" then
-		local tool = FindTool("trident bat")
+		local tool = FindTool("Trident Bat")
 		if not tool then
 			BuyItem("Trident Bat")
 		end
-                game:GetService("ReplicatedStorage"):WaitForChild("BatRemotes"):WaitForChild("Trident Bat"):WaitForChild("Lunge"):FireServer(tool)
+                BatRemote("Trident Bat", "Lunge"):FireServer(tool)
 	elseif Ability == "Magnetize" then
-		local tool = FindTool("magnetizer")
+		local tool = FindTool("Magnetizer")
 		if not tool then
 			BuyItem("Magnetizer")
 		end
-		game:GetService("ReplicatedStorage"):WaitForChild("BatRemotes"):WaitForChild("Magnetizer"):WaitForChild("Magnetize"):FireServer(tool)
+		BatRemote("Magnetizer", "Magnetize"):FireServer(tool)
 	elseif Ability == "Poison Cloud" then
-		local tool = FindTool("poison bat")
+		local tool = FindTool("Poison Bat")
 		if not tool then
 			BuyItem("Poison Bat")
 		end
-		game:GetService("ReplicatedStorage"):WaitForChild("BatRemotes"):WaitForChild("Poison Bat"):WaitForChild("Poison Cloud"):FireServer(tool)
+		BatRemote("Poison Bat", "Poison Cloud"):FireServer(tool)
 	elseif Ability == "Snack" then
-		local tool = FindTool("batburger")
+		local tool = FindTool("Batburger")
 		if not tool then
 			BuyItem("Batburger")
 		end
-		game:GetService("ReplicatedStorage"):WaitForChild("BatRemotes"):WaitForChild("Batburger"):WaitForChild("Snack"):FireServer(tool)
+		BatRemote("Batburger", "Snack"):FireServer(tool)
 	end
 end
 
-function HealPlayer()
-	local tool = FindTool("batburger")
-	if not tool then
-		BuyItem("Batburger")
-	end
-	game:GetService("ReplicatedStorage"):WaitForChild("BatRemotes"):WaitForChild("Batburger"):WaitForChild("Snack"):FireServer(tool)
-end
-
-function Kill(Target)
-  repeat task.wait()
-	game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("UpdateMobileShiftlock"):FireServer(false)
-	game:GetService("ReplicatedStorage"):WaitForChild("BatRemotes"):WaitForChild("Basic Bat"):FireServer(FindTool())
+function TeleportToKill(Target)
 	targetcframe = Target.Character.HumanoidRootPart.CFrame
 	TweenTP(targetcframe * CFrame.new(0, 0, -1))
 	local CharPos = game.Players.LocalPlayer.Character.HumanoidRootPart.Position
@@ -258,7 +183,25 @@ function Kill(Target)
 	local TPos = Vector3.new(tpos.X,CharPos.Y,tpos.Z)
 	local NewCFrame = CFrame.new(CharPos,TPos)
 	Players.LocalPlayer.Character.HumanoidRootPart.CFrame = NewCFrame
-  until Target.Character.Humanoid.Health == 0 or Target.Character:FindFirstChildWhichIsA("ForceField")
+end
+
+function HealPlayer()
+	local tool = FindTool("Batburger")
+	if not tool then
+		BuyItem("Batburger")
+	end
+	BatRemote("Batburger", "Snack"):FireServer(tool)
+end
+
+function Kill(plr)
+  repeat task.wait()
+	Remotes.UpdateMobileShiftlock:FireServer(false)
+	if not FindTool("Long Bat") then
+		BuyItem("Long Bat")
+	end
+	BatRemote("Long Bat"):FireServer(FindTool("Long Bat"))
+	TeleportToKill(plr)
+  until plr.Character.Humanoid.Health == 0 or plr.Character:FindFirstChildWhichIsA("ForceField")
 end
 
 function KillAll()
@@ -304,7 +247,7 @@ spawn(function()
 	      HealPlayer()
 	 end
 	 if States.AutoSwing then
-              game:GetService("ReplicatedStorage"):WaitForChild("BatRemotes"):WaitForChild("Basic Bat"):FireServer(FindTool())
+              BatRemote("Long Bat"):FireServer(FindTool())
 	 end
 	 if States.TripmineThrow then
 	      AbilityNoCooldown("Tripmine Throw")
