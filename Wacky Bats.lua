@@ -355,6 +355,7 @@ local Window = Library:NewWindow("Wacky Bats")
 local Main = Window:NewSection("Main")
 local Kills = Window:NewSection("Kills")
 local Settings = Window:NewSection("Settings")
+local Credit = Window:NewSection("Credit")
 Main:CreateToggle("Kill Aura", function(v)
 	States.KillAura = v
 end)
@@ -426,10 +427,9 @@ Settings:CreateToggle("Speed Hack", function(value)
 	        humanoid.WalkSpeed = DefaultSpeed
 	end
 end)
-game:GetService("StarterGui"):SetCore("SendNotification", {
-	Title = "Script Loaded!";
-	Text = "Follow account me";
-	Icon = "";
-	Duration = 7.5;
-})
-setclipboard("dksjahjdlfjdjsjwk17")
+Credit:CreateButton("Credit by @dksjahjdlfjdjsjwk17", function()
+--
+end)
+Credit:CreateButton("Script by NoobHubV4", function()
+--
+end)
