@@ -109,7 +109,7 @@ function AbilityNoCooldown(Ability)
 		if not tool then
 			BuyItem("Shotbat")
 		end
-                BatRemote("Shobat", "Blast"):FireServer(tool)
+                BatRemote("Shotbat", "Blast"):FireServer(tool)
 	elseif Ability == "Strike" then
 		local tool = FindTool("Knockout")
 		if not tool then
@@ -176,6 +176,18 @@ function AbilityNoCooldown(Ability)
 			BuyItem("Batburger")
 		end
 		BatRemote("Batburger", "Snack"):FireServer(tool)
+	elseif Ability == "Nimbus Flight" then
+		local tool = FindTool("Cloud Bat")
+		if not tool then
+			BuyItem("Cloud Bat")
+		end
+		BatRemote("Cloud Bat", "Nimbus Flight"):FireServer(tool)
+	elseif Ability == "Invisibility" then
+		local tool = FindTool("Ghost Bat")
+		if not tool then
+			BuyItem("Ghost Bat")
+		end
+		BatRemote("Ghost Bat", "Invisibility"):FireServer(tool)
 	end
 end
 
@@ -328,6 +340,12 @@ spawn(function()
 	 if States.Snack then
 	      AbilityNoCooldown("Snack")
 	 end
+	 if States.NimbusFlight then
+	      AbilityNoCooldown("Nimbus Flight")
+	 end
+	 if States.Invisibility then
+	      AbilityNoCooldown("Invisibility")
+	 end
     end
     while task.wait() do
 	pcall(task2)
@@ -346,7 +364,7 @@ end)
 Main:CreateToggle("Auto Swing", function(v)
 	States.AutoSwing = v
 end)
-Main:CreateDropdown("Select Ability", {"Tripmine Throw","Gubby Dash","Smash","Quick Kick","Blast","Strike","Play","Guard","Power Up","Harden","Ninja Dash","Rage","Lunge","Magnetize","Poison Cloud","Snack"}, 1, function(v)
+Main:CreateDropdown("Select Ability", {"Tripmine Throw","Gubby Dash","Smash","Quick Kick","Blast","Strike","Play","Guard","Power Up","Harden","Ninja Dash","Rage","Lunge","Magnetize","Poison Cloud","Snack","Nimbus Flight","Invisibility"}, 1, function(v)
 	Ability = v
 end)
 Main:CreateToggle("Spam Ability", function(v)
@@ -382,6 +400,10 @@ Main:CreateToggle("Spam Ability", function(v)
 		States.PoisonCloud = v
 	elseif Ability == "Snack" then
 		States.Snack = v
+	elseif Ability == "Nimbus Flight" then
+		States.NimbusFlight = v
+	elseif Ability == "Invisibility" then
+		States.Invisibility = v
 	end
 end)
 Kills:CreateButton("Kill All", function()
