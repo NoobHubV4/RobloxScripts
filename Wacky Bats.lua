@@ -368,6 +368,9 @@ end)
 Main:CreateDropdown("Select Ability", {"Tripmine Throw","Gubby Dash","Smash","Quick Kick","Blast","Strike","Play","Guard","Power Up","Harden","Ninja Dash","Rage","Lunge","Magnetize","Poison Cloud","Snack","Nimbus Flight","Invisibility"}, 1, function(v)
 	Ability = v
 end)
+Main:CreateButton("Summon Ability", function()
+	AbilityNoCooldown(Ability)
+end)
 Main:CreateToggle("Spam Ability", function(v)
 	if Ability == "Tripmine Throw" then
 		States.TripmineThrow = v
