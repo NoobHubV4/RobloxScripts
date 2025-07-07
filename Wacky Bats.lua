@@ -259,7 +259,7 @@ spawn(function()
               end
 	 end
 	 local humanoid = LocalPlayer.Character.Humanoid
-         if humanoid.Health <= 99 and States.AutoHeal then
+         if humanoid.Health <= 50 and States.AutoHeal then
 	      HealPlayer()
 	 end
 	 if States.AutoSwing then
