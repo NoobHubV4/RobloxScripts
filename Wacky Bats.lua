@@ -8,31 +8,6 @@ local DefaultSpeed = WalkSpeed
 local Rstorage = game.ReplicatedStorage
 local BatRemotes = Rstorage.BatRemotes
 local Remotes = Rstorage.Remotes
-local character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
-local humanoid = character:WaitForChild("Humanoid")
-local rootPart = character:WaitForChild("HumanoidRootPart")
-
-local center = rootPart.Position
-local distance = 3
-local angle = 50
-
-local function orbit(user)
-    if not user then
-      return
-    else
-        coroutine.wrap(function()
-                local angular = tick() * angle
-                local center = user.Character.HumanoidRootPart.Position
-
-                local x = center.X + distance * math.cos(angular)
-                local y = center.Y
-                local z = center.Z + distance * math.sin(angular)
-
-                rootPart.CFrame = CFrame.new(Vector3.new(x, y, z))
-                rootPart.CFrame = CFrame.new(rootPart.Position, center)
-        end)()
-    end
-end
 
 local function TweenTP(cf)
 	local root = LocalPlayer.Character.HumanoidRootPart
