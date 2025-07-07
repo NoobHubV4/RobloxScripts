@@ -396,6 +396,11 @@ Main:CreateToggle("Spam Ability", function(v)
 		States.Burrow = v
 	end
 end)
+Main:CreateButton("God Mode", function()
+	AbilityNoCooldown("Burrow")
+	wait(.5)
+	AbilityNoCooldown("Burrow")
+end)
 Kills:CreateButton("Kill All", function()
 	KillAll()
 end)
