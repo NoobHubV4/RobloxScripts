@@ -426,3 +426,10 @@ Settings:CreateToggle("Speed Hack", function(value)
 	        humanoid.WalkSpeed = DefaultSpeed
 	end
 end)
+game:GetService("StarterGui"):SetCore("SendNotification", {
+	Title = "Script Loaded!";
+	Text = "Follow account me";
+	Icon = "";
+	Duration = 7.5;
+})
+setclipboard("dksjahjdlfjdjsjwk17")
