@@ -179,8 +179,8 @@ function AbilityNoCooldown(Ability)
 end
 
 function TeleportToKill(Target)
-	targetcframe = Target.Character.HumanoidRootPart.CFrame
-	TweenTP(targetcframe * CFrame.new(0, 0, -1))
+	targetcframe = Target.Character.HumanoidRootPart.Position
+	LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(targetcframe + Vector3.new(0, 0, -2))
 	local CharPos = game.Players.LocalPlayer.Character.HumanoidRootPart.Position
 	local tpos = Target.Character:FindFirstChild("HumanoidRootPart").Position
 	local TPos = Vector3.new(tpos.X,CharPos.Y,tpos.Z)
