@@ -2,6 +2,8 @@ local Library = loadstring(Game:HttpGet('https://raw.githubusercontent.com/NoobH
 local Window = Library:NewWindow("Merge Brainrot")
 local Rstorage = game.ReplicatedStorage
 local Main = Window:NewSection("Main")
+local Main2 = Window:NewSection("Main 2")
+local Spam = false
 Main:CreateTextbox("Add Cash", function(value)
      Rstorage.Remotes.AddValueEvent:FireServer("Cash", tonumber(value))
 end)
@@ -34,4 +36,14 @@ Main:CreateButton("10K Cash Rate Level", function()
 end)
 Main:CreateButton("100 Spawn Tier Level", function()
      Rstorage.Remotes.UpgradeEvent:FireServer("SpawnTierLevel", 100, 0)
+end)
+Main2:CreateToggle("Spam Rebirth", function(v)
+     Spam = v
+     Stepped = game.RunService.Stepped:Connect(function()
+          if Spam then
+               game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("RebirthConfirmEvent"):FireServer(0, 0, 1e18)
+          elseif not Spam then
+               Stepped:Disconnect()
+          end
+     end)
 end)
