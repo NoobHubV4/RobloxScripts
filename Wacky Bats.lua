@@ -15,7 +15,7 @@ local function TweenTP(cf)
 	local diff = cf.p - root.Position
 	local oldg = workspace.Gravity
 	workspace.Gravity = 0
-	for i=0,diff.Magnitude,6 do
+	for i=0,diff.Magnitude,math.huge do
 		root.CFrame = cf0 + diff.Unit * i
 		root.Velocity,root.RotVelocity=Vector3.new(),Vector3.new()
 		task.wait()
@@ -179,8 +179,8 @@ function AbilityNoCooldown(Ability)
 end
 
 function TeleportToKill(Target)
-	targetcframe = Target.Character.HumanoidRootPart.Position
-	LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(targetcframe + Vector3.new(0, 0, -2))
+	targetcframe = Target.Character.HumanoidRootPart.CFrame
+	TweenTP(targetcframe * CFrame.new(0, 0, -2))
 	local CharPos = game.Players.LocalPlayer.Character.HumanoidRootPart.Position
 	local tpos = Target.Character:FindFirstChild("HumanoidRootPart").Position
 	local TPos = Vector3.new(tpos.X,CharPos.Y,tpos.Z)
