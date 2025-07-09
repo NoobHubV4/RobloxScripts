@@ -15,7 +15,7 @@ local function TweenTP(cf)
 	local diff = cf.p - root.Position
 	local oldg = workspace.Gravity
 	workspace.Gravity = 0
-	for i=0,diff.Magnitude,5 do
+	for i=0,diff.Magnitude,6 do
 		root.CFrame = cf0 + diff.Unit * i
 		root.Velocity,root.RotVelocity=Vector3.new(),Vector3.new()
 		task.wait()
@@ -169,6 +169,12 @@ function AbilityNoCooldown(Ability)
 			BuyItem("Whack-a-mole")
 		end
 		BatRemote("Whack-a-mole", "Burrow"):FireServer(tool)
+	elseif Ability == "Valor" then
+		local tool = FindTool("The Victor")
+		if not tool then
+			BuyItem("The Victor")
+		end
+		BatRemote("The Victor", "Valor"):FireServer(tool)
 	end
 end
 
@@ -335,6 +341,16 @@ spawn(function()
 	pcall(task2)
     end
 end)
+spawn(function()
+	task3 = function()
+		if States.Valor then
+			AbilityNoCooldown("Valor")
+		end
+	end
+	while task.wait() do
+		pcall(task3)
+	end
+end)
 local Window = Library:NewWindow("Wacky Bats")
 local Main = Window:NewSection("Main")
 local Kills = Window:NewSection("Kills")
@@ -349,7 +365,7 @@ end)
 Main:CreateToggle("Auto Swing", function(v)
 	States.AutoSwing = v
 end)
-Main:CreateDropdown("Select Ability", {"Tripmine Throw","Gubby Dash","Smash","Quick Kick","Blast","Strike","Play","Guard","Power Up","Harden","Ninja Dash","Rage","Lunge","Magnetize","Poison Cloud","Snack","Nimbus Flight","Invisibility","Burrow"}, 1, function(v)
+Main:CreateDropdown("Select Ability", {"Tripmine Throw","Gubby Dash","Smash","Quick Kick","Blast","Strike","Play","Guard","Power Up","Harden","Ninja Dash","Rage","Lunge","Magnetize","Poison Cloud","Snack","Nimbus Flight","Invisibility","Burrow","Valor"}, 1, function(v)
 	Ability = v
 end)
 Main:CreateButton("Summon Ability", function()
@@ -394,6 +410,8 @@ Main:CreateToggle("Spam Ability", function(v)
 		States.Invisibility = v
 	elseif Ability == "Burrow" then
 		States.Burrow = v
+	elseif Ability == "Valor" then
+		States.Valor = v
 	end
 end)
 Main:CreateButton("God Mode", function()
