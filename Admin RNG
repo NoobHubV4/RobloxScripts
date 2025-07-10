@@ -5,7 +5,7 @@ local auto = false
 local Main = Window:NewSection("Main")
 Main:CreateToggle("Auto Roll", function(state)
      auto = state
-     while auto and task.wait(.5) do
+     while auto and task.wait(.4) do
           Rstorage.Batman["Left Arm"].Lshoulder.RightShoulderAttachment.dLJtcFktGhiUviCshf:InvokeServer(false)
      end
 end)
