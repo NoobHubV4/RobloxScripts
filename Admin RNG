@@ -2,10 +2,15 @@ local Library = loadstring(Game:HttpGet('https://raw.githubusercontent.com/NoobH
 local Window = Library:NewWindow("Admin RNG")
 local Rstorage = game.ReplicatedStorage
 local auto = false
+local cooldown = 0.5
 local Main = Window:NewSection("Main")
+Main:CreateTextbox("Cooldown Spin", function(v)
+      cooldown = v
+end)
 Main:CreateToggle("Auto Spin", function(state)
      auto = state
-     while auto and task.wait(.45) do
+     while auto do
           Rstorage.Batman["Left Arm"].Lshoulder.RightShoulderAttachment.dLJtcFktGhiUviCshf:InvokeServer(false)
+          task.wait(cooldown)
      end
 end)
