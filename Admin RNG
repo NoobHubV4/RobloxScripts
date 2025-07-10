@@ -3,9 +3,9 @@ local Window = Library:NewWindow("Admin RNG")
 local Rstorage = game.ReplicatedStorage
 local auto = false
 local Main = Window:NewSection("Main")
-Main:CreateToggle("Auto Roll", function(state)
+Main:CreateToggle("Auto Spin", function(state)
      auto = state
-     while auto and task.wait(.4) do
+     while auto and task.wait(.45) do
           Rstorage.Batman["Left Arm"].Lshoulder.RightShoulderAttachment.dLJtcFktGhiUviCshf:InvokeServer(false)
      end
 end)
