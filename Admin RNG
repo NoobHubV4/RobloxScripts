@@ -1,0 +1,11 @@
+local Library = loadstring(Game:HttpGet('https://raw.githubusercontent.com/NoobHubV1/NoobHubV1/main/Wizard%20Lib.lua'))()
+local Window = Library:NewWindow("Admin RNG")
+local Rstorage = game.ReplicatedStorage
+local auto = false
+local Main = Window:NewSection("Main")
+Main:CreateToggle("Auto Roll", function(state)
+     auto = state
+     while auto and task.wait(.5) do
+          Rstorage.Batman["Left Arm"].Lshoulder.RightShoulderAttachment.dLJtcFktGhiUviCshf:InvokeServer(false)
+     end
+end)
