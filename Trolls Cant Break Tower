@@ -333,10 +333,10 @@ end
 function SlapPower()
         local tool = FindSlapTool()
         if tool:FindFirstChild("Power") then
-                tool.Power.Value = 9e13 --90T Power
+                tool.Power.Value = -math.huge --infinite Power
         end
         if tool:FindFirstChild("Speed") then
-                tool.Speed.Value = math.huge --No Cooldown
+                tool.Speed.Value = 1 --No Cooldown
         end
 end
 
@@ -1016,10 +1016,6 @@ spawn(function()
 				Void(v)
 			end
                 end
-                local tool = FindCharacterSlapTool()
-                if tool then
-                        tool:Activate()
-                end
         end
         while task.wait() do
                 pcall(task3)
@@ -1054,8 +1050,6 @@ SpamBtn.MouseButton1Click:Connect(function()
       if tool then
         SlapPower()
         Notif("Successfully", "Activated Slap Power")
-        wait(2)
-        Notif("Successfully", "Slap Power 90T")
       else
         Notif("Error", "Not Slap Gloves")
       end
