@@ -11,7 +11,7 @@ end)
 Main:CreateButton("Get 10X Money", function()
      Rstorage.Remotes.SpinPrizeEvent:FireServer(8)
 end)
-Main:CreateDropdown("Pet", {"Doggy","Wizard","Cactus","Swimmer","Astronaut","Police","Triple Dominus","Cowboy","Camel","Robot","Cosmo Boy","Princess Cat","Star Gepard"}, 1, function(select)
+Main:CreateDropdown("Pet", {"Doggy","Wizard","Cactus","Swimmer","Astronaut","Police","Triple Dominus","Cowboy","Camel","Robot","Cosmo Boy","Princess Cat","Star Gepard","Main player","Employer"}, 1, function(select)
      Pet = select
 end)
 Main:CreateButton("Give Pet", function()
@@ -38,7 +38,7 @@ spawn(function()
         Rstorage.Remotes.GemEvent:FireServer(20, "bye")
       end
       if States.AutoChest then
-        Rstorage.Remotes.TreasureEvent:FireServer("Chest15")
+        Rstorage.Remotes.TreasureEvent:FireServer("Chest")
       end
       if States.AutoWin then
         Rstorage.Remotes.TreasureEvent:FireServer("Cup15")
