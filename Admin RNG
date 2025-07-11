@@ -1,16 +1,11 @@
 local Library = loadstring(Game:HttpGet('https://raw.githubusercontent.com/NoobHubV1/NoobHubV1/main/Wizard%20Lib.lua'))()
 local Window = Library:NewWindow("Admin RNG")
 local Rstorage = game.ReplicatedStorage
-local auto = false
-local cooldown = 0.5
+local auto = nil
 local Main = Window:NewSection("Main")
-Main:CreateTextbox("Cooldown Spin", function(v)
-      cooldown = v
-end)
 Main:CreateToggle("Auto Spin", function(state)
      auto = state
-     while auto do
+     while auto and task.wait(.8) do
           Rstorage.Batman["Left Arm"].Lshoulder.RightShoulderAttachment.dLJtcFktGhiUviCshf:InvokeServer(false)
-          task.wait(cooldown)
      end
 end)
