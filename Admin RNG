@@ -2,16 +2,10 @@ local Library = loadstring(Game:HttpGet('https://raw.githubusercontent.com/NoobH
 local Window = Library:NewWindow("Admin RNG")
 local Rstorage = game.ReplicatedStorage
 local auto
-local cool
 local Main = Window:NewSection("Main")
 Main:CreateToggle("Auto Spin", function(state)
      auto = state
-     while auto and wait() do
-          if not cool then
-                cool = true
-                Rstorage.Batman["Left Arm"].Lshoulder.RightShoulderAttachment.dLJtcFktGhiUviCshf:InvokeServer(false)
-                task.wait(.8)
-                cool = false
-          end
+     while auto and task.wait(.775) do
+          Rstorage.Batman["Left Arm"].Lshoulder.RightShoulderAttachment.dLJtcFktGhiUviCshf:InvokeServer(false)
      end
 end)
