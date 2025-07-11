@@ -7,6 +7,8 @@ Main:CreateToggle("Auto Spin", function(state)
      auto = state
 end)
 
-while auto and task.wait(.775) do
-     Rstorage.Batman["Left Arm"].Lshoulder.RightShoulderAttachment.dLJtcFktGhiUviCshf:InvokeServer(false)
+while task.wait(.775) do
+     if auto then
+          Rstorage.Batman["Left Arm"].Lshoulder.RightShoulderAttachment.dLJtcFktGhiUviCshf:InvokeServer(false)
+     end
 end
