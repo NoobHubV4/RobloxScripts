@@ -47,6 +47,7 @@ TextBox.TextScaled = true
 TextBox.TextSize = 14.000
 TextBox.TextWrapped = true
 TextBox.ClearTextOnFocus = false
+TextBox.PlaceholderText = "Dupe Amount"
 
 TextButton.Parent = Frame
 TextButton.BackgroundColor3 = Color3.fromRGB(170, 0, 255)
@@ -101,11 +102,12 @@ TextButton.MouseButton1Click:Connect(function()
         if dupesDone >= Amount then
             grabAllTools()
             dupesDone = 0
+            Amount = 0
             break
         end
 
         teleportCharacter(getDropCFrame())
-        task.wait(.15)
+        task.wait(.2)
             
         for _, tool in pairs(localPlayer.Backpack:GetChildren()) do
             if tool:IsA("Tool") then
