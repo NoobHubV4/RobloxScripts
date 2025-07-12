@@ -7,8 +7,6 @@ local Main = Window:NewSection("Main")
 local enabled = false
 local hudVisible = true
 local sentOnce = false
-local autoJump
-local player = game:GetService("Players").LocalPlayer
 
 local connection
 local sharedConnection
@@ -100,15 +98,4 @@ Main:CreateToggle("Auto Respawn", function(value)
      elseif not value then
           disconnectAll()
      end
-end)
-Main:CreateToggle("Auto Jump", function(value)
-     autoJump = value
-end)
-
-local humanoid = player.Character:WaitForChild("Humanoid")
-
-game:GetService("RunService").RenderStepped:Connect(function()
-    if humanoid and autoJump and humanoid:GetState() ~= Enum.HumanoidStateType.Jumping then
-        humanoid.Jump = true
-    end
 end)
