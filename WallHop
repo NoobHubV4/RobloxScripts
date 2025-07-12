@@ -1,0 +1,64 @@
+local player = game.Players.LocalPlayer
+
+local flickEnabled = true
+local flickButton
+local xButton
+
+-- Create the GUI elements
+local gui = Instance.new("ScreenGui")
+gui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+
+local container = Instance.new("Frame")
+container.Size = UDim2.new(0.25, 0, 0.15, 0)  -- Adjust size for a slightly smaller container
+container.Position = UDim2.new(0.7, 0, 0.1, 0)  -- Move GUI to top right corner
+container.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+container.BorderSizePixel = 0
+container.Parent = gui
+
+flickButton = Instance.new("TextButton")
+flickButton.Text = "FLICK"
+flickButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+flickButton.Size = UDim2.new(0.6, 0, 0.6, 0)  -- Adjust size for a slightly bigger flick button
+flickButton.Position = UDim2.new(0.2, 0, 0.2, 0)  -- Adjust position within the container
+flickButton.BackgroundColor3 = Color3.fromRGB(255, 165, 0)  -- Orange color
+flickButton.Parent = container
+
+xButton = Instance.new("TextButton")
+xButton.Text = "X"
+xButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+xButton.Size = UDim2.new(0.1, 0, 0.1, 0)
+xButton.Position = UDim2.new(0.85, 0, 0, 0)
+xButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+xButton.Parent = container
+
+local function flickCamera90Degrees()
+    local currentCam = workspace.CurrentCamera
+    local initialPos = currentCam.CFrame.Position
+    local initialRot = currentCam.CFrame - initialPos
+    currentCam.CFrame = CFrame.new(initialPos) * CFrame.Angles(0, math.rad(90), 0) * initialRot
+    print("Camera flicked 90 degrees!")
+end
+
+local function flickCameraBack90Degrees()
+    local currentCam = workspace.CurrentCamera
+    local initialPos = currentCam.CFrame.Position
+    local initialRot = currentCam.CFrame - initialPos
+    currentCam.CFrame = CFrame.new(initialPos) * CFrame.Angles(0, math.rad(-90), 0) * initialRot
+    print("Camera flicked back 90 degrees!")
+end
+
+local function flickCameraSequence()
+    flickCamera90Degrees()
+    wait(0.03)
+    flickCameraBack90Degrees()
+end
+
+flickButton.MouseButton1Click:Connect(function()
+    if flickEnabled then
+        flickCameraSequence()
+    end
+end)
+
+xButton.MouseButton1Click:Connect(function()
+    gui:Destroy()
+end)
