@@ -11,7 +11,7 @@ local TextButton = Instance.new("TextButton")
 
 --Properties:
 
-ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+ScreenGui.Parent = game.CoreGui
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 ScreenGui.ResetOnSpawn = true
 
@@ -92,7 +92,6 @@ local function grabAllTools()
                 end)
             end
         end
-        print("Grabbed all tools back from workspace")
     end
 end
 
@@ -130,7 +129,6 @@ TextButton.MouseButton1Click:Connect(function()
          local humanoid = localPlayer.Character and localPlayer.Character:FindFirstChildWhichIsA("Humanoid")
          if humanoid then
              humanoid.Health = 0
-             print("Humanoid killed for drop")
          end
             
          localPlayer.CharacterAdded:Wait()
@@ -148,9 +146,7 @@ TextButton.MouseButton1Click:Connect(function()
              end
          end
             
-         dupesDone = dupesDone + 1
-         print("Dupe count: " .. dupesDone)
-            
+         dupesDone = dupesDone + 1     
          task.wait(0.1)
     end
 end)
