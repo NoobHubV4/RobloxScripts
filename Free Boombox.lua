@@ -105,7 +105,7 @@ TextButton.MouseButton1Click:Connect(function()
         end
 
         teleportCharacter(getDropCFrame())
-        task.wait(0.1)
+        task.wait(.15)
             
         for _, tool in pairs(localPlayer.Backpack:GetChildren()) do
             if tool:IsA("Tool") then
