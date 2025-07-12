@@ -106,7 +106,7 @@ TextButton.MouseButton1Click:Connect(function()
             break
         end
 
-        teleportCharacter(getDropCFrame())
+        teleportCharacter(CFrame.new(-199, 304, -53))
         task.wait(.2)
             
         for _, tool in pairs(localPlayer.Backpack:GetChildren()) do
@@ -114,9 +114,9 @@ TextButton.MouseButton1Click:Connect(function()
                 tool.Parent = localPlayer.Character
             end
          end
-            
-        task.wait(0.1)
-            
+        task.wait(.1)
+        game.Players.LocalPlayer.Character.HumanoidRootPart.Anchored = true
+        task.wait(.2)
         for _, tool in pairs(localPlayer.Character:GetChildren()) do
             if tool:IsA("Tool") and tool:FindFirstChild("Handle") then
                 if tool.Name == "BoomBox" then
@@ -127,14 +127,13 @@ TextButton.MouseButton1Click:Connect(function()
                 end
             end
          end
-            
          local humanoid = localPlayer.Character and localPlayer.Character:FindFirstChildWhichIsA("Humanoid")
          if humanoid then
              humanoid.Health = 0
          end
             
          localPlayer.CharacterAdded:Wait()
-         task.wait(0.1)
+         task.wait(0.2)
             
          local newChar = localPlayer.Character
          local newHumanoid = newChar and newChar:FindFirstChildWhichIsA("Humanoid")
@@ -149,6 +148,8 @@ TextButton.MouseButton1Click:Connect(function()
          end
             
          dupesDone = dupesDone + 1     
-         task.wait(0.1)
+         task.wait(0.2)
     end
 end)
+
+--Player not steal boombox
