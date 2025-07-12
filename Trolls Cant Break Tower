@@ -1,3 +1,24 @@
+local Prefix = ":"
+local Players = game.Players
+local LocalPlayer = Players.LocalPlayer
+local Unloaded = false
+local Key = false
+local UserInputService = game:GetService("UserInputService")
+
+local Notif = function(Title, Text, Duration)
+	local Duration = Duration
+	if not Duration then
+		Duration = 3
+	end
+	game:GetService("StarterGui"):SetCore("SendNotification", {
+		Title = Title;
+		Text = Text;
+		Icon = "";
+		Duration = Duration;
+	})
+end
+
+function LocalScript()
 print([[
 Commands:
         slap [plr,all,random] | Slap the Player
@@ -36,27 +57,6 @@ Commands:
         flyingcarpet / carpet | Get Item Flying Carpet
         commands / cmds | Show a commands list
 ]])
-local Prefix = ":"
-local Players = game.Players
-local LocalPlayer = Players.LocalPlayer
-local Unloaded = false
-local Key = false
-local UserInputService = game:GetService("UserInputService")
-
-local Notif = function(Title, Text, Duration)
-	local Duration = Duration
-	if not Duration then
-		Duration = 3
-	end
-	game:GetService("StarterGui"):SetCore("SendNotification", {
-		Title = Title;
-		Text = Text;
-		Icon = "";
-		Duration = Duration;
-	})
-end
-
-function LocalScript()
 local Whitelisted = {};
 local Loops = {
       Slaps = {
@@ -251,7 +251,7 @@ function SlapEvent(target, Pos, Pos2)
 end
 
 function CheckWhitelist(args)
-        return not (Whitelisted[args.UserId])
+        return not (Whitelisted[args.UserId]) and not (LocalPlayer:IsFriendsWith(args.UserId))
 end
 
 local PlrFromArgs = function(plr, args)
@@ -283,7 +283,7 @@ function GetRandomPlr()
 end
 
 function Slap(targets)
-        SlapEvent(targets, LocalPlayer.Character.HumanoidRootPart.Position, Vector3.new(0, 1000000, 0))
+        SlapEvent(targets, LocalPlayer.Character.HumanoidRootPart.Position, Vector3.new(0, 10000000, 0))
 end
 
 function SlapAll()
@@ -336,7 +336,7 @@ function SlapPower()
                 tool.Power.Value = -math.huge --infinite Power
         end
         if tool:FindFirstChild("Speed") then
-                tool.Speed.Value = 1 --No Cooldown
+                tool.Speed.Value = 0.25 --0.25s Cooldown
         end
 end
 
@@ -568,13 +568,13 @@ function OnCommand(text)
                         for i,v in pairs(Players:GetPlayers()) do
 			        if ViewPlr[v.UserId] then
 				        ViewPlr[v.UserId] = nil
-				        wait(.3)
+				        wait(.1)
 			        end
                         end
 			ViewPlr[DaPlayer.UserId] = DaPlayer
                         Notif("Successfully", "View "..DaPlayer.DisplayName)
 			task.spawn(function()
-				while wait(.05) do
+				while task.wait() do
 					pcall(function()
                                                 if ViewPlr then
                                                         for _,target in next, ViewPlr do
