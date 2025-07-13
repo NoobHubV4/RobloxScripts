@@ -163,18 +163,13 @@ TextButton.MouseButton1Click:Connect(function()
         plr.Character = char
         newChar:Destroy()
     end
-    plr.CharacterAdded:Wait() task.wait(.1)
+    plr.CharacterAdded:Wait() task.wait(.2)
         else
                 --
         end
         teleportCharacter(localPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(0, 1000, 0))
         task.wait(.2)
         localPlayer.Character.HumanoidRootPart.Anchored = true
-        for _, tool in pairs(localPlayer.Backpack:GetChildren()) do
-            if tool:IsA("Tool") then
-                tool.Parent = localPlayer.Character
-            end
-        end
         local plr = localPlayer
         local rcdEnabled, wasHidden = false, false
     if gethidden then
@@ -183,7 +178,13 @@ TextButton.MouseButton1Click:Connect(function()
 
     if rcdEnabled and replicatesignal then
         replicatesignal(plr.ConnectDiedSignalBackend)
-        wait(Players.RespawnTime - 0.35)
+        wait(Players.RespawnTime - 0.6)
+        for _, tool in pairs(localPlayer.Backpack:GetChildren()) do
+            if tool:IsA("Tool") then
+                tool.Parent = localPlayer.Character
+            end
+        end
+        task.wait(.3)
         for _, tool in pairs(localPlayer.Character:GetChildren()) do
             if tool:IsA("Tool") and tool:FindFirstChild("Handle") then
                 if tool.Name == "BoomBox" then
@@ -223,7 +224,7 @@ TextButton.MouseButton1Click:Connect(function()
          dupesDone = dupesDone + 1
          task.wait(.1)
          Notif("Successfully", "Dupe: "..dupesDone)
-         wait()
+         wait(.25)
     end
     elseif active then
          Notif("Error", "Script Active, wait a end", 5)
