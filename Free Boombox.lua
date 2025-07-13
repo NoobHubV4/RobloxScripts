@@ -63,7 +63,6 @@ TextButton.TextWrapped = true
 local Players = game:GetService("Players")
 
 local localPlayer = Players.LocalPlayer
-local dropLocation = workspace:GetChildren()[134]
 local Amount
 local dupesDone = 0
 
@@ -73,15 +72,6 @@ local function teleportCharacter(cframe)
         char.HumanoidRootPart.CFrame = cframe
     else
     end
-end
-
-local function getDropCFrame()
-    if dropLocation:IsA("BasePart") then
-        return dropLocation.CFrame
-    elseif dropLocation:IsA("Model") and dropLocation.PrimaryPart then
-        return dropLocation.PrimaryPart.CFrame
-    end
-    return CFrame.new(0, 5, 0)
 end
 
 function Notif(Title, Text, Time)
@@ -101,7 +91,7 @@ TextButton.MouseButton1Click:Connect(function()
             break
         end
 
-        teleportCharacter(CFrame.new(0, 100000, 0))
+        teleportCharacter(localPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(0, 100000, 0))
         task.wait(.2)
             
         for _, tool in pairs(localPlayer.Backpack:GetChildren()) do
@@ -115,9 +105,6 @@ TextButton.MouseButton1Click:Connect(function()
         for _, tool in pairs(localPlayer.Character:GetChildren()) do
             if tool:IsA("Tool") and tool:FindFirstChild("Handle") then
                 if tool.Name == "BoomBox" then
-                     tool.Parent = workspace
-                     tool.Handle.CFrame = getDropCFrame()
-                else
                      tool.Parent = workspace
                 end
             end
