@@ -8,6 +8,7 @@ local Frame = Instance.new("Frame")
 local TextLabel = Instance.new("TextLabel")
 local TextBox = Instance.new("TextBox")
 local TextButton = Instance.new("TextButton")
+local TextButton2 = Instance.new("TextButton")
 
 --Properties:
 
@@ -51,14 +52,25 @@ TextBox.PlaceholderText = "Dupe Amount"
 
 TextButton.Parent = Frame
 TextButton.BackgroundColor3 = Color3.fromRGB(170, 0, 255)
-TextButton.Position = UDim2.new(0.311643839, 0, 0.713450253, 0)
-TextButton.Size = UDim2.new(0, 89, 0, 19)
+TextButton.Position = UDim2.new(0.167643839, 0, 0.713450253, 0)
+TextButton.Size = UDim2.new(0, 79, 0, 19)
 TextButton.Font = Enum.Font.SourceSans
 TextButton.Text = "Dupe"
 TextButton.TextColor3 = Color3.fromRGB(0, 0, 0)
 TextButton.TextScaled = true
 TextButton.TextSize = 12.000
 TextButton.TextWrapped = true
+
+TextButton2.Parent = Frame
+TextButton2.BackgroundColor3 = Color3.fromRGB(170, 0, 255)
+TextButton2.Position = UDim2.new(0.502931517, 0, 0.713450253, 0)
+TextButton2.Size = UDim2.new(0, 79, 0, 19)
+TextButton2.Font = Enum.Font.SourceSans
+TextButton2.Text = "Drop"
+TextButton2.TextColor3 = Color3.fromRGB(0, 0, 0)
+TextButton2.TextScaled = true
+TextButton2.TextSize = 12.000
+TextButton2.TextWrapped = true
 
 local Players = game:GetService("Players")
 
@@ -94,6 +106,23 @@ function Notif(Title, Text, Time)
   game:GetService("StarterGui"):SetCore("SendNotification", {Title = Title, Text = Text, Duration = Time,})
 end
 
+function FindRadioTool()
+        local player = localPlayer
+        for _, tool in pairs(player.Backpack:GetChildren()) do
+        if tool:IsA("Tool") and tool.Name:lower():find("box") then
+            return tool
+        end
+    end
+    local char = player.Character
+    if char then
+        for _, tool in pairs(char:GetChildren()) do
+            if tool:IsA("Tool") and tool.Name:lower():find("box") then
+                return tool
+            end
+        end
+     end
+end
+
 TextButton.MouseButton1Click:Connect(function()
   if not active then
   active = true
@@ -107,6 +136,45 @@ TextButton.MouseButton1Click:Connect(function()
             auto = false
             break
         end
+        local tool = FindRadioTool()
+        if not tool then
+                Notif("Error", "Player not BoomBox, not dupe, wait a respawn and auto dupe")
+                local plr = localPlayer
+        local rcdEnabled, wasHidden = false, false
+    if gethidden then
+        rcdEnabled, wasHidden = gethidden(workspace, "RejectCharacterDeletions") ~= Enum.RejectCharacterDeletions.Disabled
+    end
+
+    if rcdEnabled and replicatesignal then
+        replicatesignal(plr.ConnectDiedSignalBackend)
+        task.wait(Players.RespawnTime - 0.1)
+        replicatesignal(plr.Kill)
+    elseif rcdEnabled and not replicatesignal then
+        Notif("Incompatible Exploit", "Your exploit does not support this command (missing replicatesignal)")
+    else
+        local char = plr.Character
+        local hum = char:FindFirstChildWhichIsA("Humanoid")
+        if hum then hum:ChangeState(Enum.HumanoidStateType.Dead) end
+        char:ClearAllChildren()
+        local newChar = Instance.new("Model")
+        newChar.Parent = workspace
+        plr.Character = newChar
+        task.wait()
+        plr.Character = char
+        newChar:Destroy()
+    end
+    plr.CharacterAdded:Wait() task.wait(.1)
+        else
+                --
+        end
+        teleportCharacter(localPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(0, 1000, 0))
+        task.wait(.125)
+        localPlayer.Character.HumanoidRootPart.Anchored = true
+        for _, tool in pairs(localPlayer.Backpack:GetChildren()) do
+            if tool:IsA("Tool") then
+                tool.Parent = localPlayer.Character
+            end
+        end
         
         local plr = localPlayer
         local rcdEnabled, wasHidden = false, false
@@ -116,13 +184,7 @@ TextButton.MouseButton1Click:Connect(function()
 
     if rcdEnabled and replicatesignal then
         replicatesignal(plr.ConnectDiedSignalBackend)
-        task.wait(Players.RespawnTime - 0.5)
-        for _, tool in pairs(localPlayer.Backpack:GetChildren()) do
-            if tool:IsA("Tool") then
-                tool.Parent = localPlayer.Character
-            end
-         end
-        task.wait(.1)
+        wait(Players.RespawnTime - 0.4)
         for _, tool in pairs(localPlayer.Character:GetChildren()) do
             if tool:IsA("Tool") and tool:FindFirstChild("Handle") then
                 if tool.Name == "BoomBox" then
@@ -167,6 +229,14 @@ TextButton.MouseButton1Click:Connect(function()
     end
     elseif active then
          Notif("Error", "Script Active, wait a end", 5)
+    end
+end)
+TextButton2.MouseButton1Click:Connect(function()
+    local character = localPlayer.Character or localPlayer.CharacterAdded:Wait()
+    local tool = character:FindFirstChildOfClass("Tool")
+    if tool then
+        tool.Parent = workspace
+        Notif("Successfully", "Drop "..tool.Name)
     end
 end)
 --Player not steal boombox
