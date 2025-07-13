@@ -85,12 +85,12 @@ local function getDropCFrame()
 end
 
 local function grabAllTools()
-    local humanoid = localPlayer.Character and localPlayer.Character:FindFirstChildWhichIsA("Humanoid")
-    if humanoid then
+    local character = localPlayer.Character and localPlayer.CharacterAdded:Wait()
+    if character then
         for _, child in ipairs(workspace:GetChildren()) do
             if child:IsA("BackpackItem") and child:FindFirstChild("Handle") then
                 pcall(function()
-                    humanoid:EquipTool(child)
+                    child.Handle.CFrame = character.HumanoidRootPart.CFrame
                 end)
             end
         end
@@ -138,12 +138,11 @@ TextButton.MouseButton1Click:Connect(function()
          task.wait(0.2)
             
          local newChar = localPlayer.Character
-         local newHumanoid = newChar and newChar:FindFirstChildWhichIsA("Humanoid")
-         if newHumanoid then
+         if newChar then
              for _, item in ipairs(workspace:GetChildren()) do
                  if item:IsA("BackpackItem") and item:FindFirstChild("Handle") then
                      pcall(function()
-                         newHumanoid:EquipTool(item)
+                         item.Handle.CFrame = newChar.HumanoidRootPart.CFrame
                      end)
                  end
              end
