@@ -64,6 +64,7 @@ local Players = game:GetService("Players")
 
 local localPlayer = Players.LocalPlayer
 local dropLocation = workspace:GetChildren()[134]
+local Amount
 local dupesDone = 0
 
 local function teleportCharacter(cframe)
@@ -97,7 +98,7 @@ local function grabAllTools()
 end
 
 TextButton.MouseButton1Click:Connect(function()
-  local Amount = tonumber(TextBox.Text)
+  Amount = tonumber(TextBox.Text)
   for i = 1,Amount do
         if dupesDone >= Amount then
             grabAllTools()
