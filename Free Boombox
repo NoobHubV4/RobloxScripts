@@ -147,7 +147,7 @@ TextButton.MouseButton1Click:Connect(function()
 
     if rcdEnabled and replicatesignal then
         replicatesignal(plr.ConnectDiedSignalBackend)
-        wait(Players.RespawnTime - 0.1)
+        wait(Players.RespawnTime - 0.2)
         replicatesignal(plr.Kill)
     elseif rcdEnabled and not replicatesignal then
         Notif("Incompatible Exploit", "Your exploit does not support this command (missing replicatesignal)")
@@ -224,7 +224,7 @@ TextButton.MouseButton1Click:Connect(function()
          dupesDone = dupesDone + 1
          task.wait(.1)
          Notif("Successfully", "Dupe: "..dupesDone)
-         wait(.25)
+         wait()
     end
     elseif active then
          Notif("Error", "Script Active, wait a end", 5)
