@@ -85,7 +85,7 @@ local function getDropCFrame()
 end
 
 local function grabAllTools()
-    local character = localPlayer.Character and localPlayer.CharacterAdded:Wait()
+    local character = localPlayer.Character or localPlayer.CharacterAdded:Wait()
     if character then
         for _, child in ipairs(workspace:GetChildren()) do
             if child:IsA("BackpackItem") and child:FindFirstChild("Handle") then
