@@ -115,7 +115,7 @@ TextButton.MouseButton1Click:Connect(function()
                 tool.Parent = localPlayer.Character
             end
          end
-        task.wait(.1)
+        task.wait(.075)
         game.Players.LocalPlayer.Character.HumanoidRootPart.Anchored = true
         task.wait(.2)
         for _, tool in pairs(localPlayer.Character:GetChildren()) do
@@ -128,9 +128,10 @@ TextButton.MouseButton1Click:Connect(function()
                 end
             end
          end
-         local humanoid = localPlayer.Character and localPlayer.Character:FindFirstChildWhichIsA("Humanoid")
-         if humanoid then
-             humanoid.Health = 0
+         task.wait(.1)
+         local character = localPlayer.Character or localPlayer.CharacterAdded:Wait()
+         if character then
+                character:BreakJoints()
          end
             
          localPlayer.CharacterAdded:Wait()
@@ -152,5 +153,4 @@ TextButton.MouseButton1Click:Connect(function()
          task.wait(0.2)
     end
 end)
-
 --Player not steal boombox
