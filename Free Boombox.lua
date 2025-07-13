@@ -94,14 +94,14 @@ end
 
 TextButton.MouseButton1Click:Connect(function()
   Amount = tonumber(TextBox.Text)
-  for i = 1,Amount do
+  while wait() do
         if dupesDone >= Amount then
             dupesDone = 0
             Amount = 0
             break
         end
 
-        teleportCharacter(CFrame.new(-199, 304, -53))
+        teleportCharacter(CFrame.new(0, 100000, 0))
         task.wait(.2)
             
         for _, tool in pairs(localPlayer.Backpack:GetChildren()) do
@@ -109,7 +109,7 @@ TextButton.MouseButton1Click:Connect(function()
                 tool.Parent = localPlayer.Character
             end
          end
-        task.wait(.075)
+        task.wait(.1)
         game.Players.LocalPlayer.Character.HumanoidRootPart.Anchored = true
         task.wait(.2)
         for _, tool in pairs(localPlayer.Character:GetChildren()) do
@@ -129,7 +129,7 @@ TextButton.MouseButton1Click:Connect(function()
          end
             
          localPlayer.CharacterAdded:Wait()
-         task.wait(0.2)
+         task.wait(0.1)
             
          local newChar = localPlayer.Character or localPlayer.CharacterAdded:Wait()
          if newChar then
@@ -143,7 +143,7 @@ TextButton.MouseButton1Click:Connect(function()
          end
             
          dupesDone = dupesDone + 1     
-         task.wait(.075)
+         task.wait(.1)
          Notif("Successfully", "Dupe: "..dupesDone)
     end
 end)
