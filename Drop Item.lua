@@ -1,5 +1,6 @@
 local gui = Instance.new("ScreenGui")
-gui.Parent = game.Players.LocalPlayer.PlayerGui
+gui.Parent = game.CoreGui
+gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 gui.ResetOnSpawn = true
 
 local Frame = Instance.new("Frame")
@@ -21,9 +22,8 @@ TextButton.Parent = Frame
 local Players = game:FindService("Players")
 local player = Players.LocalPlayer
 
-local character = player.Character or player.CharacterAdded:Wait()
-
 TextButton.MouseButton1Click:Connect(function()
+    local character = player.Character
     local tool = character:FindFirstChildOfClass("Tool")
     if tool then
         tool.Parent = workspace
