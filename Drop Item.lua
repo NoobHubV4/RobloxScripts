@@ -1,0 +1,31 @@
+local gui = Instance.new("ScreenGui")
+gui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+
+local Frame = Instance.new("Frame")
+Frame.Size = UDim2.new(0.35, 0, 0.25, 0)  -- Adjust size for a slightly smaller container
+Frame.Position = UDim2.new(0.7, 0, 0.1, 0)  -- Move GUI to top right corner
+Frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+Frame.BorderSizePixel = 0
+Frame.Parent = gui
+Frame.Draggable = true
+
+TextButton = Instance.new("TextButton")
+TextButton.Text = "Drop"
+TextButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+TextButton.Size = UDim2.new(0.7, 0, 0.7, 0)  -- Adjust size for a slightly bigger flick button
+TextButton.Position = UDim2.new(0.2, 0, 0.2, 0)  -- Adjust position within the container
+TextButton.BackgroundColor3 = Color3.fromRGB(255, 165, 0)  -- Orange color
+TextButton.Parent = Frame
+
+local Players = game:FindService("Players")
+local player = Players.LocalPlayer
+
+local character = player.Character or player.CharacterAdded:Wait()
+
+TextButton.MouseButton1Click:Connect(function()
+    local tool = character:FindFirstChildOfClass("Tool")
+    if tool then
+        tool.Parent = workspace
+        tool.Handle.Position = character.HumanoidRootPart.Position
+    end
+end)
