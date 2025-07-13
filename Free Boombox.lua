@@ -84,17 +84,12 @@ local function getDropCFrame()
     return CFrame.new(0, 5, 0)
 end
 
-local function grabAllTools()
-    local character = localPlayer.Character or localPlayer.CharacterAdded:Wait()
-    if character then
-        for _, child in ipairs(workspace:GetChildren()) do
-            if child:IsA("BackpackItem") and child:FindFirstChild("Handle") then
-                pcall(function()
-                    child.Handle.CFrame = character.HumanoidRootPart.CFrame
-                end)
-            end
-        end
-    end
+function Notif(Title, Text, Time)
+  local Time = Time
+  if not Time then
+        Time = 3
+  end
+  game:GetService("StarterGui"):SetCore("SendNotification", {Title = Title, Text = Text, Duration = Time,})
 end
 
 TextButton.MouseButton1Click:Connect(function()
@@ -136,19 +131,20 @@ TextButton.MouseButton1Click:Connect(function()
          localPlayer.CharacterAdded:Wait()
          task.wait(0.2)
             
-         local newChar = localPlayer.Character
+         local newChar = localPlayer.Character or localPlayer.CharacterAdded:Wait()
          if newChar then
              for _, item in ipairs(workspace:GetChildren()) do
                  if item:IsA("BackpackItem") and item:FindFirstChild("Handle") then
                      pcall(function()
-                         item.Handle.CFrame = newChar.HumanoidRootPart.CFrame
+                         newChar.Humanoid:EquipTool(item)
                      end)
                  end
              end
          end
             
          dupesDone = dupesDone + 1     
-         task.wait(0.2)
+         task.wait(.075)
+         Notif("Successfully", "Dupe: "..dupesDone)
     end
 end)
 --Player not steal boombox
