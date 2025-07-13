@@ -67,6 +67,16 @@ local Amount
 local dupesDone = 0
 local active = nil
 local auto = nil
+local cooldown = nil
+
+function missing(t, f, fallback)
+    if type(f) == t then return f end
+    return fallback
+end
+
+replicatesignal = missing("function", replicatesignal)
+sethidden =  missing("function", sethiddenproperty or set_hidden_property or set_hidden_prop)
+gethidden =  missing("function", gethiddenproperty or get_hidden_property or get_hidden_prop)
 
 local function teleportCharacter(cframe)
     local char = localPlayer.Character
@@ -87,7 +97,6 @@ end
 TextButton.MouseButton1Click:Connect(function()
   if not active then
   active = true
-  saved = localPlayer.Character.HumanoidRootPart.CFrame
   Amount = tonumber(TextBox.Text)
   auto = true
   while auto and wait() do
@@ -96,31 +105,48 @@ TextButton.MouseButton1Click:Connect(function()
             Amount = 0
             active = false
             auto = false
-            localPlayer.Character.HumanoidRootPart.CFrame = saved
             break
         end
+        
+        local plr = localPlayer
+        local rcdEnabled, wasHidden = false, false
+    if gethidden then
+        rcdEnabled, wasHidden = gethidden(workspace, "RejectCharacterDeletions") ~= Enum.RejectCharacterDeletions.Disabled
+    end
 
-        teleportCharacter(localPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(0, 100000, 0))
-        task.wait(.2)
-            
+    if rcdEnabled and replicatesignal then
+        replicatesignal(plr.ConnectDiedSignalBackend)
+        task.wait(Players.RespawnTime - 0.5)
         for _, tool in pairs(localPlayer.Backpack:GetChildren()) do
             if tool:IsA("Tool") then
                 tool.Parent = localPlayer.Character
             end
          end
-        task.wait(.15)
+        task.wait(.1)
         for _, tool in pairs(localPlayer.Character:GetChildren()) do
             if tool:IsA("Tool") and tool:FindFirstChild("Handle") then
                 if tool.Name == "BoomBox" then
                      tool.Parent = workspace
                 end
             end
-         end
-         task.wait(.075)
-         local character = localPlayer.Character or localPlayer.CharacterAdded:Wait()
-         if character then
-                character:BreakJoints()
-         end
+        end
+        replicatesignal(plr.Kill)
+    elseif rcdEnabled and not replicatesignal then
+        Notif("Incompatible Exploit", "Your exploit does not support this command (missing replicatesignal)")
+    else
+        local char = plr.Character
+        local hum = char:FindFirstChildWhichIsA("Humanoid")
+        if hum then hum:ChangeState(Enum.HumanoidStateType.Dead) end
+        char:ClearAllChildren()
+        local newChar = Instance.new("Model")
+        newChar.Parent = workspace
+        plr.Character = newChar
+        task.wait()
+        plr.Character = char
+        newChar:Destroy()
+        end
+        task.wait(.1)
+        
             
          localPlayer.CharacterAdded:Wait()
          task.wait(0.075)
