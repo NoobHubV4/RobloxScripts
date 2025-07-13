@@ -1,5 +1,5 @@
 local gui = Instance.new("ScreenGui")
-gui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+gui.Parent = game.CoreGui
 
 local Frame = Instance.new("Frame")
 Frame.Size = UDim2.new(0.35, 0, 0.25, 0)  -- Adjust size for a slightly smaller container
