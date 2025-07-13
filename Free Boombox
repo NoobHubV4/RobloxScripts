@@ -128,7 +128,7 @@ TextButton.MouseButton1Click:Connect(function()
   active = true
   Amount = tonumber(TextBox.Text)
   auto = true
-  while auto and wait() do
+  while auto do
         if dupesDone >= Amount then
             dupesDone = 0
             Amount = 0
@@ -147,7 +147,7 @@ TextButton.MouseButton1Click:Connect(function()
 
     if rcdEnabled and replicatesignal then
         replicatesignal(plr.ConnectDiedSignalBackend)
-        task.wait(Players.RespawnTime - 0.1)
+        wait(Players.RespawnTime - 0.1)
         replicatesignal(plr.Kill)
     elseif rcdEnabled and not replicatesignal then
         Notif("Incompatible Exploit", "Your exploit does not support this command (missing replicatesignal)")
@@ -168,14 +168,13 @@ TextButton.MouseButton1Click:Connect(function()
                 --
         end
         teleportCharacter(localPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(0, 1000, 0))
-        task.wait(.125)
+        task.wait(.2)
         localPlayer.Character.HumanoidRootPart.Anchored = true
         for _, tool in pairs(localPlayer.Backpack:GetChildren()) do
             if tool:IsA("Tool") then
                 tool.Parent = localPlayer.Character
             end
         end
-        
         local plr = localPlayer
         local rcdEnabled, wasHidden = false, false
     if gethidden then
@@ -184,7 +183,7 @@ TextButton.MouseButton1Click:Connect(function()
 
     if rcdEnabled and replicatesignal then
         replicatesignal(plr.ConnectDiedSignalBackend)
-        wait(Players.RespawnTime - 0.4)
+        wait(Players.RespawnTime - 0.35)
         for _, tool in pairs(localPlayer.Character:GetChildren()) do
             if tool:IsA("Tool") and tool:FindFirstChild("Handle") then
                 if tool.Name == "BoomBox" then
@@ -207,11 +206,9 @@ TextButton.MouseButton1Click:Connect(function()
         plr.Character = char
         newChar:Destroy()
         end
-        task.wait(.1)
         
-            
          localPlayer.CharacterAdded:Wait()
-         task.wait(0.075)
+         task.wait(.2)
             
          local newChar = localPlayer.Character or localPlayer.CharacterAdded:Wait()
          if newChar then
@@ -226,6 +223,7 @@ TextButton.MouseButton1Click:Connect(function()
          dupesDone = dupesDone + 1
          task.wait(.1)
          Notif("Successfully", "Dupe: "..dupesDone)
+         wait()
     end
     elseif active then
          Notif("Error", "Script Active, wait a end", 5)
