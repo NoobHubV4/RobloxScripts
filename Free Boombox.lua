@@ -101,7 +101,6 @@ TextButton.MouseButton1Click:Connect(function()
   Amount = tonumber(TextBox.Text)
   for i = 1,Amount do
         if dupesDone >= Amount then
-            grabAllTools()
             dupesDone = 0
             Amount = 0
             break
