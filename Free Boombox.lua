@@ -116,14 +116,14 @@ TextButton.MouseButton1Click:Connect(function()
                 end
             end
          end
-         task.wait(.1)
+         task.wait(.075)
          local character = localPlayer.Character or localPlayer.CharacterAdded:Wait()
          if character then
                 character:BreakJoints()
          end
             
          localPlayer.CharacterAdded:Wait()
-         task.wait(0.1)
+         task.wait(0.075)
             
          local newChar = localPlayer.Character or localPlayer.CharacterAdded:Wait()
          if newChar then
