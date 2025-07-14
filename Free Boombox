@@ -135,7 +135,7 @@ Amount = tonumber(TextBox.Text)
         if not tool then
                 Notif("Error", "Player not BoomBox, not dupe, wait a respawn and auto dupe")
         replicatesignal(localPlayer.ConnectDiedSignalBackend)
-        wait(Players.RespawnTime - 0.15)
+        wait(Players.RespawnTime - 0.2)
         localPlayer.Character:BreakJoints()
     localPlayer.CharacterAdded:Wait() wait(.3)
         else
@@ -150,7 +150,7 @@ Amount = tonumber(TextBox.Text)
         localPlayer.Character.HumanoidRootPart.Anchored = true
 
         replicatesignal(localPlayer.ConnectDiedSignalBackend)
-        wait(Players.RespawnTime - 0.8)
+        wait(Players.RespawnTime - 0.7)
         for _, tool in pairs(localPlayer.Backpack:GetChildren()) do
             if tool:IsA("Tool") then
                 tool.Parent = localPlayer.Character
@@ -167,7 +167,7 @@ Amount = tonumber(TextBox.Text)
         localPlayer.Character:BreakJoints()
 
          localPlayer.CharacterAdded:Wait()
-         wait(.3)
+         wait(.2)
          local newChar = localPlayer.Character or localPlayer.CharacterAdded:Wait()
          for _, item in ipairs(workspace:GetChildren()) do
              if item:IsA("BackpackItem") and item:FindFirstChild("Handle") then
