@@ -14,7 +14,7 @@ ScreenGui.ResetOnSpawn = true
 Frame.Parent = ScreenGui
 Frame.BackgroundColor3 = Color3.fromRGB(0, 85, 255)
 Frame.Position = UDim2.new(0.0799492374, 0, 0.483815432, 0)
-Frame.Size = UDim2.new(0, 252, 0, 126)
+Frame.Size = UDim2.new(0, 252, 0, 116)
 Frame.Active = true
 Frame.Archivable = true
 Frame.Draggable = true
@@ -82,15 +82,6 @@ end
 
 replicatesignal = missing("function", replicatesignal)
 
-local function teleportCharacter(cframe)
-    local char = localPlayer.Character
-    if char and char:FindFirstChild("HumanoidRootPart") then
-        char.HumanoidRootPart.CFrame = cframe
-    else
-        char:SetPrimaryPartCFrame(cframe)
-    end
-end
-
 function Notif(Title, Text, Time)
   local Time = Time
   if not Time then
@@ -144,20 +135,20 @@ function Dupe(Amount)
         localPlayer.Character = nil
         localPlayer.Character = char
         char.Animate:Destroy()
-        teleportCharacter(CFrame.new(0, 9999, 0))
+        localPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(0, 9999, 0)
         wait(.1)
         localPlayer.Character.HumanoidRootPart.Anchored = true
         for _,tool in pairs(char:GetChildren()) do
-				if tool:IsA("Tool") then
-					tool.Parent = localPlayer.Backpack
-				end
+		if tool:IsA("Tool") then
+			tool.Parent = localPlayer.Backpack
 		end
+	end
         replicatesignal(localPlayer.ConnectDiedSignalBackend)
-        wait(Players.RespawnTime - 0.3)
+        wait(Players.RespawnTime - 0.4)
         local equipnumber = {}
         for _, tool in pairs(localPlayer.Backpack:GetChildren()) do
             if tool:IsA("Tool") and tool:FindFirstChild("Handle") then
-                if tool.Name == "BoomBox" then
+                if tool.Name:find("boombox") then
                      tool.Parent = char
 		     tool.Parent = workspace
                      equipnumber[_] = tool
