@@ -116,8 +116,7 @@ function FindRadioTool()
      end
 end
 
-TextButton.MouseButton1Click:Connect(function()
-Amount = tonumber(TextBox.Text)
+function Dupe(Amount)
  if Amount ~= nil then
     if localPlayer.Character.Humanoid.Health ~= 0 then
       if not active then
@@ -154,13 +153,13 @@ Amount = tonumber(TextBox.Text)
 				end
 		end
         replicatesignal(localPlayer.ConnectDiedSignalBackend)
-        wait(Players.RespawnTime - 0.3)
+        wait(Players.RespawnTime - 0.2)
         local equipnumber = {}
         for _, tool in pairs(localPlayer.Backpack:GetChildren()) do
             if tool:IsA("Tool") and tool:FindFirstChild("Handle") then
                 if tool.Name == "BoomBox" then
                      tool.Parent = char
-				     tool.Parent = workspace
+		     tool.Parent = workspace
                      equipnumber[_] = tool
                 end
             end
@@ -188,6 +187,11 @@ Amount = tonumber(TextBox.Text)
 else
   Notif("Error", "Not Amount", 5)
 end
+end
+
+TextButton.MouseButton1Click:Connect(function()
+amount = tonumber(TextBox.Text)
+Dupe(amount)
 end)
 TextButton2.MouseButton1Click:Connect(function()
     local character = localPlayer.Character or localPlayer.CharacterAdded:Wait()
