@@ -172,7 +172,7 @@ Amount = tonumber(TextBox.Text)
          for _, item in ipairs(workspace:GetChildren()) do
              if item:IsA("BackpackItem") and item:FindFirstChild("Handle") then
                  pcall(function()
-                     firetouchinterest(item, newChar.HumanoidRootPart, 1)
+                     firetouchinterest(item.Handle, newChar.HumanoidRootPart, 0)
                  end)
              end
          end
