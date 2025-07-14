@@ -135,7 +135,7 @@ Amount = tonumber(TextBox.Text)
         if not tool then
                 Notif("Error", "Player not BoomBox, not dupe, wait a respawn and auto dupe")
         replicatesignal(localPlayer.ConnectDiedSignalBackend)
-        wait(Players.RespawnTime - 0.2)
+        wait(Players.RespawnTime - 0.1)
         localPlayer.Character:BreakJoints()
     localPlayer.CharacterAdded:Wait() wait(.3)
         else
@@ -145,40 +145,39 @@ Amount = tonumber(TextBox.Text)
         localPlayer.Character = nil
         localPlayer.Character = char
         char.Animate:Destroy()
-        teleportCharacter(CFrame.new(0, 10000, 0))
+        teleportCharacter(CFrame.new(0, 9999, 0))
         wait(.1)
         localPlayer.Character.HumanoidRootPart.Anchored = true
-
+        for _,tool in pairs(char:GetChildren()) do
+				if tool:IsA("Tool") then
+					tool.Parent = localPlayer.Backpack
+				end
+		end
         replicatesignal(localPlayer.ConnectDiedSignalBackend)
-        wait(Players.RespawnTime - 0.7)
+        wait(Players.RespawnTime - 0.3)
+        local equipnumber = {}
         for _, tool in pairs(localPlayer.Backpack:GetChildren()) do
-            if tool:IsA("Tool") then
-                tool.Parent = localPlayer.Character
-            end
-        end
-        wait(.2)
-        for _, tool in pairs(localPlayer.Character:GetChildren()) do
             if tool:IsA("Tool") and tool:FindFirstChild("Handle") then
                 if tool.Name == "BoomBox" then
-                     tool.Parent = workspace
+                     tool.Parent = char
+				     tool.Parent = workspace
+                     equipnumber[_] = tool
                 end
             end
         end
         localPlayer.Character:BreakJoints()
 
          localPlayer.CharacterAdded:Wait()
-         wait(.2)
+         wait(.1)
          local newChar = localPlayer.Character or localPlayer.CharacterAdded:Wait()
-         for _, item in ipairs(workspace:GetChildren()) do
-             if item:IsA("BackpackItem") and item:FindFirstChild("Handle") then
-                 pcall(function()
-                     firetouchinterest(item.Handle, newChar.HumanoidRootPart, 0)
-                 end)
-             end
+         for _, item in ipairs(equipnumber) do
+             pcall(function()
+                 newChar.Humanoid:EquipTool(item)
+             end)
          end
          dupesDone = dupesDone + 1
-         Notif("Successfully", "Dupe: "..dupesDone)
-         wait()
+         Notif("Successfully", "Dupe: "..dupesDone.." time")
+         wait(.3)
     end
     elseif active then
          Notif("Error", "Script Active, wait a end", 5)
