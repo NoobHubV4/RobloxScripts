@@ -79,7 +79,7 @@ local Amount
 local dupesDone = 0
 local active = nil
 local auto = nil
-local cooldown = nil
+local Added
 
 function missing(t, f, fallback)
     if type(f) == t then return f end
@@ -124,6 +124,7 @@ function FindRadioTool()
 end
 
 TextButton.MouseButton1Click:Connect(function()
+ if localPlayer.Character.Humanoid.Health ~= 0 then
   if not active then
   active = true
   Amount = tonumber(TextBox.Text)
@@ -163,12 +164,12 @@ TextButton.MouseButton1Click:Connect(function()
         plr.Character = char
         newChar:Destroy()
     end
-    plr.CharacterAdded:Wait() task.wait(.2)
+    plr.CharacterAdded:Wait() wait(.4)
         else
                 --
         end
-        teleportCharacter(localPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(0, 1000, 0))
-        task.wait(.2)
+        teleportCharacter(CFrame.new(0, 10000, 0))
+        wait(.4)
         localPlayer.Character.HumanoidRootPart.Anchored = true
         local plr = localPlayer
         local rcdEnabled, wasHidden = false, false
@@ -178,13 +179,13 @@ TextButton.MouseButton1Click:Connect(function()
 
     if rcdEnabled and replicatesignal then
         replicatesignal(plr.ConnectDiedSignalBackend)
-        wait(Players.RespawnTime - 0.6)
+        wait(Players.RespawnTime - 1)
         for _, tool in pairs(localPlayer.Backpack:GetChildren()) do
             if tool:IsA("Tool") then
                 tool.Parent = localPlayer.Character
             end
         end
-        task.wait(.3)
+        wait(.4)
         for _, tool in pairs(localPlayer.Character:GetChildren()) do
             if tool:IsA("Tool") and tool:FindFirstChild("Handle") then
                 if tool.Name == "BoomBox" then
@@ -207,28 +208,27 @@ TextButton.MouseButton1Click:Connect(function()
         plr.Character = char
         newChar:Destroy()
         end
-        
+
          localPlayer.CharacterAdded:Wait()
-         task.wait(.2)
-            
+         wait(.4)
          local newChar = localPlayer.Character or localPlayer.CharacterAdded:Wait()
-         if newChar then
-             for _, item in ipairs(workspace:GetChildren()) do
-                 if item:IsA("BackpackItem") and item:FindFirstChild("Handle") then
-                     pcall(function()
-                         newChar.Humanoid:EquipTool(item)
-                     end)
-                 end
+         for _, item in ipairs(workspace:GetChildren()) do
+             if item:IsA("BackpackItem") and item:FindFirstChild("Handle") then
+                 pcall(function()
+                     newChar.Humanoid:EquipTool(item)
+                 end)
              end
          end
          dupesDone = dupesDone + 1
-         task.wait(.1)
          Notif("Successfully", "Dupe: "..dupesDone)
          wait()
     end
     elseif active then
          Notif("Error", "Script Active, wait a end", 5)
     end
+ else
+    Notif("Error", "Player Dead", 5)
+ end
 end)
 TextButton2.MouseButton1Click:Connect(function()
     local character = localPlayer.Character or localPlayer.CharacterAdded:Wait()
