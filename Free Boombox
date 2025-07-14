@@ -124,10 +124,11 @@ function FindRadioTool()
 end
 
 TextButton.MouseButton1Click:Connect(function()
- if localPlayer.Character.Humanoid.Health ~= 0 then
-  if not active then
+Amount = tonumber(TextBox.Text)
+ if Amount ~= nil then
+    if localPlayer.Character.Humanoid.Health ~= 0 then
+      if not active then
   active = true
-  Amount = tonumber(TextBox.Text)
   auto = true
   while auto do
         if dupesDone >= Amount then
@@ -140,52 +141,25 @@ TextButton.MouseButton1Click:Connect(function()
         local tool = FindRadioTool()
         if not tool then
                 Notif("Error", "Player not BoomBox, not dupe, wait a respawn and auto dupe")
-                local plr = localPlayer
-        local rcdEnabled, wasHidden = false, false
-    if gethidden then
-        rcdEnabled, wasHidden = gethidden(workspace, "RejectCharacterDeletions") ~= Enum.RejectCharacterDeletions.Disabled
-    end
-
-    if rcdEnabled and replicatesignal then
-        replicatesignal(plr.ConnectDiedSignalBackend)
-        wait(Players.RespawnTime - 0.2)
-        replicatesignal(plr.Kill)
-    elseif rcdEnabled and not replicatesignal then
-        Notif("Incompatible Exploit", "Your exploit does not support this command (missing replicatesignal)")
-    else
-        local char = plr.Character
-        local hum = char:FindFirstChildWhichIsA("Humanoid")
-        if hum then hum:ChangeState(Enum.HumanoidStateType.Dead) end
-        char:ClearAllChildren()
-        local newChar = Instance.new("Model")
-        newChar.Parent = workspace
-        plr.Character = newChar
-        task.wait()
-        plr.Character = char
-        newChar:Destroy()
-    end
-    plr.CharacterAdded:Wait() wait(.4)
+        replicatesignal(localPlayer.ConnectDiedSignalBackend)
+        wait(Players.RespawnTime - 0.15)
+        localPlayer.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Dead)
+    localPlayer.CharacterAdded:Wait() wait(.3)
         else
                 --
         end
         teleportCharacter(CFrame.new(0, 10000, 0))
-        wait(.4)
+        wait(.3)
         localPlayer.Character.HumanoidRootPart.Anchored = true
-        local plr = localPlayer
-        local rcdEnabled, wasHidden = false, false
-    if gethidden then
-        rcdEnabled, wasHidden = gethidden(workspace, "RejectCharacterDeletions") ~= Enum.RejectCharacterDeletions.Disabled
-    end
 
-    if rcdEnabled and replicatesignal then
-        replicatesignal(plr.ConnectDiedSignalBackend)
-        wait(Players.RespawnTime - 1)
+        replicatesignal(localPlayer.ConnectDiedSignalBackend)
+        wait(Players.RespawnTime - 0.9)
         for _, tool in pairs(localPlayer.Backpack:GetChildren()) do
             if tool:IsA("Tool") then
                 tool.Parent = localPlayer.Character
             end
         end
-        wait(.4)
+        wait(.3)
         for _, tool in pairs(localPlayer.Character:GetChildren()) do
             if tool:IsA("Tool") and tool:FindFirstChild("Handle") then
                 if tool.Name == "BoomBox" then
@@ -193,24 +167,11 @@ TextButton.MouseButton1Click:Connect(function()
                 end
             end
         end
-        replicatesignal(plr.Kill)
-    elseif rcdEnabled and not replicatesignal then
-        Notif("Incompatible Exploit", "Your exploit does not support this command (missing replicatesignal)")
-    else
-        local char = plr.Character
-        local hum = char:FindFirstChildWhichIsA("Humanoid")
-        if hum then hum:ChangeState(Enum.HumanoidStateType.Dead) end
-        char:ClearAllChildren()
-        local newChar = Instance.new("Model")
-        newChar.Parent = workspace
-        plr.Character = newChar
-        task.wait()
-        plr.Character = char
-        newChar:Destroy()
-        end
+        wait(.1)
+        localPlayer.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Dead)
 
          localPlayer.CharacterAdded:Wait()
-         wait(.4)
+         wait(.3)
          local newChar = localPlayer.Character or localPlayer.CharacterAdded:Wait()
          for _, item in ipairs(workspace:GetChildren()) do
              if item:IsA("BackpackItem") and item:FindFirstChild("Handle") then
@@ -229,6 +190,9 @@ TextButton.MouseButton1Click:Connect(function()
  else
     Notif("Error", "Player Dead", 5)
  end
+else
+  Notif("Error", "Not Amount", 5)
+end
 end)
 TextButton2.MouseButton1Click:Connect(function()
     local character = localPlayer.Character or localPlayer.CharacterAdded:Wait()
