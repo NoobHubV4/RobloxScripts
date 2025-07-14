@@ -1,8 +1,3 @@
--- Gui to Lua
--- Version: 3.2
-
--- Instances:
-
 local ScreenGui = Instance.new("ScreenGui")
 local Frame = Instance.new("Frame")
 local TextLabel = Instance.new("TextLabel")
@@ -79,7 +74,6 @@ local Amount
 local dupesDone = 0
 local active = nil
 local auto = nil
-local Added
 
 function missing(t, f, fallback)
     if type(f) == t then return f end
@@ -87,8 +81,6 @@ function missing(t, f, fallback)
 end
 
 replicatesignal = missing("function", replicatesignal)
-sethidden =  missing("function", sethiddenproperty or set_hidden_property or set_hidden_prop)
-gethidden =  missing("function", gethiddenproperty or get_hidden_property or get_hidden_prop)
 
 local function teleportCharacter(cframe)
     local char = localPlayer.Character
@@ -142,8 +134,8 @@ Amount = tonumber(TextBox.Text)
         if not tool then
                 Notif("Error", "Player not BoomBox, not dupe, wait a respawn and auto dupe")
         replicatesignal(localPlayer.ConnectDiedSignalBackend)
-        wait(Players.RespawnTime - 0.15)
-        localPlayer.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Dead)
+        wait(Players.RespawnTime - 0.1)
+        localPlayer.Character:BreakJoints()
     localPlayer.CharacterAdded:Wait() wait(.3)
         else
                 --
@@ -167,8 +159,7 @@ Amount = tonumber(TextBox.Text)
                 end
             end
         end
-        wait(.1)
-        localPlayer.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Dead)
+        localPlayer.Character:BreakJoints()
 
          localPlayer.CharacterAdded:Wait()
          wait(.3)
