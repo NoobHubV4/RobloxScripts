@@ -87,6 +87,7 @@ local function teleportCharacter(cframe)
     if char and char:FindFirstChild("HumanoidRootPart") then
         char.HumanoidRootPart.CFrame = cframe
     else
+        char:SetPrimaryPartCFrame(cframe)
     end
 end
 
@@ -134,24 +135,28 @@ Amount = tonumber(TextBox.Text)
         if not tool then
                 Notif("Error", "Player not BoomBox, not dupe, wait a respawn and auto dupe")
         replicatesignal(localPlayer.ConnectDiedSignalBackend)
-        wait(Players.RespawnTime - 0.1)
+        wait(Players.RespawnTime - 0.15)
         localPlayer.Character:BreakJoints()
     localPlayer.CharacterAdded:Wait() wait(.3)
         else
                 --
         end
+        local char = localPlayer.Character
+        localPlayer.Character = nil
+        localPlayer.Character = char
+        char.Animate:Destroy()
         teleportCharacter(CFrame.new(0, 10000, 0))
-        wait(.3)
+        wait(.1)
         localPlayer.Character.HumanoidRootPart.Anchored = true
 
         replicatesignal(localPlayer.ConnectDiedSignalBackend)
-        wait(Players.RespawnTime - 0.9)
+        wait(Players.RespawnTime - 0.8)
         for _, tool in pairs(localPlayer.Backpack:GetChildren()) do
             if tool:IsA("Tool") then
                 tool.Parent = localPlayer.Character
             end
         end
-        wait(.3)
+        wait(.2)
         for _, tool in pairs(localPlayer.Character:GetChildren()) do
             if tool:IsA("Tool") and tool:FindFirstChild("Handle") then
                 if tool.Name == "BoomBox" then
@@ -167,7 +172,7 @@ Amount = tonumber(TextBox.Text)
          for _, item in ipairs(workspace:GetChildren()) do
              if item:IsA("BackpackItem") and item:FindFirstChild("Handle") then
                  pcall(function()
-                     newChar.Humanoid:EquipTool(item)
+                     firetouchinterest(item, newChar.HumanoidRootPart, 1)
                  end)
              end
          end
