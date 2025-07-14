@@ -139,7 +139,7 @@ function Dupe(Amount)
         wait(.1)
         localPlayer.Character.HumanoidRootPart.Anchored = true
         for _,tool in pairs(char:GetChildren()) do
-		if tool:IsA("Tool") then
+		if tool:IsA("Tool") and tool.Name:lower():find("boombox") then
 			tool.Parent = localPlayer.Backpack
 		end
 	end
@@ -147,12 +147,10 @@ function Dupe(Amount)
         wait(Players.RespawnTime - 0.4)
         local equipnumber = {}
         for _, tool in pairs(localPlayer.Backpack:GetChildren()) do
-            if tool:IsA("Tool") and tool:FindFirstChild("Handle") then
-                if tool.Name:find("boombox") then
-                     tool.Parent = char
-		     tool.Parent = workspace
-                     equipnumber[_] = tool
-                end
+            if tool:IsA("Tool") and tool.Name:lower():find("boombox") then
+                tool.Parent = char
+		tool.Parent = workspace
+                equipnumber[_] = tool
             end
         end
         localPlayer.Character:BreakJoints()
