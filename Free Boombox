@@ -135,7 +135,7 @@ function Dupe(Amount)
         localPlayer.Character = nil
         localPlayer.Character = char
         char.Animate:Destroy()
-        localPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(0, 9999, 0)
+        localPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(0, 10000, 0)
         wait(.1)
         localPlayer.Character.HumanoidRootPart.Anchored = true
         for _,tool in pairs(char:GetChildren()) do
