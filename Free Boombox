@@ -4,8 +4,6 @@ local TextLabel = Instance.new("TextLabel")
 local TextBox = Instance.new("TextBox")
 local TextButton = Instance.new("TextButton")
 local TextButton2 = Instance.new("TextButton")
-local TextLabel2 = Instance.new("TextLabel")
-local UIGradient = Instance.new("UIGradient")
 
 --Properties:
 
@@ -69,35 +67,9 @@ TextButton2.TextScaled = true
 TextButton2.TextSize = 12.000
 TextButton2.TextWrapped = true
 
-TextLabel2.Parent = ScreenGui
-TextLabel2.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-TextLabel2.BackgroundTransparency = 1.000
-TextLabel2.Position = UDim2.new(0, 0, 0, 0)
-TextLabel2.Size = UDim2.new(0, 400, 0, 52)
-TextLabel2.Font = Enum.Font.Cartoon
-TextLabel2.TextColor3 = Color3.fromRGB(255, 255, 255)
-TextLabel2.TextScaled = true
-TextLabel2.TextSize = 14.000
-TextLabel2.TextWrapped = true
-TextLabel2.TextXAlignment = Enum.TextXAlignment.Left
-TextLabel2.Visible = false
-
-UIGradient.Color =ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(196, 8, 202)), ColorSequenceKeypoint.new(0.13, Color3.fromRGB(199, 15, 191)), ColorSequenceKeypoint.new(0.48, Color3.fromRGB(247, 127, 28)), ColorSequenceKeypoint.new(0.89, Color3.fromRGB(254, 7, 59)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 2, 61))}
-UIGradient.Parent = TextLabel2
-task.spawn(function()
-	while game do
-		task.wait()
-		UIGradient.Rotation +=.005
-	end
-end)
-
 local Players = game:GetService("Players")
 
 local localPlayer = Players.LocalPlayer
-local Amount
-local dupesDone = 0
-local active = nil
-local auto = nil
 
 function missing(t, f, fallback)
     if type(f) == t then return f end
@@ -106,53 +78,8 @@ end
 
 replicatesignal = missing("function", replicatesignal)
 
-function Notif(Title, Text, Time)
-  local Time = Time
-  if not Time then
-        Time = 3
-  end
-  game:GetService("StarterGui"):SetCore("SendNotification", {Title = Title, Text = Text, Duration = Time,})
-end
-
-function FindRadioTool()
-  local character, backpack = localPlayer.Character:GetChildren(), localPlayer.Backpack:GetChildren()
-    for i,v in ipairs(backpack) do
-            if v:IsA("Tool") and v.Name == "BoomBox" then
-                    return v
-            end
-    end
-    for i,v in pairs(character) do
-            if v:IsA("Tool") and v.Name == 'BoomBox' then
-                    return v
-            end
-    end
-end
-
 function Dupe(Amount)
- if Amount ~= nil then
-    if localPlayer.Character.Humanoid.Health ~= 0 then
-      if not active then
-  active = true
-  auto = true
-  TextLabel2.Visible = true
-  TextLabel2.Text = "Dupe: "..dupesDone.." time"
-  while auto do
-        if dupesDone >= Amount then
-            dupesDone = 0
-            Amount = 0
-            active = false
-            auto = false
-            wait(.325)
-            TextLabel2.Visible = false
-            break
-        end
-        if not FindRadioTool() then
-                Notif("Error", 'Player not BoomBox auto respawn')
-                replicatesignal(localPlayer.ConnectDiedSignalBackend)
-                wait(game.Players.RespawnTime - 0.3)
-                replicatesignal(localPlayer.Kill)
-                localPlayer.CharacterAdded:Wait() wait(.2)
-        end
+  for i = 1,Amount or 1 do
         local char = localPlayer.Character
         localPlayer.Character = nil
         localPlayer.Character = char
@@ -179,19 +106,8 @@ function Dupe(Amount)
                  newChar.Humanoid:EquipTool(item)
              end)
          end
-         dupesDone = dupesDone + 1
-         TextLabel2.Text = "Dupe: "..dupesDone.." time"
          wait(.3)
     end
-    elseif active then
-         Notif("Error", "Script Active, wait a end", 5)
-    end
- else
-    Notif("Error", "Player Dead", 5)
- end
-else
-  Notif("Error", "Not Amount", 5)
-end
 end
 
 TextButton.MouseButton1Click:Connect(function()
