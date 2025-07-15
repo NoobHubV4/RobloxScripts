@@ -121,16 +121,6 @@ function Dupe(Amount)
             auto = false
             break
         end
-        local tool = FindRadioTool()
-        if not tool then
-                Notif("Error", "Player not BoomBox, not dupe, wait a respawn and auto dupe")
-        replicatesignal(localPlayer.ConnectDiedSignalBackend)
-        wait(Players.RespawnTime - 0.1)
-        localPlayer.Character:BreakJoints()
-    localPlayer.CharacterAdded:Wait() wait(.2)
-        else
-                --
-        end
         local char = localPlayer.Character
         localPlayer.Character = nil
         localPlayer.Character = char
@@ -138,20 +128,16 @@ function Dupe(Amount)
         localPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(0, 10000, 0)
         wait(.1)
         localPlayer.Character.HumanoidRootPart.Anchored = true
-        for _,tool in pairs(char:GetChildren()) do
-		if tool:IsA("Tool") and tool.Name:lower():find("boombox") then
-			tool.Parent = localPlayer.Backpack
-		end
-	end
+        char.Humanoid:UnequipTools()
         replicatesignal(localPlayer.ConnectDiedSignalBackend)
         wait(Players.RespawnTime - 0.3)
         for _, tool in pairs(localPlayer.Backpack:GetChildren()) do
-            if tool:IsA("Tool") and tool.Name:lower():find("boombox") then
+            if tool:IsA("Tool") then
                 tool.Parent = char
 		tool.Parent = workspace
             end
         end
-        localPlayer.Character:BreakJoints()
+        replicatesignal(localPlayer.Kill)
 
          localPlayer.CharacterAdded:Wait()
          wait(.1)
@@ -162,7 +148,6 @@ function Dupe(Amount)
              end)
          end
          dupesDone = dupesDone + 1
-         Notif("Successfully", "Dupe: "..dupesDone.." time")
          wait(.3)
     end
     elseif active then
