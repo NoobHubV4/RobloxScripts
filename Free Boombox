@@ -127,7 +127,7 @@ function Dupe(Amount)
         replicatesignal(localPlayer.ConnectDiedSignalBackend)
         wait(Players.RespawnTime - 0.1)
         localPlayer.Character:BreakJoints()
-    localPlayer.CharacterAdded:Wait() wait(.3)
+    localPlayer.CharacterAdded:Wait() wait(.2)
         else
                 --
         end
@@ -144,13 +144,11 @@ function Dupe(Amount)
 		end
 	end
         replicatesignal(localPlayer.ConnectDiedSignalBackend)
-        wait(Players.RespawnTime - 0.4)
-        local equipnumber = {}
+        wait(Players.RespawnTime - 0.3)
         for _, tool in pairs(localPlayer.Backpack:GetChildren()) do
             if tool:IsA("Tool") and tool.Name:lower():find("boombox") then
                 tool.Parent = char
 		tool.Parent = workspace
-                equipnumber[_] = tool
             end
         end
         localPlayer.Character:BreakJoints()
@@ -158,7 +156,7 @@ function Dupe(Amount)
          localPlayer.CharacterAdded:Wait()
          wait(.1)
          local newChar = localPlayer.Character or localPlayer.CharacterAdded:Wait()
-         for _, item in ipairs(equipnumber) do
+         for _, item in ipairs(workspace:GetChildren()) do
              pcall(function()
                  newChar.Humanoid:EquipTool(item)
              end)
@@ -190,4 +188,3 @@ TextButton2.MouseButton1Click:Connect(function()
         Notif("Successfully", "Drop "..tool.Name)
     end
 end)
---Player not steal boombox
