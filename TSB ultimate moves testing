@@ -1,25 +1,30 @@
 local Library = loadstring(Game:HttpGet("https://raw.github.com/NoobHubV1/NoobHubV1/main/Wizard%20Lib.lua"))()
 local loopkillall = false
+local killaura = false
 local Players = game:FindService("Players")
-local player = Players.LocalPlayer
+local player, LocalPlayer = Players.LocalPlayer, Players.LocalPlayer
 local Rstorage = game:FindService("ReplicatedStorage")
 
 local Window = Library:NewWindow("NoobHubV4 Hub")
 
 local Section = Window:NewSection("Main")
 
-local Kill = function(char)
+local RemoteHit = function(HitPart)
+    Rstorage.Remotes.ServerClientCommunication:FireServer({Function = "Skill Replication", SkillToReplicate = "Rising Fist", User = player.Character, Part = "Hit", HitTarget = HitPart})
+    Rstorage.Remotes.ServerClientCommunication:FireServer({Function = "Skill Replication", SkillToReplicate = "Rising Fist", User = player.Character, Part = "End", HitTarget = HitPart})
+end
+
+local Kill = function(Target)
     repeat task.wait()
-          Rstorage.Remotes.ServerClientCommunication:FireServer({Function = "Skill Replication", SkillToReplicate = "Rising Fist", User = player.Character, Part = "Hit", HitTarget = char})
-          Rstorage.Remotes.ServerClientCommunication:FireServer({Function = "Skill Replication", SkillToReplicate = "Rising Fist", User = player.Character, Part = "End", HitTarget = char})
-    until char.Humanoid.Health == 0
+          RemoteHit(Target.Character)
+    until Target.Character.Humanoid.Health == 0
 end
 
 local KillAll = function()
     for _,plr in ipairs(Players:GetPlayers()) do
       if plr.Character.Humanoid.Health ~= 0 then
         if plr ~= player then
-              Kill(plr.Character)
+              Kill(plr)
         end
       end
     end
@@ -29,14 +34,31 @@ Section:CreateButton("Kill All", function()
     KillAll()
 end)
 
-Section:CreateToggle("Loop Kill All", function(value)
-    loopkillall = value
+Section:CreateToggle("Loop Kill All", function(state)
+    loopkillall = state
+end)
+
+Section:CreateToggle("Kill Aura", function(state)
+    killaura = state
 end)
 
 spawn(function()
   task0 = function()
     if loopkillall then
       KillAll()
+    end
+    if killaura then
+      local VPart = LocalPlayer.Character.HumanoidRootPart
+      for _, Targets in pairs(Players:GetPlayers()) do
+	      if Targets.Character and not Targets.Character:FindFirstChildWhichIsA("ForceField") and Targets.Character:FindFirstChildOfClass("Humanoid").Health ~= 0 then
+		          local TPart = Targets.Character:FindFirstChildWhichIsA("BasePart")
+		          if VPart and TPart and Targets ~= LocalPlayer then
+			          if (TPart.Position-VPart.Position).Magnitude <= 10 then
+				         Kill(Targets)
+			          end
+		          end
+	      end
+      end
     end
   end
   while task.wait() do
