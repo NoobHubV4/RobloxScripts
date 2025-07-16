@@ -1,0 +1,45 @@
+local Library = loadstring(Game:HttpGet("https://raw.github.com/NoobHubV1/NoobHubV1/main/Wizard%20Lib.lua"))()
+local loopkillall = false
+local Players = game:FindService("Players")
+local player = Players.LocalPlayer
+local Rstorage = game:FindService("ReplicatedStorage")
+
+local Window = Library:NewWindow("NoobHubV4 Hub")
+
+local Section = Window:NewSection("Main")
+
+local Kill = function(char)
+    repeat task.wait()
+          Rstorage.Remotes.ServerClientCommunication:FireServer({Function = "Skill Replication", SkillToReplicate = "Rising Fist", User = player.Character, Part = "Hit", HitTarget = char})
+          Rstorage.Remotes.ServerClientCommunication:FireServer({Function = "Skill Replication", SkillToReplicate = "Rising Fist", User = player.Character, Part = "End", HitTarget = char})
+    until char.Humanoid.Health == 0
+end
+
+local KillAll = function()
+    for _,plr in ipairs(Players:GetPlayers()) do
+      if plr.Character.Humanoid.Health ~= 0 then
+        if plr ~= player then
+              Kill(plr.Character)
+        end
+      end
+    end
+end
+
+Section:CreateButton("Kill All", function()
+    KillAll()
+end)
+
+Section:CreateToggle("Loop Kill All", function(value)
+    loopkillall = value
+end)
+
+spawn(function()
+  task0 = function()
+    if loopkillall then
+      KillAll()
+    end
+  end
+  while task.wait() do
+    pcall(task0)
+  end
+end)
