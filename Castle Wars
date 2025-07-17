@@ -12,10 +12,12 @@ local function TPCFrame(Arg2)
         getChar().HumanoidRootPart.CFrame = Arg2
 end
 
-local CanCollide = function(state)
+local CanCollide = function(state, state2)
         for i,v in ipairs(plr.Character:GetChildren()) do
-                if v:IsA("BasePart") then
-                        v.CanCollide = state
+                if v:IsA("BasePart") and v.Name ~= "Head" then
+                        if v.CanCollide == state2 then
+                                v.CanCollide = state
+                        end
                 end
         end
 end
@@ -23,14 +25,14 @@ end
 local function getFlag(Color)
         if Color == "Blue" then
         local saved = workspace:FindFirstChild("GameBase")["Map"]:FindFirstChild("Flags")["FlagBlue"]:FindFirstChild("Base").CFrame
-        CanCollide(false)
-        workspace:FindFirstChild("GameBase")["Map"]:FindFirstChild("Flags")["FlagBlue"]:FindFirstChild("Base").CFrame = game.Players.LocalPlayer.Character.Head.CFrame
+        CanCollide(false, true)
+        workspace:FindFirstChild("GameBase")["Map"]:FindFirstChild("Flags")["FlagBlue"]:FindFirstChild("Base").CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
         task.wait()
         workspace:FindFirstChild("GameBase")["Map"]:FindFirstChild("Flags")["FlagBlue"]:FindFirstChild("Base").CFrame = saved
         elseif Color == "Red" then
-        CanCollide(false)
         local saved = workspace:FindFirstChild("GameBase")["Map"]:FindFirstChild("Flags")["FlagRed"]:FindFirstChild("Base").CFrame
-        workspace:FindFirstChild("GameBase")["Map"]:FindFirstChild("Flags")["FlagRed"]:FindFirstChild("Base").CFrame = game.Players.LocalPlayer.Character.Head.CFrame
+        CanCollide(false, true)
+        workspace:FindFirstChild("GameBase")["Map"]:FindFirstChild("Flags")["FlagRed"]:FindFirstChild("Base").CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
         task.wait()
         workspace:FindFirstChild("GameBase")["Map"]:FindFirstChild("Flags")["FlagRed"]:FindFirstChild("Base").CFrame = saved
         end
@@ -38,13 +40,9 @@ end
 
 local function Win()
         if plr.Team == game.Teams["Blue Castle"] then
-        getFlag("Red")
-        task.wait()
-        getFlag("Blue")
+        getFlag("Red"); getFlag("Blue")
         elseif plr.Team == game.Teams["Red Castle"] then
-        getFlag("Blue")
-        task.wait()
-        getFlag("Red")
+        getFlag("Blue"); getFlag("Red")
         end
 end
 
