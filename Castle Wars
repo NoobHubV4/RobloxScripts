@@ -12,15 +12,23 @@ local function TPCFrame(Arg2)
         getChar().HumanoidRootPart.CFrame = Arg2
 end
 
+local CanCollide = function(state)
+        for i,v in ipairs(plr.Character:GetChildren()) do
+                if v:IsA("BasePart") then
+                        v.CanCollide = state
+                end
+        end
+end
+
 local function getFlag(Color)
         if Color == "Blue" then
         local saved = workspace:FindFirstChild("GameBase")["Map"]:FindFirstChild("Flags")["FlagBlue"]:FindFirstChild("Base").CFrame
-        plr.Character.Head.CanCollide = false
+        CanCollide(false)
         workspace:FindFirstChild("GameBase")["Map"]:FindFirstChild("Flags")["FlagBlue"]:FindFirstChild("Base").CFrame = game.Players.LocalPlayer.Character.Head.CFrame
         task.wait()
         workspace:FindFirstChild("GameBase")["Map"]:FindFirstChild("Flags")["FlagBlue"]:FindFirstChild("Base").CFrame = saved
         elseif Color == "Red" then
-        plr.Character.Head.CanCollide = false
+        CanCollide(false)
         local saved = workspace:FindFirstChild("GameBase")["Map"]:FindFirstChild("Flags")["FlagRed"]:FindFirstChild("Base").CFrame
         workspace:FindFirstChild("GameBase")["Map"]:FindFirstChild("Flags")["FlagRed"]:FindFirstChild("Base").CFrame = game.Players.LocalPlayer.Character.Head.CFrame
         task.wait()
