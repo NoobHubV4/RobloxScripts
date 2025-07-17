@@ -14,7 +14,7 @@ spawn(function()
     if autoOrbs then
       for _,Orbs in ipairs(workspace:FindFirstChild("activeOrbs"):GetChildren()) do
         if Orbs:IsA("BasePart") then
-          game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = Orbs.CFrame
+          Orbs.CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
         end
       end
     end
