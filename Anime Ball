@@ -5,6 +5,7 @@ local Player = game.Players.LocalPlayer
 local Cooldown = tick()
 local Parried = false
 local AutoParry = false
+local SpamParry = false
 
 function GetBall()
   for i,v in next, workspace.Balls:GetChildren() do
@@ -16,13 +17,17 @@ Section:CreateToggle("Auto Parry", function(state)
        AutoParry = state
 end)
 
+Section:CreateToggle("Spam Parry", function(state)
+       SpamParry = state
+end)
+
 game.RunService.PreSimulation:Connect(function()
     local Ball, HRP = GetBall(), Player.Character.HumanoidRootPart
     if not Ball or not HRP then return end
     if Ball and HRP and AutoParry then
       local Speed = Ball.LinearVelocity.VectorVelocity.Magnitude
       local Distance = (HRP.Position - Ball.Position).Magnitude
-      if game:GetService("Players").LocalPlayer.Character:FindFirstChild("Highlight") and not Parried and Distance / Speed < 0.55 then
+      if game:GetService("Players").LocalPlayer.Character:FindFirstChild("Highlight") and not Parried and Distance / Speed < 0.5 then
         game.ReplicatedStorage.Framework.RemoteFunction:InvokeServer("SwordService", "Block", {-0.4646197259426117})
 
         if (tick() - Cooldown) >= 0.5 then
@@ -30,4 +35,15 @@ game.RunService.PreSimulation:Connect(function()
         end
       end
     end
+end)
+
+spawn(function()
+   task0 = function()
+      if SpamParry then
+         game.ReplicatedStorage.Framework.RemoteFunction:InvokeServer("SwordService", "Block", {-0.4646197259426117})
+      end
+   end
+   while task.wait() do
+      pcall(task0)
+   end
 end)
