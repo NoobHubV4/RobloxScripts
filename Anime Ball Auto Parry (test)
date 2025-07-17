@@ -1,0 +1,34 @@
+local Player = game.Players.LocalPlayer
+local Cooldown = tick()
+local Parried = false
+
+function GetBall()
+  for i,v in next, workspace.Balls:GetChildren() do
+    return v
+  end
+end
+
+function t(Title, Text, Duration)
+        game:GetService("StarterGui"):SetCore("SendNotification", {
+		Title = Title;
+		Text = Text;
+		Icon = "";
+		Duration = Duration;
+	})
+end
+
+game.RunService.PreSimulation:Connect(function()
+    local Ball, HRP = GetBall(), Player.Character.HumanoidRootPart
+    if not Ball or not HRP then return t("Test", "Test Script", 1) end
+    if Ball and HRP then
+      local Speed = Ball.LinearVelocity.VectorVelocity.Magnitude
+      local Distance = (HRP.Position - Ball.Position).Magnitude
+      if game:GetService("Players").LocalPlayer.Character:FindFirstChild("Highlight") and not Parried and Distance / Speed < 0.55 then
+        t("Test", "Test Scripter", 5)
+
+        if (tick() - Cooldown) >= 10 then
+             Parried = false
+        end
+      end
+    end
+end)
