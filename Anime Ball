@@ -7,6 +7,7 @@ local Parried = false
 local AutoParry = false
 local ScreenGui = Instance.new("ScreenGui", game.CoreGui)
 local TextLabel = Instance.new("TextLabel", ScreenGui)
+local speeds = 0.65
 
 function GetBall()
   for i,v in next, workspace.Balls:GetChildren() do
@@ -37,7 +38,7 @@ spawn(function()
     if Ball and HRP and AutoParry then
       local Speed = Ball.LinearVelocity.VectorVelocity.Magnitude
       local Distance = (Ball.Position - HRP.Position).Magnitude
-      if game.Players.LocalPlayer.Character:FindFirstChild("Highlight") and not Parried and Distance / Speed < 0.6 then
+      if game.Players.LocalPlayer.Character:FindFirstChild("Highlight") and not Parried and Distance / Speed < speeds then
         game.ReplicatedStorage.Framework.RemoteFunction:InvokeServer("SwordService", "Block", {-0.4646197259426117})
 
         if (tick() - Cooldown) >= 1 then
