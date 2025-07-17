@@ -1,0 +1,28 @@
+local lib = loadstring(Game:HttpGet("https://raw.githubusercontent.com/NoobHubV1/NoobHubV1/main/Wizard%20Lib.lua"))()
+local autoOrbs
+local autoStrength
+local Window = lib:NewWindow("Blades World")
+local Section = Window:NewSection("Main")
+Section:CreateToggle("Auto Orbs", function(state)
+  autoOrbs = state
+end)
+Section:CreateToggle("Auto Strength", function(state)
+  autoStrength = state
+end)
+spawn(function()
+  task0 = function()
+    if autoOrbs then
+      for i,v in ipairs(workspace:FindFirstChild("activeOrbs"):GetChildren()) do
+        if v:IsA("BasePart") then
+          v.CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
+        end
+      end
+    end
+    if autoStrength then
+      workspace:FindFirstChild("BladePowerGiver")["RemoteEvent"]:FireServer()
+    end
+  end
+  while task.wait() do
+    pcall(task0)
+  end
+end)
