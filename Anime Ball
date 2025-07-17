@@ -6,7 +6,6 @@ local Cooldown = tick()
 local Parried = false
 local AutoParry = false
 local SpamParry = false
-local VirtualInputManager = game:GetService("VirtualInputManager") or game:FindFirstDescendant("VirtualInputManager")
 local ScreenGui = Instance.new("ScreenGui", game.CoreGui)
 local TextLabel = Instance.new("TextLabel", ScreenGui)
 
@@ -32,19 +31,24 @@ Section:CreateButton("Manual Spam", function()
        loadstring(Game:HttpGet("https://raw.githubusercontent.com/NoobHubV4/RobloxScripts/main/Remote%20anime%20ball"))()
 end)
 
-game.RunService.PreSimulation:Connect(function()
+spawn(function()
+    task0 = function()
     local Ball, HRP = GetBall(), GetRoot()
     if not Ball or not HRP then return end
     if Ball and HRP and AutoParry then
       local Speed = Ball.LinearVelocity.VectorVelocity.Magnitude
-      local Distance = (HRP.Position - Ball.Position).Magnitude
-      if game:GetService("Players").LocalPlayer.Character:FindFirstChild("Highlight") and not Parried and Distance / Speed < 0.5 then
-        VirtualInputManager:SendMouseButtonEvent(0, 0, 0, true, game, 0)
+      local Distance = (Ball.Position - HRP.Position).Magnitude
+      if game:GetService("Players").LocalPlayer.Character:FindFirstChild("Highlight") and not Parried and Distance / Speed < 0.55 then
+        game.ReplicatedStorage.Framework.RemoteFunction:InvokeServer("SwordService", "Block", {-0.4646197259426117})
 
         if (tick() - Cooldown) >= 1 then
              Parried = false
         end
       end
+    end
+    end
+    while task.wait() do
+        pcall(task0)
     end
 end)
 
@@ -56,7 +60,7 @@ TextLabel.BackgroundTransparency = 0.5
 TextLabel.Position = UDim2.new(0, 0, 0, 0)
 TextLabel.Size = UDim2.new(0, 180, 0, 40)
 TextLabel.Font = Enum.Font.SourceSans
-TextLabel.TextColor3 = Color3.fromRGB(0, 0, 0)
+TextLabel.TextColor3 = Color3.fromRGB(150, 100, 75)
 TextLabel.TextScaled = true
 TextLabel.TextSize = 15.000
 TextLabel.TextStrokeTransparency = 0.000
@@ -64,8 +68,8 @@ TextLabel.TextWrapped = true
 
 game.RunService.Stepped:Connect(function()
      local Ball, HRP = GetBall(), GetRoot()
-     if not Ball or not HRP then TextLabel.Text = "0" end
+     if not Ball or not HRP then TextLabel.Text = "Speed: 0" end
      if Ball and HRP then
-            TextLabel.Text = (HRP.Position - Ball.Position).Magnitude / Ball.LinearVelocity.VectorVelocity.Magnitude
+            TextLabel.Text = "Speed: "..Ball.LinearVelocity.VectorVelocity.Magnitude
      end
 end)
