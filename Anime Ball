@@ -1,6 +1,10 @@
+local lib = loadstring(Game:HttpGet("https://raw.githubusercontent.com/NoobHubV1/NoobHubV1/main/Wizard%20Lib.lua"))()
+local Window = lib:NewWindow("Anime Ball")
+local Section = Window:NewSection("Main")
 local Player = game.Players.LocalPlayer
 local Cooldown = tick()
 local Parried = false
+local AutoParry = false
 
 function GetBall()
   for i,v in next, workspace.Balls:GetChildren() do
@@ -8,25 +12,20 @@ function GetBall()
   end
 end
 
-function t(Title, Text, Duration)
-        game:GetService("StarterGui"):SetCore("SendNotification", {
-		Title = Title;
-		Text = Text;
-		Icon = "";
-		Duration = Duration;
-	})
-end
+Section:CreateToggle("Auto Parry", function(state)
+       AutoParry = state
+end)
 
 game.RunService.PreSimulation:Connect(function()
     local Ball, HRP = GetBall(), Player.Character.HumanoidRootPart
-    if not Ball or not HRP then return t("Test", "Test Script", 1) end
-    if Ball and HRP then
+    if not Ball or not HRP then return end
+    if Ball and HRP and AutoParry then
       local Speed = Ball.LinearVelocity.VectorVelocity.Magnitude
       local Distance = (HRP.Position - Ball.Position).Magnitude
       if game:GetService("Players").LocalPlayer.Character:FindFirstChild("Highlight") and not Parried and Distance / Speed < 0.55 then
-        t("Test", "Test Scripter", 5)
+        game.ReplicatedStorage.Framework.RemoteFunction:InvokeServer("SwordService", "Block", {-0.4646197259426117})
 
-        if (tick() - Cooldown) >= 10 then
+        if (tick() - Cooldown) >= 0.5 then
              Parried = false
         end
       end
