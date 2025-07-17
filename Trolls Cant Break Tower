@@ -1,24 +1,17 @@
-local Prefix = ":"
-local Players = game.Players
-local LocalPlayer = Players.LocalPlayer
-local Unloaded = false
-local Key = false
-local UserInputService = game:GetService("UserInputService")
-
-local Notif = function(Title, Text, Duration)
-	local Duration = Duration
-	if not Duration then
-		Duration = 3
-	end
-	game:GetService("StarterGui"):SetCore("SendNotification", {
+function t(Title, Text, Duration)
+        game:GetService("StarterGui"):SetCore("SendNotification", {
 		Title = Title;
 		Text = Text;
 		Icon = "";
 		Duration = Duration;
 	})
 end
-
-function LocalScript()
+if game.PlaceId ~= 14493533447 then
+        return game.TeleportService:Teleport(14493533447)
+end
+if game.CoreGui:FindFirstChild("Tower") then
+        return t("Error", "Script already executor", 5)
+end
 print([[
 Commands:
         slap [plr,all,random] | Slap the Player
@@ -57,6 +50,25 @@ Commands:
         flyingcarpet / carpet | Get Item Flying Carpet
         commands / cmds | Show a commands list
 ]])
+local Prefix = ":"
+local Players = game.Players
+local LocalPlayer = Players.LocalPlayer
+local Unloaded = false
+local UserInputService = game:GetService("UserInputService")
+
+local Notif = function(Title, Text, Duration)
+	local Duration = Duration
+	if not Duration then
+		Duration = 3
+	end
+	game:GetService("StarterGui"):SetCore("SendNotification", {
+		Title = Title;
+		Text = Text;
+		Icon = "";
+		Duration = Duration;
+	})
+end
+
 local Whitelisted = {};
 local Loops = {
       Slaps = {
@@ -86,7 +98,7 @@ local States = {
 };
 local ViewPlr = {};
 local Connections = {};
-local API = {};
+local UnloadScript
 local Camera = game:FindService("Workspace").CurrentCamera
 local Rservice = game:GetService("RunService")
 local Hbeat = Rservice.Heartbeat
@@ -94,7 +106,7 @@ local Rstep = Rservice.RenderStepped
 local Stepped = Rservice.Stepped
 
 --Menu
-local Tower = Instance.new("ScreenGui", game.Players.LocalPlayer.PlayerGui)
+local Tower = Instance.new("ScreenGui", game.CoreGui)
 Tower.Name = "Tower"
 Tower.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 Tower.ResetOnSpawn = false
@@ -507,7 +519,7 @@ function OnCommand(text)
                 wait(.5)
                 game:FindService("TeleportService"):Teleport(game.PlaceId)
         elseif cm("unload") then
-                API:UnloadScript()
+                UnloadScript()
                 Notif("Unload", "Unload the Scripter")
         elseif cm("prefix") then
                 local New = Args[2]
@@ -1056,7 +1068,7 @@ SpamBtn.MouseButton1Click:Connect(function()
 end)
 LocalPlayer.Character.Humanoid.Health = 0
 Notif("Trolls Cant Break Tower", "Script Loaded!")
-function API:UnloadScript()
+UnloadScript = function()
         Unloaded = true
         Tower:Destroy()
         ScreenGui:Destroy()
@@ -1066,44 +1078,4 @@ function API:UnloadScript()
         Connections.Focus:Disconnect()
         Connections.CharacterAdded:Disconnect()
         Connections.Died:Disconnect()
-end
-end
-
-UserInputService.InputBegan:Connect(function(input, gameProcessed)
-        if not Unloaded then
-	        if input.KeyCode == Enum.KeyCode.M and not Key then
-		        Key = true
-                        LocalScript()
-                end
-	end
-end)
-
-if not Unloaded then
-local VirtualInputManager = game:GetService("VirtualInputManager") or game:FindFirstDescendant("VirtualInputManager")
-
-local ScreenGui = Instance.new("ScreenGui")
-local SpamBtn = Instance.new("TextButton")
-
-ScreenGui.Parent = game.CoreGui
-ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-ScreenGui.ResetOnSpawn = true
-
-SpamBtn.Name = "SpamBtn"
-SpamBtn.Parent = ScreenGui
-SpamBtn.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
-SpamBtn.Position = UDim2.new(0, 0, 0.395768493, 0)
-SpamBtn.Size = UDim2.new(0, 100, 0, 45)
-SpamBtn.Font = Enum.Font.Arcade
-SpamBtn.Text = "Scam Press M"
-SpamBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-SpamBtn.TextScaled = true
-SpamBtn.TextSize = 14.000
-SpamBtn.TextStrokeTransparency = 0.000
-SpamBtn.TextWrapped = true
-SpamBtn.Visible = true
-SpamBtn.Draggable = false
-SpamBtn.MouseButton1Click:Connect(function()
-      VirtualInputManager:SendKeyEvent(true,"M",false,game)
-      ScreenGui:Destroy()
-end)
 end
