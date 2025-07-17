@@ -250,7 +250,8 @@ spawn(function()
 	      HealPlayer()
 	 end
 	 if States.AutoSwing then
-              BatRemote("Long Bat"):FireServer(FindTool())
+	      local tool = FindTool()
+              BatRemote(tool.Name):FireServer(tool)
 	 end
 	 if States.TripmineThrow then
 	      AbilityNoCooldown("Tripmine Throw")
@@ -415,8 +416,9 @@ Main:CreateToggle("Spam Ability", function(v)
 	end
 end)
 Main:CreateButton("God Mode", function()
-	AbilityNoCooldown("Burrow")
-	wait(.5)
+        repeat task.wait()
+                BuyItem("Basic Bat")
+	until LocalPlayer.Backpack:FindFirstChild("Basic Bat")
 	AbilityNoCooldown("Burrow")
 end)
 Kills:CreateButton("Kill All", function()
