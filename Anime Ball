@@ -10,7 +10,7 @@ local Player = game.Players.LocalPlayer
 local Cooldown = tick()
 local Parried = false
 local AutoParry = false
-local ParryMethod = "Click"
+local ParryMethod = "Keypress"
 local ScreenGui = Instance.new("ScreenGui", game.CoreGui)
 local TextLabel = Instance.new("TextLabel", ScreenGui)
 local VIM = game:GetService("VirtualInputManager") or game:FindFirstDescendant("VirtualInputManager")
@@ -44,7 +44,7 @@ function t(Title, Text, Time)
     game:FindService("StarterGui"):SetCore("SendNotification",{Title=Title,Text=Text,Icon="",Duration=Time,})
 end
 
-Section:CreateDropdown("Parry Method", {"Keypress","Click","Remote"}, 2, function(select)
+Section:CreateDropdown("Parry Method", {"Keypress","Click","Remote"}, 1, function(select)
        ParryMethod = select
 end)
 
