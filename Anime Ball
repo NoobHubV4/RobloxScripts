@@ -59,7 +59,6 @@ spawn(function()
       game.ReplicatedStorage.Framework.RemoteFunction:InvokeServer("SwordService", "Block", {0})
       Parried = true
       Cooldown = tick()
-      t("Test Script", "Test", 0.005)
       if (tick() - Cooldown) >= 1 then
              Parried = false
       end
