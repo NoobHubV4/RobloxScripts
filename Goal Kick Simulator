@@ -1,14 +1,21 @@
 local lib = loadstring(Game:HttpGet("https://raw.githubusercontent.com/NoobHubV1/NoobHubV1/main/Wizard%20Lib.lua"))()
 local autoKick
+local autoRebirth
 local Window = lib:NewWindow("Goal Kick Simulator")
 local Section = Window:NewSection("Main")
 Section:CreateToggle("Auto Kick", function(state)
   autoKick = state
 end)
+Section:CreateToggle("Auto Rebirth", function(state)
+  autoRebirth = state
+end)
 spawn(function()
   task0 = function()
     if autoKick then
       game.ReplicatedStorage.Remote.RemoteFunction:InvokeServer("Throw", 1)
+    end
+    if autoRebirth then
+      game.ReplicatedStorage.Remote.RemoteFunction:InvokeServer("Rebirth")
     end
   end
   while task.wait() do
