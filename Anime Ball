@@ -45,7 +45,7 @@ spawn(function()
     local Ball, HRP = GetBall(), GetRoot()
     if not Ball or not HRP then return end
     if Ball and HRP and AutoParry then
-      if game.Players.LocalPlayer.Character:FindFirstChild("Highlight") and not Parried and (Ball.Position - HRP.Position).Magnitude / Ball.LinearVelocity.VectorVelocity.Magnitude < 0.55 then
+      if game.Players.LocalPlayer.Character:FindFirstChild("Highlight") and not Parried and (Ball.Position - HRP.Position).Magnitude / Ball.LinearVelocity.VectorVelocity.Magnitude < 0.6 then
         Parried = true
         if Method == "Keypress" then
                VIM:SendKeyEvent(true,"F",false,game)
@@ -56,7 +56,6 @@ spawn(function()
         end
         wait(.15)
         Parried = false
-        t("Test", "Test Script", 1)
       end
     end
     end
