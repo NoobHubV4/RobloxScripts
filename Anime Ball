@@ -62,7 +62,7 @@ spawn(function()
       if (tick() - Cooldown) >= 1 then
              Parried = false
       end
-      wait(.3)
+      task.wait(.6)
       Parried = false
     end
     end
