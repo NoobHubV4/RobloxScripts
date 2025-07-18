@@ -5,9 +5,10 @@ local Player = game.Players.LocalPlayer
 local Cooldown = tick()
 local Parried = false
 local AutoParry = false
+local Method = "Click"
 local ScreenGui = Instance.new("ScreenGui", game.CoreGui)
 local TextLabel = Instance.new("TextLabel", ScreenGui)
-local VirtualInputManager = game:GetService("VirtualInputManager") or game:FindFirstDescendant("VirtualInputManager")
+local VIM = game:GetService("VirtualInputManager") or game:FindFirstDescendant("VirtualInputManager")
 
 function GetBall()
   for i,v in next, workspace.Balls:GetChildren() do
@@ -23,6 +24,14 @@ function GetRoot()
   end
 end
 
+function t(Title, Text, Time)
+    game:FindService("StarterGui"):SetCore("SendNotification",{Title=Title,Text=Text,Icon="",Duration=Time,})
+end
+
+Section:CreateDropdown("Parry Method", {"Keypress","Click","Remote"}, 2, function(select)
+       Method = select
+end)
+
 Section:CreateToggle("Auto Parry", function(state)
        AutoParry = state
 end)
@@ -36,14 +45,18 @@ spawn(function()
     local Ball, HRP = GetBall(), GetRoot()
     if not Ball or not HRP then return end
     if Ball and HRP and AutoParry then
-      local Speed = Ball.LinearVelocity.VectorVelocity.Magnitude
-      local Distance = (Ball.Position - HRP.Position).Magnitude
-      if game.Players.LocalPlayer.Character:FindFirstChild("Highlight") and not Parried and Distance / Speed < 0.55 then
+      if game.Players.LocalPlayer.Character:FindFirstChild("Highlight") and not Parried and (Ball.Position - HRP.Position).Magnitude / Ball.LinearVelocity.VectorVelocity.Magnitude < 0.55 then
         Parried = true
-        game.ReplicatedStorage.Framework.RemoteFunction:InvokeServer("SwordService", "Block", {0})
-        if (tick() - Cooldown) >= 1 then
-           Parried = false
+        if Method == "Keypress" then
+               VIM:SendKeyEvent(true,"F",false,game)
+        elseif Method == "Click" then
+               VIM:SendMouseButtonEvent(0, 0, 0, true, game, 0)
+        elseif Method == "Remote" then
+               game.ReplicatedStorage.Framework.RemoteFunction:InvokeServer("SwordService", "Block", {0})
         end
+        wait(.15)
+        Parried = false
+        t("Test", "Test Script", 1)
       end
     end
     end
