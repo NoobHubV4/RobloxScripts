@@ -7,13 +7,14 @@ local lib = loadstring(Game:HttpGet("https://raw.githubusercontent.com/NoobHubV1
 local Window = lib:NewWindow("Anime Ball")
 local Section = Window:NewSection("Main")
 local Player = game.Players.LocalPlayer
-local Cooldown = tick()
-local Parried = false
-local AutoParry = false
 local ScreenGui = Instance.new("ScreenGui", game.CoreGui)
 local TextLabel = Instance.new("TextLabel", ScreenGui)
 local VIM = game:GetService("VirtualInputManager") or game:FindFirstDescendant("VirtualInputManager")
 local AutoMove = false
+local RunService = game:GetService("RunService") or game:FindFirstDescendant("RunService")
+local VirtualInputManager = game:GetService("VirtualInputManager") or game:FindFirstDescendant("VirtualInputManager")
+local AutoParry = false
+local Parried = false
 
 function GetBall()
   for i,v in next, workspace.Balls:GetChildren() do
@@ -44,26 +45,32 @@ end)
 Section:CreateToggle("Auto Move", function(state)
        AutoMove = state
 end)
-
 spawn(function()
-    task0 = function()
-       local Ball, HRP = GetBall(), GetRoot()
-       if not Ball or not HRP then return end
-       if Ball and HRP and AutoParry then
-         if Player.Character:FindFirstChild("Highlight") and not Parried and (Ball.Position - HRP.Position).Magnitude / Ball.LinearVelocity.VectorVelocity.Magnitude < 0.6 then
-           Parried = true
-           game.ReplicatedStorage.Framework.RemoteFunction:InvokeServer("SwordService", "Block", {0})
-
-           wait(.85)
-           Parried = false
-         end
-       end
+    function Parry()
+    local Ball, HRP = GetBall(), Player.Character.HumanoidRootPart
+    if not Ball or not HRP then
+      return
     end
-    while wait(.07875) do
-        pcall(task0)
+    
+    local Speed = Ball.LinearVelocity.VectorVelocity.Magnitude
+    local Distance = (HRP.Position - Ball.Position).Magnitude
+    
+    if Player.Character.Highlight and not Parried and Distance / Speed <= 0.6 and AutoParry then
+      game.ReplicatedStorage.Framework.RemoteFunction:InvokeServer("SwordService", "Block", {0})
+      Parried = true
+      Cooldown = tick()
+      t("Test Script", "Test", 0.005)
+      if (tick() - Cooldown) >= 1 then
+             Parried = false
+      end
+      wait(.3)
+      Parried = false
     end
+    end
+while wait(.0375) do
+    pcall(Parry)
+end
 end)
-
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 ScreenGui.ResetOnSpawn = true
 
