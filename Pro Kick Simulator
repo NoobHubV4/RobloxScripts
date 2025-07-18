@@ -1,0 +1,35 @@
+local lib = loadstring(Game:HttpGet("https://raw.githubusercontent.com/NoobHubV1/NoobHubV1/main/Wizard%20Lib.lua"))()
+local autoWin
+local autoTrain
+local autoRebirth
+local G = "G1"
+local Window = lib:NewWindow("Pro Kick Simulator")
+local Section = Window:NewSection("Main")
+Section:CreateDropdown("Train", {"G1","G2","G3","G4","G5"}, 1, function(select)
+  G = select
+end)
+Section:CreateToggle("Auto Train", function(state)
+  autoTrain = state
+end)
+Section:CreateToggle("Auto Win", function(state)
+  autoWin = state
+end)
+Section:CreateToggle("Auto Rebirth", function(state)
+  autoRebirth = state
+end)
+spawn(function()
+  task0 = function()
+    if autoWin then
+      game.ReplicatedStorage.Events.Kick.End:FireServer()
+    end
+    if autoTrain then
+      game.ReplicatedStorage.Events.Train.Complete:FireServer(G)
+    end
+    if autoRebirth then
+      game.ReplicatedStorage.Events.Rebirth.Rebirthed:FireServer()
+    end
+  end
+  while task.wait() do
+    pcall(task0)
+  end
+end)
