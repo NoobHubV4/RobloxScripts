@@ -26,7 +26,9 @@ spawn(function()
       game.ReplicatedStorage.Events.Click:FireServer()
     end
     if infWins then
-      game.ReplicatedStorage.Events.Win:FireServer("Zone7")
+      for i = 1,8 do
+        game.ReplicatedStorage.Events.Win:FireServer("Zone"..i)
+      end
     end
   end
   while task.wait() do
