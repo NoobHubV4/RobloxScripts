@@ -1,0 +1,37 @@
+local lib = loadstring(Game:HttpGet("https://raw.githubusercontent.com/NoobHubV1/NoobHubV1/main/Wizard%20Lib.lua"))()
+local autoJump
+local JumpFast
+local SavedPositions
+local Window = lib:NewWindow("Jump for ADMIN")
+local Section = Window:NewSection("Main")
+Section:CreateToggle("Auto Jump", function(state)
+  autoJump = state
+end)
+Section:CreateToggle("250 Jump/s", function(state)
+  JumpFast = state
+end)
+spawn(function()
+  task0 = function()
+    if autoJump then
+      game.ReplicatedStorage.JumpEvent:FireServer()
+    end
+  end
+  while task.wait() do
+    pcall(task0)
+  end
+end)
+spawn(function()
+  task1 = function()
+    if JumpFast then
+      game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = workspace:FindFirstChild("Map")["PL3Trampoline6"]:FindFirstChild("Bouncer")["Union"].CFrame
+      for _,part in next, game.Players.LocalPlayer.Character:GetChildren() do
+        if part:IsA("BasePart") then
+          part.CanCollide = false
+        end
+      end
+    end
+  end
+  while task.wait() do
+    pcall(task1)
+  end
+end)
