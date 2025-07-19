@@ -9,12 +9,12 @@ local Section = Window:NewSection("Main")
 local Player = game.Players.LocalPlayer
 local ScreenGui = Instance.new("ScreenGui", game.CoreGui)
 local TextLabel = Instance.new("TextLabel", ScreenGui)
-local VIM = game:GetService("VirtualInputManager") or game:FindFirstDescendant("VirtualInputManager")
 local AutoMove = false
-local RunService = game:GetService("RunService") or game:FindFirstDescendant("RunService")
 local AutoParry = false
 local Cooldown = tick()
 local balltarget
+local Key
+local VIM = game:GetService("VirtualInputManager") or game:FindFirstDescendant("VirtualInputManager")
 
 function GetBall()
   for _,ball in next, workspace.GameObjects.Balls:GetChildren() do
@@ -25,13 +25,17 @@ end
 function t(Title, Text, Time)
     game:FindService("StarterGui"):SetCore("SendNotification",{Title=Title,Text=Text,Icon="",Duration=Time,})
 end
-
+Section:CreateTextbox("Key to Block", function(text)
+    Key = text
+end)
 Section:CreateToggle("Auto Parry", function(state)
        AutoParry = state
 end)
-
 Section:CreateToggle("Auto Move", function(state)
        AutoMove = state
+end)
+Section:CreateButton("Get Key", function()
+       loadstring(game:HttpGet("https://raw.githubusercontent.com/infyiff/backup/main/SimpleSpyV3/main.lua"))()
 end)
 workspace.GameObjects.Balls.ChildAdded:Connect(function()
        local Ball = GetBall()
@@ -54,8 +58,8 @@ game.RunService.PreSimulation:Connect(function()
     local Speed = Ball.LinearVelocity.VectorVelocity.Magnitude
     local Distance = (HRP.Position - Ball.Position).Magnitude
     
-    if Ball:GetAttribute("target") == Player.Name and not Parried and Distance / Speed <= 0.75 and AutoParry then
-      VIM:SendMouseButtonEvent(0, 0, 0, true, game, 0)
+    if Ball:GetAttribute("target") == Player.Name and not Parried and Distance / Speed <= 0.7 and AutoParry then
+      game:GetService("ReplicatedStorage"):WaitForChild("GET"):InvokeServer(Key, "block", HRP.Position)
       Parried = true
       Cooldown = tick()
       if (tick() - Cooldown) >= 1 then
