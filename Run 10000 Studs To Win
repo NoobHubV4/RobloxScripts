@@ -1,0 +1,24 @@
+local lib = loadstring(Game:HttpGet("https://raw.githubusercontent.com/NoobHubV1/NoobHubV1/main/Wizard%20Lib.lua"))()
+local autoSpeed
+local autoRebirth
+local Window = lib:NewWindow("Run 10,000 Studs To Win")
+local Section = Window:NewSection("Main")
+Section:CreateToggle("Auto Speed", function(state)
+  autoSpeed = state
+end)
+Section:CreateToggle("Auto Rebirth", function(state)
+  autoRebirth = state
+end)
+spawn(function()
+  task0 = function()
+    if autoSpeed then
+      game.ReplicatedStorage.Remotes.secondspeed:FireServer()
+    end
+    if autoRebirth then
+      game.ReplicatedStorage.Remotes.rebirth:FireServer()
+    end
+  end
+  while task.wait() do
+    pcall(task0)
+  end
+end)
