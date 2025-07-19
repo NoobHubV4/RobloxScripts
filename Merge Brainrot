@@ -2,8 +2,18 @@ local Library = loadstring(Game:HttpGet('https://raw.githubusercontent.com/NoobH
 local Window = Library:NewWindow("Merge Brainrot")
 local Rstorage = game.ReplicatedStorage
 local Main = Window:NewSection("Main")
-local Main2 = Window:NewSection("Main 2")
-local Spam = false
+local Potion = Window:NewSection("Potion")
+local Misc = Window:NewSection("Misc")
+local spamRebirth
+local spamPrestige
+local spamBuy = {
+         Potion = {
+             Potion1 = false;
+             Potion2 = false;
+             Potion3 = false;
+             All = false;
+         };
+};
 Main:CreateTextbox("Add Cash", function(value)
      Rstorage.Remotes.AddValueEvent:FireServer("Cash", tonumber(value))
 end)
@@ -37,13 +47,50 @@ end)
 Main:CreateButton("100 Spawn Tier Level", function()
      Rstorage.Remotes.UpgradeEvent:FireServer("SpawnTierLevel", 100, 0)
 end)
-Main2:CreateToggle("Spam Rebirth", function(v)
-     Spam = v
-     Stepped = game.RunService.Stepped:Connect(function()
-          if Spam then
-               game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("RebirthConfirmEvent"):FireServer(0, 0, 1e18)
-          elseif not Spam then
-               Stepped:Disconnect()
-          end
-     end)
+Misc:CreateToggle("Spam Rebirth", function(v)
+     spamRebirth = v
+end)
+Misc:CreateToggle("Spam Prestige", function(v)
+     spamPrestige = v
+end)
+Potion:CreateToggle("Auto Buy X2 Cash", function(v)
+     spamBuy.Potion.Potion1 = v
+end)
+Potion:CreateToggle("Auto Buy X2 Spawn Rate", function(v)
+     spamBuy.Potion.Potion2 = v
+end)
+Potion:CreateToggle("Auto Buy X2 Max Brainrot", function(v)
+     spamBuy.Potion.Potion3 = v
+end)
+Potion:CreateToggle("Auto Buy All", function(v)
+     spamBuy.Potion.All = v
+end)
+
+spawn(function()
+  task0 = function()
+    if spamRebirth then
+      Rstorage.Remotes.RebirthConfirmEvent:FireServer(0, 0, 1e19)
+    end
+    if spamPrestige then
+      Rstorage.Remotes.UpdateBestBlockEvent:FireServer(100)
+      Rstorage.Remotes.PrestigeEvent:FireServer()
+    end
+    if spamBuy.Potion.Potion1 then
+      Rstorage.Remotes.BuyPotionEvent:FireServer("Potion1", 0)
+    end
+    if spamBuy.Potion.Potion2 then
+      Rstorage.Remotes.BuyPotionEvent:FireServer("Potion2", 0)
+    end
+    if spamBuy.Potion.Potion3 then
+      Rstorage.Remotes.BuyPotionEvent:FireServer("Potion3", 0)
+    end
+    if spamBuy.Potion.All then
+      for i = 1,3 do
+        Rstorage.Remotes.BuyPotionEvent:FireServer("Potion"..i, 0)
+      end
+    end
+  end
+  while task.wait() do
+    pcall(task0)
+  end
 end)
