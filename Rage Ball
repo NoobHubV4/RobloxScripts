@@ -80,9 +80,8 @@ TextLabel.TextWrapped = true
 game.RunService.Stepped:Connect(function()
      local Ball = GetBall()
      if Ball then
-            local Distance = (Ball.Position - Player.Character.HumanoidRootPart.Position).Magnitude
             local Speed = Ball.LinearVelocity.VectorVelocity.Magnitude
-            TextLabel.Text = "Speed: "..Distance / Speed
+            TextLabel.Text = "Speed: "..Speed
      end
 end)
 
