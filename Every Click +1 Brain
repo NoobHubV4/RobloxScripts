@@ -1,1 +1,24 @@
---Patched
+local lib = loadstring(Game:HttpGet("https://raw.githubusercontent.com/NoobHubV1/NoobHubV1/main/Wizard%20Lib.lua"))()
+local autoClick
+local infWins
+local Window = lib:NewWindow("Every Click +1 Brain")
+local Section = Window:NewSection("Main")
+Section:CreateToggle("Auto Click", function(state)
+  autoClick = state
+end)
+Section:CreateToggle("Inf Wins", function(state)
+  infWins = state
+end)
+spawn(function()
+  task0 = function()
+    if autoClick then
+      game.ReplicatedStorage.Events.Click:FireServer()
+    end
+    if infWins then
+      game.ReplicatedStorage.Events.Win:FireServer("Zone7")
+    end
+  end
+  while task.wait() do
+    pcall(task0)
+  end
+end)
