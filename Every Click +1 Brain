@@ -3,6 +3,17 @@ local autoClick
 local infWins
 local Window = lib:NewWindow("Every Click +1 Brain")
 local Section = Window:NewSection("Main")
+function DeleteDoor(Zone)
+  game.ReplicatedStorage.Events.DamageDoor:FireServer(Zone, "Door1", math.huge, 0)
+  game.ReplicatedStorage.Events.DamageDoor:FireServer(Zone, "Door2", math.huge, 0)
+  game.ReplicatedStorage.Events.DamageDoor:FireServer(Zone, "Door3", math.huge, 0)
+  game.ReplicatedStorage.Events.DamageDoor:FireServer(Zone, "Door4", math.huge, 0)
+end
+Section:CreateButton("Delete All Door", function()
+  for i = 1,8 do
+    DeleteDoor("Zone"..i)
+  end
+end)
 Section:CreateToggle("Auto Click", function(state)
   autoClick = state
 end)
