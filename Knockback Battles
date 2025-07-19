@@ -1,0 +1,28 @@
+local lib = loadstring(Game:HttpGet("https://raw.githubusercontent.com/NoobHubV1/NoobHubV1/main/Wizard%20Lib.lua"))()
+local punchAura
+local LocalPlayer = game.Players.LocalPlayer
+local Window = lib:NewWindow("Knockback Battles")
+local Section = Window:NewSection("Main")
+Section:CreateToggle("Punch Aura", function(state)
+  punchAura = state
+end)
+spawn(function()
+  task0 = function()
+    if punchAura then
+      local VPart = LocalPlayer.Character.HumanoidRootPart
+      for _, Targets in pairs(game.Players:GetPlayers()) do
+	       if Targets.Character and not Targets.Character:FindFirstChildWhichIsA("ForceField") and Targets.Character:FindFirstChildOfClass("Humanoid").Health ~= 0 then
+		       local TPart = Targets.Character:FindFirstChildWhichIsA("BasePart")
+		       if VPart and TPart and Targets ~= LocalPlayer then
+			         if (TPart.Position-VPart.Position).Magnitude <= 20 then
+				         game.ReplicatedStorage.Remotes.Replication.Fighter.HitPlayer:FireServer(Targets.Character, false)
+			         end
+		       end
+	       end
+      end
+    end
+  end
+  while task.wait() do
+    pcall(task0)
+  end
+end)
