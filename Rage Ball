@@ -1,0 +1,95 @@
+for i,v in ipairs(game.CoreGui:GetChildren()) do
+        if v.Name == "ScreenGui" then
+                v:Destroy()
+        end
+end
+local lib = loadstring(Game:HttpGet("https://raw.githubusercontent.com/NoobHubV1/NoobHubV1/main/Wizard%20Lib.lua"))()
+local Window = lib:NewWindow("Rage Ball")
+local Section = Window:NewSection("Main")
+local Player = game.Players.LocalPlayer
+local ScreenGui = Instance.new("ScreenGui", game.CoreGui)
+local TextLabel = Instance.new("TextLabel", ScreenGui)
+local VIM = game:GetService("VirtualInputManager") or game:FindFirstDescendant("VirtualInputManager")
+local AutoMove = false
+local RunService = game:GetService("RunService") or game:FindFirstDescendant("RunService")
+local AutoParry = false
+local Cooldown = tick()
+local balltarget
+
+function GetBall()
+  for _,ball in next, workspace.GameObjects.Balls:GetChildren() do
+    return ball
+  end
+end
+
+function t(Title, Text, Time)
+    game:FindService("StarterGui"):SetCore("SendNotification",{Title=Title,Text=Text,Icon="",Duration=Time,})
+end
+
+Section:CreateToggle("Auto Parry", function(state)
+       AutoParry = state
+end)
+
+Section:CreateToggle("Auto Move", function(state)
+       AutoMove = state
+end)
+workspace.GameObjects.Balls.ChildAdded:Connect(function()
+       local Ball = GetBall()
+       if not Ball then return end
+       if balltarget then
+              balltarget:Disconnect()
+              balltarget = nil
+       end
+       balltarget = Ball:GetAttributeChangedSignal("target"):Connect(function()
+              Parried = false
+       end)
+end)
+       
+game.RunService.PreSimulation:Connect(function()
+    local Ball, HRP = GetBall(), Player.Character.HumanoidRootPart
+    if not Ball or not HRP then
+      return
+    end
+    
+    local Speed = Ball.LinearVelocity.VectorVelocity.Magnitude
+    local Distance = (HRP.Position - Ball.Position).Magnitude
+    
+    if Ball:GetAttribute("target") == Player.Name and not Parried and Distance / Speed <= 0.75 and AutoParry then
+      VIM:SendMouseButtonEvent(0, 0, 0, true, game, 0)
+      Parried = true
+      Cooldown = tick()
+      if (tick() - Cooldown) >= 1 then
+             Parried = false
+      end
+    end
+end)
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+ScreenGui.ResetOnSpawn = true
+
+TextLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+TextLabel.BackgroundTransparency = 0.5
+TextLabel.Position = UDim2.new(0, 0, 0, 0)
+TextLabel.Size = UDim2.new(0, 180, 0, 40)
+TextLabel.Font = Enum.Font.SourceSans
+TextLabel.TextColor3 = Color3.fromRGB(150, 100, 75)
+TextLabel.TextScaled = true
+TextLabel.TextSize = 15.000
+TextLabel.TextStrokeTransparency = 0.000
+TextLabel.TextWrapped = true
+
+game.RunService.Stepped:Connect(function()
+     local Ball = GetBall()
+     if Ball then
+            local Distance = (Ball.Position - Player.Character.HumanoidRootPart.Position).Magnitude
+            local Speed = Ball.LinearVelocity.VectorVelocity.Magnitude
+            TextLabel.Text = "Speed: "..Distance / Speed
+     end
+end)
+
+game.RunService.Heartbeat:Connect(function()
+     local Ball, humanoid = GetBall(), Player.Character.Humanoid
+     if not Ball or not humanoid then return end
+     if Ball and humanoid and AutoMove then
+            humanoid:MoveTo(Ball.Position)
+     end
+end)
