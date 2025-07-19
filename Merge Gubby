@@ -41,7 +41,7 @@ Main2:CreateToggle("Spam Rebirth", function(v)
      Spam = v
      Stepped = game.RunService.Stepped:Connect(function()
           if Spam then
-               game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("RebirthConfirmEvent"):FireServer(0, 0, 1e18)
+               Rstorage.Remotes.RebirthConfirmEvent:FireServer(0, 0, 1e19)
           elseif not Spam then
                Stepped:Disconnect()
           end
