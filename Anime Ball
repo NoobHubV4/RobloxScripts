@@ -15,6 +15,7 @@ local RunService = game:GetService("RunService") or game:FindFirstDescendant("Ru
 local VirtualInputManager = game:GetService("VirtualInputManager") or game:FindFirstDescendant("VirtualInputManager")
 local AutoParry = false
 local Parried = false
+local Cooldown = tick()
 
 function GetBall()
   for i,v in next, workspace.Balls:GetChildren() do
@@ -62,11 +63,12 @@ spawn(function()
       if (tick() - Cooldown) >= 1 then
              Parried = false
       end
-      task.wait(.6)
-      Parried = false
+      wait(.2)
+      Parried = true
+      t("Test Script", "Test", 0)
     end
     end
-while wait(.0375) do
+while wait(.025) do
     pcall(Parry)
 end
 end)
