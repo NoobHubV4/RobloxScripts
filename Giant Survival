@@ -1,1 +1,32 @@
---Patched
+local lib = loadstring(Game:HttpGet("https://raw.githubusercontent.com/NoobHubV1/NoobHubV1/main/Wizard%20Lib.lua"))()
+local autoKill
+local number
+local autoMoney
+local Window = lib:NewWindow("Giant Survival")
+local Section = Window:NewSection("Main")
+Section:CreateTextbox("Giant Number", function(text)
+  number = text
+end)
+Section:CreateButton("Instant Kill", function()
+  for i = 1,3250 do
+    workspace:WaitForChild("__THINGS"):WaitForChild("__REMOTES"):WaitForChild("giant_dealdamage"):FireServer({"Giant_"..number, 20, -0.028954521711628635})
+  end
+end)
+Section:CreateToggle("Auto Money", function(state)
+  autoMoney = state
+end)
+Section:CreateToggle("Auto Kill", function(state)
+  autoKill = state
+end)
+game.RunService.RenderStepped:Connect(function()
+  if autoKill then
+    for i = 1,2 do
+      workspace["__THINGS"]:FindFirstChild("__REMOTES")["giant_dealdamage"]:FireServer({"Giant_"..number, 20, -0.028954521711628635})
+    end
+  end
+  if autoMoney then
+    for i = 1,2 do
+      workspace:FindFirstChild("__THINGS")["__REMOTES"]:FindFirstChild("currencycollected"):FireServer({})
+    end
+  end
+end)
