@@ -21,12 +21,12 @@ end)
 spawn(function()
   task0 = function()
     if autoKill then
-      for i = 1,4 do
-        workspace:WaitForChild("__THINGS"):WaitForChild("__REMOTES"):WaitForChild("giant_dealdamage"):FireServer({"Giant_"..i, 20, -0.028954521711628635})
+      for i = 1,9 do
+        workspace:WaitForChild("__THINGS"):WaitForChild("__REMOTES"):WaitForChild("giant_dealdamage"):FireServer({"Giant_"..number, 20, -0.028954521711628635})
       end
     end
     if autoMoney then
-      for i = 1,4 do
+      for i = 1,9 do
         workspace:WaitForChild("__THINGS"):WaitForChild("__REMOTES"):WaitForChild("currencycollected"):FireServer({})
       end
     end
