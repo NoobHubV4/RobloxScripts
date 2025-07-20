@@ -1,0 +1,107 @@
+for i,v in ipairs(game.CoreGui:GetChildren()) do
+        if v.Name == "VeryepicepicGui" then
+                 v:Destroy()
+        end
+end
+local VeryepicepicGui = Instance.new("ScreenGui")
+local Main = Instance.new("Frame")
+local on = Instance.new("TextButton")
+local UIGradient = Instance.new("UIGradient")
+local off = Instance.new("TextButton")
+local UIGradient_2 = Instance.new("UIGradient")
+local TextLabel = Instance.new("TextLabel")
+local UIGradient_3 = Instance.new("UIGradient")
+
+--Properties:
+
+VeryepicepicGui.Name = "Very epic epic Gui"
+VeryepicepicGui.Parent = game.CoreGui
+VeryepicepicGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+Main.Name = "Main"
+Main.Parent = VeryepicepicGui
+Main.BackgroundColor3 = Color3.fromRGB(0, 255, 255)
+Main.BorderSizePixel = 0
+Main.Position = UDim2.new(-0.000249447388, 0, 0.529880464, 0)
+Main.Size = UDim2.new(0.139175609, 0, 0.195219129, 0)
+
+on.Name = "on"
+on.Parent = Main
+on.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+on.BorderSizePixel = 0
+on.Size = UDim2.new(1, 0, 0.490196079, 0)
+on.Font = Enum.Font.SciFi
+on.Text = "God mode All"
+on.TextColor3 = Color3.fromRGB(0, 0, 0)
+on.TextScaled = true
+on.TextSize = 14.000
+on.TextWrapped = true
+
+UIGradient.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(132, 255, 139)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(106, 123, 255))}
+UIGradient.Parent = on
+
+off.Name = "off"
+off.Parent = Main
+off.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+off.BorderSizePixel = 0
+off.Position = UDim2.new(0, 0, 0.509803951, 0)
+off.Size = UDim2.new(1, 0, 0.490196079, 0)
+off.Font = Enum.Font.SciFi
+off.Text = "Off"
+off.TextColor3 = Color3.fromRGB(0, 0, 0)
+off.TextScaled = true
+off.TextSize = 14.000
+off.TextWrapped = true
+
+UIGradient_2.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 122, 198)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(138, 130, 255))}
+UIGradient_2.Parent = off
+
+TextLabel.Parent = Main
+TextLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+TextLabel.BorderSizePixel = 0
+TextLabel.Position = UDim2.new(3.13572335, 0, -2.33673477, 0)
+TextLabel.Size = UDim2.new(1.38442528, 0, 0.510204077, 0)
+TextLabel.Font = Enum.Font.SciFi
+TextLabel.Text = "Credits: NoobHubV4"
+TextLabel.TextColor3 = Color3.fromRGB(0, 0, 0)
+TextLabel.TextScaled = true
+TextLabel.TextSize = 14.000
+TextLabel.TextWrapped = true
+
+UIGradient_3.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(57, 97, 255)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 54, 184))}
+UIGradient_3.Parent = TextLabel
+
+-- Scripts:
+
+local function WBEV_fake_script() -- on.Script 
+ local script = Instance.new('Script', on)
+
+ local God = false
+ 
+ script.Parent.Parent.off.MouseButton1Click:connect(function()
+  God = false
+ end)
+ 
+ script.Parent.MouseButton1Click:connect(function()
+ God = true 
+ while God == true and wait() do
+ local tool = game.Players.LocalPlayer.Character:FindFirstChild("GoldenApple") or game.Players.LocalPlayer.Backpack:FindFirstChild("GoldenApple")
+ if not tool then
+   game.ReplicatedStorage.Events.GiveTool:FireServer("GoldenApple")
+   wait(.1)
+ end
+ repeat task.wait()
+   game.ReplicatedStorage.Events.BackpackEvent:FireServer("Equip", game.Players.LocalPlayer.Backpack:FindFirstChild("GoldenApple"))
+ until game.Players.LocalPlayer.Character:FindFirstChild("GoldenApple")
+ game.ReplicatedStorage.Events.HealTheNoobs:FireServer()
+ end
+ end)
+end
+coroutine.wrap(WBEV_fake_script)()
+local function FCDYJV_fake_script() -- TextLabel.Script 
+ local script = Instance.new('Script', TextLabel)
+
+ wait(6)
+ script.Parent.Visible = false
+end
+coroutine.wrap(FCDYJV_fake_script)()
