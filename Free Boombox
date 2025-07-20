@@ -71,32 +71,22 @@ local Players = game:GetService("Players")
 
 local localPlayer = Players.LocalPlayer
 
-function missing(t, f, fallback)
-    if type(f) == t then return f end
-    return fallback
-end
-
-replicatesignal = missing("function", replicatesignal)
-
 function Dupe(Amount)
   for i = 1,Amount or 1 do
         local char = localPlayer.Character
         localPlayer.Character = nil
         localPlayer.Character = char
         char.Animate:Destroy()
-        localPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(0, 10000, 0)
-        wait(.1)
-        localPlayer.Character.HumanoidRootPart.Anchored = true
+        localPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(1e8, 1e8, 1e8)
         char.Humanoid:UnequipTools()
-        replicatesignal(localPlayer.ConnectDiedSignalBackend)
-        wait(Players.RespawnTime - 0.3)
+        wait(.3)
         for _, tool in pairs(localPlayer.Backpack:GetChildren()) do
             if tool:IsA("Tool") then
                 tool.Parent = char
 		tool.Parent = workspace
             end
         end
-        replicatesignal(localPlayer.Kill)
+        char.Humanoid:ChangeState(Enum.HumanoidStateType.Dead)
 
          localPlayer.CharacterAdded:Wait()
          wait(.1)
@@ -106,7 +96,7 @@ function Dupe(Amount)
                  newChar.Humanoid:EquipTool(item)
              end)
          end
-         wait(.3)
+         wait(.2)
     end
 end
 
