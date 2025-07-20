@@ -78,6 +78,7 @@ function Dupe(Amount)
         localPlayer.Character = char
         char.Animate:Destroy()
         localPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(1e8, 1e8, 1e8)
+        wait(.1)
         char.Humanoid:UnequipTools()
         wait(.3)
         for _, tool in pairs(localPlayer.Backpack:GetChildren()) do
@@ -96,7 +97,7 @@ function Dupe(Amount)
                  newChar.Humanoid:EquipTool(item)
              end)
          end
-         wait(.2)
+         wait(.3)
     end
 end
 
