@@ -8,7 +8,7 @@ Section:CreateTextbox("Giant Number", function(text)
   number = text
 end)
 Section:CreateButton("Instant Kill", function()
-  for i = 1,3250 do
+  for i = 1,3500 do
     workspace:WaitForChild("__THINGS"):WaitForChild("__REMOTES"):WaitForChild("giant_dealdamage"):FireServer({"Giant_"..number, 20, -0.028954521711628635})
   end
 end)
@@ -18,15 +18,20 @@ end)
 Section:CreateToggle("Auto Kill", function(state)
   autoKill = state
 end)
-game.RunService.RenderStepped:Connect(function()
-  if autoKill then
-    for i = 1,2 do
-      workspace["__THINGS"]:FindFirstChild("__REMOTES")["giant_dealdamage"]:FireServer({"Giant_"..number, 20, -0.028954521711628635})
+spawn(function()
+  task0 = function()
+    if autoKill then
+      for i = 1,4 do
+        workspace:WaitForChild("__THINGS"):WaitForChild("__REMOTES"):WaitForChild("giant_dealdamage"):FireServer({"Giant_"..i, 20, -0.028954521711628635})
+      end
+    end
+    if autoMoney then
+      for i = 1,4 do
+        workspace:WaitForChild("__THINGS"):WaitForChild("__REMOTES"):WaitForChild("currencycollected"):FireServer({})
+      end
     end
   end
-  if autoMoney then
-    for i = 1,2 do
-      workspace:FindFirstChild("__THINGS")["__REMOTES"]:FindFirstChild("currencycollected"):FireServer({})
-    end
+  while task.wait() do
+    pcall(task0)
   end
 end)
