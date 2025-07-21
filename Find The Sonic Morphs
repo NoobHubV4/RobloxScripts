@@ -1,0 +1,13 @@
+local lib = loadstring(Game:HttpGet("https://raw.githubusercontent.com/NoobHubV1/NoobHubV1/main/Wizard%20Lib.lua"))()
+local Window = lib:NewWindow("Find the Sonic Morphs")
+local Section = Window:NewSection("Main")
+Section:CreateButton("Find All Morphs", function()
+  for i,v in pairs(game.Workspace.Badges:GetChildren()) do
+if v:FindFirstChild("ProximityPrompt") then
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.CFrame
+wait(.2)
+fireproximityprompt(v:FindFirstChild("ProximityPrompt"), 2, false)
+wait(.3)
+end
+end
+end)
