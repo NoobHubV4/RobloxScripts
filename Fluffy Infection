@@ -34,11 +34,11 @@ end
 
 local fagfolder1 = workspace:FindFirstChild("FagFolder")
 
-local W1 = OrionLib:MakeWindow({Name = "Furry Infection", HidePremium = true, SaveConfig = true, ConfigFolder = "Furry Infection"})
+local W1 = OrionLib:MakeWindow({Name = "Fluffy Infection", HidePremium = true, SaveConfig = true, ConfigFolder = "Fluffy Infection"})
 
 OrionLib:MakeNotification({
-    Name = "Furry Infection NoobHubV1",
-    Content = "NoobHubV2",
+    Name = "Fluffy Infection",
+    Content = "NoobHubV4",
     Image = "rbxassetid://6890648157", --- rbxassetid://4483345998
     Time = 5
 })
@@ -84,10 +84,10 @@ Toggles:AddToggle({
         spawn(function()
             if kaura then
                 _G.killaura = true
-                notify("Furry Infection NoobHubV1","KillAura On NoobHubV1")
+                notify("Fluffy Infection NoobHubV4","KillAura On")
             else
                 _G.killaura = false
-                notify("Furry Infection NoobHubV1","KillAura Off NoobHubV1")
+                notify("Fluffy Infection NoobHubV4","KillAura Off")
             end
 while _G.killaura do
 for i = 1, 1 do
@@ -105,7 +105,7 @@ for i,v in pairs(game.Players:GetPlayers()) do
         
         if (lp.Character and lp.Character:FindFirstChild("Head") and character:FindFirstChild("Head")) then
             local mag = (v.Character.Head.Position - lp.Character.Head.Position).Magnitude
-                  if mag < 100 then
+                  if mag < 25 then
 
 
 local ohInstance1 = v.Character.HumanoidRootPart
@@ -132,10 +132,10 @@ Toggles:AddToggle({
         spawn(function()
         if autogetbatt then
             _G.getbatcrack = true
-            notify("Furry Infection NoobHubV1","AutoGetBat On NoobHubV1")
+            notify("Fluffy Infection NoobHubV4","AutoGetBat On")
         else
             _G.getbatcrack = false
-            notify("Furry Infection NoobHubV1","AutoGetBat Off NoobHubV1")
+            notify("Fluffy Infection NoobHubV4","AutoGetBat Off")
         end
 while _G.getbatcrack do task.wait()  
     pcall(function()
@@ -143,9 +143,9 @@ if game.Players.LocalPlayer.Character:FindFirstChild("Bat") or game.Players.Loca
     
 else    
     local oldpos = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.Position
-    game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-136.6771240234375, 27.783193588256836, 20.907127380371094)
+    game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame = workspace.MetalBat.CFrame
     repeat task.wait()
-    game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-136.6771240234375, 27.783193588256836, 20.907127380371094)    
+    game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame = workspace.MetalBat.CFrame
     fireproximityprompt(_G.MetalBatProximity, 2, false)
     until game.Players.LocalPlayer.Character:FindFirstChild("Bat") or game.Players.LocalPlayer.Backpack:FindFirstChild("Bat") or game.Players.LocalPlayer.Backpack:FindFirstChild("Metal Bat") or game.Players.LocalPlayer.Character:FindFirstChild("Metal Bat")
     game:GetService("Players").localPlayer.Character:MoveTo(oldpos)
@@ -169,13 +169,12 @@ Toggles:AddButton({
             if v.Character:FindFirstChild("Humanoid").Health <= 0 or v.Character:FindFirstChild("ForceField") then
             
             else    
-            if v.Character:FindFirstChild("LLeft Leg") or v.Character:FindFirstChild("Left Leg"):FindFirstChild("LLeft Leg") then
+            if v.Team == game.Teams["Transfured"] then
                 game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(v.Character.HumanoidRootPart.Position)
                 oldposition = game.Players.LocalPlayer.Character.HumanoidRootPart.Position
-                repeat wait()
+                repeat task.wait()
                     if game.Players.LocalPlayer.Character:FindFirstChild("Bat") or game.Players.LocalPlayer.Character:FindFirstChild("Metal Bat") then
-                    task.wait()
-                    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(v.Character.HumanoidRootPart.Position+Vector3.new(0,2,0))
+                    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(v.Character.HumanoidRootPart.Position+Vector3.new(0,5,0))
                     local ohInstance1 = v.Character.HumanoidRootPart
                     local ohInstance2 = v.Character.Humanoid
                     local ohVector33 = Vector3.new(game.Players.LocalPlayer.Character.HumanoidRootPart.Position)
@@ -187,9 +186,9 @@ Toggles:AddButton({
                         game.Players.LocalPlayer.Character.Humanoid:EquipTool(game.Players.LocalPlayer.Backpack:FindFirstChild("Metal Bat"))
                     elseif not game.Players.LocalPlayer.Backpack:FindFirstChild("Bat") or game.Players.LocalPlayer.Backpack:FindFirstChild("Metal Bat") then
                         local oldpos = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.Position
-                        game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-136.6771240234375, 27.783193588256836, 20.907127380371094)
+                        game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame = workspace.MetalBat.CFrame
                         repeat task.wait()
-                        game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-136.6771240234375, 27.783193588256836, 20.907127380371094)    
+                        game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame = workspace.MetalBat.CFrame
                         fireproximityprompt(_G.MetalBatProximity, 2, false)
                         until game.Players.LocalPlayer.Character:FindFirstChild("Bat") or game.Players.LocalPlayer.Backpack:FindFirstChild("Bat") or game.Players.LocalPlayer.Backpack:FindFirstChild("Metal Bat") or game.Players.LocalPlayer.Character:FindFirstChild("Metal Bat")
                         game:GetService("Players").localPlayer.Character:MoveTo(oldpos)
@@ -199,16 +198,16 @@ Toggles:AddButton({
                             game.Players.LocalPlayer.Character.Humanoid:EquipTool(game.Players.LocalPlayer.Backpack:FindFirstChild("Metal Bat"))
                         end    
                     end
-            until v.Character.Humanoid.Health <= 0
+            until v.Character.Humanoid.Health <= 0 or v.Team == game.Teams["Human"]
                 game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(oldposition)
             end
         end
       	end
 else
     local oldpos = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.Position
-    game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-136.6771240234375, 27.783193588256836, 20.907127380371094)
+    game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame = workspace.MetalBat.CFrame
     repeat task.wait()
-    game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-136.6771240234375, 27.783193588256836, 20.907127380371094)    
+    game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame = workspace.MetalBat.CFrame
     fireproximityprompt(_G.MetalBatProximity, 2, false)
     until game.Players.LocalPlayer.Character:FindFirstChild("Bat") or game.Players.LocalPlayer.Backpack:FindFirstChild("Bat") or game.Players.LocalPlayer.Backpack:FindFirstChild("Metal Bat") or game.Players.LocalPlayer.Character:FindFirstChild("Metal Bat")
     if game.Players.LocalPlayer.Backpack:FindFirstChild("Bat") then
@@ -234,7 +233,7 @@ Others:AddButton({
 	Name = "Rejoin Button",
 	Callback = function()
 	    game:GetService("StarterGui"):SetCore("SendNotification",{
- Title = "NoobHubV1";
+ Title = "NoobHubV4";
  Text = "Executed";
  Duration = 5;
  Icon = "rbxassetid://4483345998";
@@ -277,10 +276,10 @@ Toggles:AddToggle({
 	    spawn(function()
 	        if lkillall then
 	            _G.killall = true
-	            notify("Furry Infection NoobHubV1","Loop Kill All On NoobHubV1")
+	            notify("Fluffy Infection NoobHubV4","Loop Kill All On")
 	        else
 	            _G.killall = false
-	            notify("Furry Infection NoobHubV1","Loop Kill All Off NoobHubV1")
+	            notify("Fluffy Infection NoobHubV4","Loop Kill All Off")
 	        end 
 
 while _G.killall do task.wait()
@@ -293,13 +292,12 @@ while _G.killall do task.wait()
             if v.Character:FindFirstChild("Humanoid").Health <= 0 or v.Character:FindFirstChild("ForceField") then
             
             else    
-            if v.Character:FindFirstChild("LLeft Leg") or v.Character:FindFirstChild("Left Leg"):FindFirstChild("LLeft Leg") then
+            if v.Team == game.Teams["Transfured"] then
                 game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(v.Character.HumanoidRootPart.Position)
                 oldposition = game.Players.LocalPlayer.Character.HumanoidRootPart.Position
                 repeat task.wait()
                     if game.Players.LocalPlayer.Character:FindFirstChild("Bat") or game.Players.LocalPlayer.Character:FindFirstChild("Metal Bat") then
-                    task.wait()
-                    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(v.Character.HumanoidRootPart.Position+Vector3.new(0,2,0))
+                    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(v.Character.HumanoidRootPart.Position+Vector3.new(0,5,0))
                     local ohInstance1 = v.Character.HumanoidRootPart
                     local ohInstance2 = v.Character.Humanoid
                     local ohVector33 = Vector3.new(game.Players.LocalPlayer.Character.HumanoidRootPart.Position)
@@ -311,9 +309,9 @@ while _G.killall do task.wait()
                         game.Players.LocalPlayer.Character.Humanoid:EquipTool(game.Players.LocalPlayer.Backpack:FindFirstChild("Metal Bat"))
                     elseif not game.Players.LocalPlayer.Backpack:FindFirstChild("Bat") or game.Players.LocalPlayer.Backpack:FindFirstChild("Metal Bat") then
                         local oldpos = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.Position
-                        game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-136.6771240234375, 27.783193588256836, 20.907127380371094)
+                        game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame = workspace.MetalBat.CFrame
                         repeat task.wait()
-                        game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-136.6771240234375, 27.783193588256836, 20.907127380371094)    
+                        game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame = workspace.MetalBat.CFrame
                         fireproximityprompt(_G.MetalBatProximity, 2, false)
                         until game.Players.LocalPlayer.Character:FindFirstChild("Bat") or game.Players.LocalPlayer.Backpack:FindFirstChild("Bat") or game.Players.LocalPlayer.Backpack:FindFirstChild("Metal Bat") or game.Players.LocalPlayer.Character:FindFirstChild("Metal Bat")
                         game:GetService("Players").localPlayer.Character:MoveTo(oldpos)
@@ -323,22 +321,22 @@ while _G.killall do task.wait()
                             game.Players.LocalPlayer.Character.Humanoid:EquipTool(game.Players.LocalPlayer.Backpack:FindFirstChild("Metal Bat"))
                         end    
                     end
-            until v.Character.Humanoid.Health <= 0
+            until v.Character.Humanoid.Health <= 0 or v.Team == game.Teams["Human"]
                 game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(oldposition)
             end
         end
       	end
 else
     local oldpos = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.Position
-    game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-136.6771240234375, 27.783193588256836, 20.907127380371094)
+    game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame = workspace.MetalBat.CFrame
     repeat task.wait()
-    game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-136.6771240234375, 27.783193588256836, 20.907127380371094)    
+    game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame = workspace.MetalBat.CFrame
     fireproximityprompt(_G.MetalBatProximity, 2, false)
-    until game.Players.LocalPlayer.Character:FindFirstChild("Bat") or game.Players.LocalPlayer.Backpack:FindFirstChild("Bat") or game.Players.LocalPlayer.Backpack:FindFirstChild("Metal  Bat") or game.Players.LocalPlayer.Character:FindFirstChild("Metal  Bat")
+    until game.Players.LocalPlayer.Character:FindFirstChild("Bat") or game.Players.LocalPlayer.Backpack:FindFirstChild("Bat") or game.Players.LocalPlayer.Backpack:FindFirstChild("Metal Bat") or game.Players.LocalPlayer.Character:FindFirstChild("Metal Bat")
     if game.Players.LocalPlayer.Backpack:FindFirstChild("Bat") then
         game.Players.LocalPlayer.Character.Humanoid:EquipTool(game.Players.LocalPlayer.Backpack:FindFirstChild("Bat"))
-    elseif game.Players.LocalPlayer.Backpack:FindFirstChild("Metal  Bat") then    
-        game.Players.LocalPlayer.Character.Humanoid:EquipTool(game.Players.LocalPlayer.Backpack:FindFirstChild("Metal  Bat"))
+    elseif game.Players.LocalPlayer.Backpack:FindFirstChild("Metal Bat") then    
+        game.Players.LocalPlayer.Character.Humanoid:EquipTool(game.Players.LocalPlayer.Backpack:FindFirstChild("Metal Bat"))
     end  
     game:GetService("Players").localPlayer.Character:MoveTo(oldpos)
 end    
@@ -355,10 +353,10 @@ Toggles:AddToggle({
 	    spawn(function()
 	        if antigrabbed then
 	            _G.autoescapegrab = true
-	            notify("Furry Infection NoobHubV1","Auto Escape Grab On NoobHubV1")
+	            notify("Furry Infection NoobHubV4","Auto Escape Grab On")
 	       else 
 	           _G.autoescapegrab = false
-	           notify("Furry Infection NoobHubV1","Auto Escape Grab Off NoobHubV1")
+	           notify("Furry Infection NoobHubV4","Auto Escape Grab Off")
 	        end
 	        
 local noescapeser
@@ -381,10 +379,10 @@ Toggles:AddToggle({
 	    spawn(function()
 	        if lesscd then
 	            _G.lesscooldown = true
-	            notify("Furry Infection NoobHubV1","Less Cooldown On NoobHubV1")
+	            notify("Furry Infection NoobHubV4","Less Cooldown On")
 	        else
 	            _G.lesscooldown = false
-	            notify("Furry Infection NoobHubV1","Less Cooldown Off NoobHubV1")
+	            notify("Furry Infection NoobHubV4","Less Cooldown Off")
 	        end 
         end)
     end
