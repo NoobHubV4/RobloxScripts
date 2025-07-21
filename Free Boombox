@@ -95,11 +95,11 @@ function Dupe(Amount)
         localPlayer.Character = nil
         localPlayer.Character = char
         char.Animate:Destroy()
-        localPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(1e9, 1e9, 1e9)
+        localPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(1e10, 1e10, 1e10)
         wait(.1)
         char.Humanoid:UnequipTools()
         replicatesignal(localPlayer.ConnectDiedSignalBackend)
-        wait(4.6)
+        wait(4.7)
         for _, tool in pairs(localPlayer.Backpack:GetChildren()) do
             if tool:IsA("Tool") then
                 tool.Parent = char
