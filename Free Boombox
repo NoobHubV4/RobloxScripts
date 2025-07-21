@@ -67,27 +67,46 @@ TextButton2.TextScaled = true
 TextButton2.TextSize = 12.000
 TextButton2.TextWrapped = true
 
-local Players = game:GetService("Players")
+function missing(t, f, fallback)
+    if type(f) == t then return f end
+    return fallback
+end
 
+replicatesignal = missing("function", replicatesignal)
+local Players = game:GetService("Players")
 local localPlayer = Players.LocalPlayer
 
 function Dupe(Amount)
   for i = 1,Amount or 1 do
+        if localPlayer.Character.Humanoid.RigType ~= Enum.HumanoidRigType.R6 then
+             local avs = game:GetService("AvatarEditorService")
+             avs:PromptSaveAvatar(game.Players.LocalPlayer.Character.Humanoid.HumanoidDescription,Enum.HumanoidRigType.R6)
+             local result = avs.PromptSaveAvatarCompleted:Wait()
+             if result == Enum.AvatarPromptResult.Success then
+                  replicatesignal(localPlayer.ConnectDiedSignalBackend)
+                  wait(4.9)
+                  localPlayer.Character.Humanoid.RigType = Enum.HumanoidRigType.R6
+                  localPlayer.CharacterAdded:Wait() wait(.15)
+             else
+                  break
+             end
+        end
         local char = localPlayer.Character
         localPlayer.Character = nil
         localPlayer.Character = char
         char.Animate:Destroy()
-        localPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(1e8, 1e8, 1e8)
+        localPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(1e9, 1e9, 1e9)
         wait(.1)
         char.Humanoid:UnequipTools()
-        wait(.3)
+        replicatesignal(localPlayer.ConnectDiedSignalBackend)
+        wait(4.6)
         for _, tool in pairs(localPlayer.Backpack:GetChildren()) do
             if tool:IsA("Tool") then
                 tool.Parent = char
 		tool.Parent = workspace
             end
         end
-        char.Humanoid:ChangeState(Enum.HumanoidStateType.Dead)
+        localPlayer.Character.Humanoid.RigType = Enum.HumanoidRigType.R15
 
          localPlayer.CharacterAdded:Wait()
          wait(.1)
