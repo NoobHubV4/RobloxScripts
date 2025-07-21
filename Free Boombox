@@ -84,7 +84,7 @@ function Dupe(Amount)
              local result = avs.PromptSaveAvatarCompleted:Wait()
              if result == Enum.AvatarPromptResult.Success then
                   replicatesignal(localPlayer.ConnectDiedSignalBackend)
-                  wait(4.9)
+                  task.wait(game.Players.RespawnTime - 0.1)
                   localPlayer.Character.Humanoid.RigType = Enum.HumanoidRigType.R6
                   localPlayer.CharacterAdded:Wait() wait(.15)
              else
@@ -99,7 +99,7 @@ function Dupe(Amount)
         wait(.1)
         char.Humanoid:UnequipTools()
         replicatesignal(localPlayer.ConnectDiedSignalBackend)
-        wait(4.7)
+        wait(Players.RespawnTime - 0.3)
         for _, tool in pairs(localPlayer.Backpack:GetChildren()) do
             if tool:IsA("Tool") then
                 tool.Parent = char
