@@ -11,7 +11,7 @@ spawn(function()
     if autoSkip then
       level = level + 1
       game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = workspace.Levels:FindFirstChild(""..level):FindFirstChild("ButtonModel")["Button"].CFrame
-      wait(.05)
+      wait(.1)
       fireclickdetector(workspace.Levels:FindFirstChild(""..level):FindFirstChild("ButtonModel")["Button"]:FindFirstChild("ClickDetector"))
     end
   end
