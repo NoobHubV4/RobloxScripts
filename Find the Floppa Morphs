@@ -1,7 +1,7 @@
 local lib = loadstring(Game:HttpGet("https://raw.githubusercontent.com/NoobHubV1/NoobHubV1/main/Wizard%20Lib.lua"))()
 local Window = lib:NewWindow("Find the Floppa Morphs")
 local Section = Window:NewSection("Main")
-Section:CreateButton("Find All Morphs", function()
+Section:CreateButton("Get All Morphs", function()
   for i,v in pairs(game.Workspace.Floppas:GetChildren()) do
 firetouchinterest(v, game.Players.LocalPlayer.Character.HumanoidRootPart, 0)
 end
