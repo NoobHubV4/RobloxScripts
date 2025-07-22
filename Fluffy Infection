@@ -149,7 +149,6 @@ else
     fireproximityprompt(_G.MetalBatProximity, 2, false)
     until game.Players.LocalPlayer.Character:FindFirstChild("Bat") or game.Players.LocalPlayer.Backpack:FindFirstChild("Bat") or game.Players.LocalPlayer.Backpack:FindFirstChild("Metal Bat") or game.Players.LocalPlayer.Character:FindFirstChild("Metal Bat")
     game:GetService("Players").localPlayer.Character:MoveTo(oldpos)
-    notify("Furry Infection NoobHubV1","Grabbed Bat NoobHubV1")
 end
 end) 
 end
