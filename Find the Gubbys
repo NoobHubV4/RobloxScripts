@@ -1,0 +1,8 @@
+local lib = loadstring(Game:HttpGet("https://raw.githubusercontent.com/NoobHubV1/NoobHubV1/main/Wizard%20Lib.lua"))()
+local Window = lib:NewWindow("Find the Gubbys")
+local Section = Window:NewSection("Main")
+Section:CreateButton("Get All Gubbys", function()
+  for i,v in pairs(game.Workspace.ToFind:GetChildren()) do
+firetouchinterest(v, game.Players.LocalPlayer.Character.HumanoidRootPart, 0)
+end
+end)
