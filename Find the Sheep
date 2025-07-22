@@ -1,0 +1,10 @@
+local lib = loadstring(Game:HttpGet("https://raw.githubusercontent.com/NoobHubV1/NoobHubV1/main/Wizard%20Lib.lua"))()
+local Window = lib:NewWindow("Find the Sheep")
+local Section = Window:NewSection("Main")
+Section:CreateTextbox("Sheep Name", function(text)
+  for i,v in pairs(game.Workspace.SheepList:GetChildren()) do
+ if v.Name == text then
+firetouchinterest(v:FindFirstChild("InteractBox"), game.Players.LocalPlayer.Character.HumanoidRootPart, 0)
+end
+ end
+end)
