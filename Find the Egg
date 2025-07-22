@@ -1,0 +1,8 @@
+local lib = loadstring(Game:HttpGet("https://raw.githubusercontent.com/NoobHubV1/NoobHubV1/main/Wizard%20Lib.lua"))()
+local Window = lib:NewWindow("Find the Egg")
+local Section = Window:NewSection("Main")
+Section:CreateButton("Get All Egg", function()
+  for i,v in pairs(game.Workspace.Eggs:GetChildren()) do
+firetouchinterest(v, game.Players.LocalPlayer.Character.HumanoidRootPart, 0)
+end
+end)
