@@ -1,0 +1,13 @@
+local lib = loadstring(Game:HttpGet("https://raw.githubusercontent.com/NoobHubV1/NoobHubV1/main/Wizard%20Lib.lua"))()
+local Window = lib:NewWindow("Find the Backrooms Morphs")
+local Section = Window:NewSection("Main")
+Section:CreateButton("Find All Morphs", function()
+  for i,v in pairs(game.Workspace.Morphs:GetChildren()) do
+if v:FindFirstChild("ProximityPrompt") then
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(v.CFrame.p + Vector3.new(0, 2, 0))
+wait(.125)
+fireproximityprompt(v:FindFirstChild("ProximityPrompt"), 2, false)
+wait(.225)
+end
+end
+end)
