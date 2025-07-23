@@ -6,7 +6,7 @@ Section:CreateTextbox("Aura Name", function(text)
   if Aura:FindFirstChild("ProximityPrompt") then
     local saved = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = Aura.CFrame
-    wait(.1375)
+    wait(.1625)
     fireproximityprompt(Aura:FindFirstChild("ProximityPrompt"))
     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = saved
   end
