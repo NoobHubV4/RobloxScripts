@@ -26,7 +26,6 @@ function notify(name,text)
     Image = "rbxassetid://6890648157", --- rbxassetid://4483345998
     Time = 5
 })
-
 end
 
 local Toggles = W1:MakeTab({
@@ -63,6 +62,9 @@ Heartbeat = game.RunService.Heartbeat:Connect(function()
 if _G.killaura then
 for i = 1,4 do
 pcall(function()
+if hitboxIndicator then
+      hitboxIndicator.CFrame = game.Players.LocalPlayer.Character.Torso.CFrame
+end
 for i,v in pairs(game.Players:GetPlayers()) do
     if v.Team ~= game.Players.LocalPlayer.Team then
 
@@ -74,16 +76,11 @@ for i,v in pairs(game.Players:GetPlayers()) do
     
 	if not v:IsFriendsWith(game:GetService("Players").LocalPlayer.UserId) then
         
-        if (lp.Character and lp.Character:FindFirstChild("Head") and character:FindFirstChild("Head")) then
-            local mag = (v.Character.Head.Position - lp.Character.Head.Position).Magnitude
-                  if mag < 20 then
-
-
-local ohInstance1 = v.Character.HumanoidRootPart
-local ohInstance2 = v.Character.Humanoid
-local ohVector33 = Vector3.new(game.Players.LocalPlayer.Character.HumanoidRootPart.Position) or Vector3.new()
-
-game.Players.LocalPlayer.Character:FindFirstChildWhichIsA("Tool").Remote.Hit:FireServer(ohInstance1, ohInstance2, ohVector33)
+        if (lp.Character and lp.Character:FindFirstChild("Torso") and character:FindFirstChild("Torso")) then
+            local mag = (v.Character.Torso.Position - lp.Character.Torso.Position).Magnitude
+            local tool = game.Players.LocalPlayer.Character:FindFirstChildWhichIsA("Tool")
+                  if mag < 15 and tool then
+tool.Remote.Hit:FireServer(v.Character.Torso, v.Character.Humanoid, Vector3.new(game.Players.LocalPlayer.Character.Torso.Position) or Vector3.new())
 end
 end
 end
