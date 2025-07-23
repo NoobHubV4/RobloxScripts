@@ -60,11 +60,8 @@ Toggles:AddToggle({
             end
 Heartbeat = game.RunService.Heartbeat:Connect(function()
 if _G.killaura then
-for i = 1,4 do
+for i = 1,5 do
 pcall(function()
-if hitboxIndicator then
-      hitboxIndicator.CFrame = game.Players.LocalPlayer.Character.Torso.CFrame
-end
 for i,v in pairs(game.Players:GetPlayers()) do
     if v.Team ~= game.Players.LocalPlayer.Team then
 
@@ -79,7 +76,7 @@ for i,v in pairs(game.Players:GetPlayers()) do
         if (lp.Character and lp.Character:FindFirstChild("Torso") and character:FindFirstChild("Torso")) then
             local mag = (v.Character.Torso.Position - lp.Character.Torso.Position).Magnitude
             local tool = game.Players.LocalPlayer.Character:FindFirstChildWhichIsA("Tool")
-                  if mag < 15 and tool then
+                  if mag < 17.5 and tool then
 tool.Remote.Hit:FireServer(v.Character.Torso, v.Character.Humanoid, Vector3.new(game.Players.LocalPlayer.Character.Torso.Position) or Vector3.new())
 end
 end
