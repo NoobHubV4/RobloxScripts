@@ -1,1 +1,12 @@
---Wait a Edit
+local lib = loadstring(Game:HttpGet("https://raw.githubusercontent.com/NoobHubV1/NoobHubV1/main/Wizard%20Lib.lua"))()
+local Window = lib:NewWindow("Find the Auras")
+local Section = Window:NewSection("Main")
+Section:CreateTextbox("Aura Name", function(text)
+  for i,v in next, game.Workspace.Morphs:GetChildren() do
+    if v.Name == text.." Aura" and v:FindFirstChild("ProximityPrompt") then
+      game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.CFrame
+      wait(.1375)
+      fireproximityprompt(v:FindFirstChild("ProximityPrompt"))
+    end
+  end
+end)
