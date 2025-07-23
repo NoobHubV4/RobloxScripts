@@ -2,22 +2,13 @@ pcall(function()
 local OrionLib = loadstring(Game:HttpGet('https://raw.githubusercontent.com/NoobHubV1/RobloxScripts/main/OrionLib.lua'))()
 _G.MetalBatProximity = workspace.MetalBat:FindFirstChild("ProximityPrompt")
 
-if workspace:FindFirstChild("FagFolder") then
-
-else    
-
 local fagfolder1 = Instance.new("Folder",workspace)
 fagfolder1.Name = "FagFolder"
-
 for i,v in pairs(workspace:GetDescendants()) do
     if v.Name == "TransfurPart" then
         v.Parent = fagfolder1
     end    
-end  
-
 end
-
-local fagfolder1 = workspace:FindFirstChild("FagFolder")
 
 local W1 = OrionLib:MakeWindow({Name = "Fluffy Infection", HidePremium = true, SaveConfig = true, ConfigFolder = "Fluffy Infection"})
 
@@ -44,18 +35,12 @@ local Toggles = W1:MakeTab({
     PremiumOnly = false
 })
 
-local Others = W1:MakeTab({
-    Name = "Others",
-    Icon = "rbxassetid://6890648157", --- rbxassetid://4483345998
-    PremiumOnly = false
-})
-
 Toggles:AddToggle({
     Name = "AntiFagInfect",
     Default = false,
     Callback = function(fagjuice1)
         if fagjuice1 then
-            fagfolder1.Parent = nil
+             fagfolder1.Parent = nil
          else
              fagfolder1.Parent = workspace
          end
@@ -94,7 +79,7 @@ for i,v in pairs(game.Players:GetPlayers()) do
 
 local ohInstance1 = v.Character.HumanoidRootPart
 local ohInstance2 = v.Character.Humanoid
-local ohVector33 = Vector3.new(game.Players.LocalPlayer.Character.HumanoidRootPart.Position)
+local ohVector33 = Vector3.new(game.Players.LocalPlayer.Character.HumanoidRootPart.Position) or Vector3.new()
 
 game.Players.LocalPlayer.Character:FindFirstChildWhichIsA("Tool").Remote.Hit:FireServer(ohInstance1, ohInstance2, ohVector33)
 end
