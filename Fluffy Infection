@@ -91,7 +91,7 @@ Toggles:AddToggle({
             end
 Heartbeat = game.RunService.Heartbeat:Connect(function()
 if _G.killaura then
-for i = 1, 2 do
+for i = 1,3 do
 pcall(function()
 for i,v in pairs(game.Players:GetPlayers()) do
     if v.Team ~= game.Players.LocalPlayer.Team then
@@ -100,20 +100,13 @@ for i,v in pairs(game.Players:GetPlayers()) do
     local character = v.Character
     local charactername = v.Name
     
-	if v:IsFriendsWith(game:GetService("Players").LocalPlayer.UserId) then
-		--- nothing
-	else
+	if not v:IsFriendsWith(game:GetService("Players").LocalPlayer.UserId) then
         
         if (lp.Character and lp.Character:FindFirstChild("Head") and character:FindFirstChild("Head")) then
             local mag = (v.Character.Head.Position - lp.Character.Head.Position).Magnitude
-                  if mag < 15 then
-
-
-local ohInstance1 = v.Character.HumanoidRootPart
-local ohInstance2 = v.Character.Humanoid
-local ohVector33 = Vector3.new(game.Players.LocalPlayer.Character.HumanoidRootPart.Position)
-
-game.Players.LocalPlayer.Character:FindFirstChildWhichIsA("Tool").Remote.Hit:FireServer(ohInstance1, ohInstance2, ohVector33)
+            local tool = game.Players.LocalPlayer.Character:FindFirstChildWhichIsA("Tool")
+                  if mag < 20 and tool then
+tool.Remote.Hit:FireServer(character.HumanoidRootPart, character.Humanoid, Vector3.new(game.Players.LocalPlayer.Character.HumanoidRootPart.Position))
 end
 end
 end
@@ -223,54 +216,6 @@ end
 end
 	    end) 
   end
-})
-
-Others:AddButton({
-	Name = "KeyBoard",
-	Callback = function()
-	    loadstring(game:HttpGet("https://raw.githubusercontent.com/advxzivhsjjdhxhsidifvsh/mobkeyboard/main/main.txt", true))()
-      end
-})
-
-Others:AddButton({
-	Name = "Rejoin Button",
-	Callback = function()
-	    game:GetService("StarterGui"):SetCore("SendNotification",{
- Title = "NoobHubV4";
- Text = "Executed";
- Duration = 5;
- Icon = "rbxassetid://4483345998";
-})
-	    --Auto execute highly recommended (use it)
-gui = game.CoreGui.RobloxPromptGui.promptOverlay:WaitForChild("ErrorPrompt")
-
-gui.Size = UDim2.new(0, 400, 0, 230)
-
-leave = gui.MessageArea.ErrorFrame.ButtonArea.LeaveButton
-
-gui.MessageArea.MessageAreaPadding.PaddingTop = UDim.new(0,-20)
-gui.MessageArea.ErrorFrame.ErrorFrameLayout.Padding = UDim.new(0, 5)
-
-gui.MessageArea.ErrorFrame.ButtonArea.ButtonLayout.CellPadding = UDim2.new(0, 0, 0, 5)
-
-rejoin = leave:Clone()
-rejoin.Parent = leave.Parent
-rejoin.ButtonText.Text = "Rejoin"
-
-Players = game:GetService("Players")
-TeleportService = game:GetService("TeleportService")
-
-rejoin.MouseButton1Up:Connect(function()
- if #Players:GetPlayers() <= 1 then
-game.Players.LocalPlayer:Kick("Rejoining...")
-rejoin: destroy ()
-wait(1)
-  TeleportService:Teleport(game.PlaceId, Players.LocalPlayer)
- else
-  TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, Players.LocalPlayer)
- end
-end)
-       end
 })
 
 Toggles:AddToggle({
