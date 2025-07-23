@@ -2,21 +2,6 @@ pcall(function()
 local OrionLib = loadstring(Game:HttpGet('https://raw.githubusercontent.com/NoobHubV1/RobloxScripts/main/OrionLib.lua'))()
 _G.MetalBatProximity = workspace.MetalBat:FindFirstChild("ProximityPrompt")
 
-spawn(function()
-    local msg = Instance.new("Message",workspace)
-    msg.Text = "Loading."
-    task.wait(3)
-    msg.Text = "Loading.."
-    task.wait(3)
-    msg.Text = "Loading..."
-    task.wait(3)
-    msg.Text = "Loaded!"
-    task.wait(3)
-    msg:Destroy()
-end)    
-
-task.wait(5)
-
 if workspace:FindFirstChild("FagFolder") then
 
 else    
@@ -104,9 +89,14 @@ for i,v in pairs(game.Players:GetPlayers()) do
         
         if (lp.Character and lp.Character:FindFirstChild("Head") and character:FindFirstChild("Head")) then
             local mag = (v.Character.Head.Position - lp.Character.Head.Position).Magnitude
-            local tool = game.Players.LocalPlayer.Character:FindFirstChildWhichIsA("Tool")
-                  if mag < 20 and tool then
-tool.Remote.Hit:FireServer(character.HumanoidRootPart, character.Humanoid, Vector3.new(game.Players.LocalPlayer.Character.HumanoidRootPart.Position))
+                  if mag < 20 then
+
+
+local ohInstance1 = v.Character.HumanoidRootPart
+local ohInstance2 = v.Character.Humanoid
+local ohVector33 = Vector3.new(game.Players.LocalPlayer.Character.HumanoidRootPart.Position)
+
+game.Players.LocalPlayer.Character:FindFirstChildWhichIsA("Tool").Remote.Hit:FireServer(ohInstance1, ohInstance2, ohVector33)
 end
 end
 end
