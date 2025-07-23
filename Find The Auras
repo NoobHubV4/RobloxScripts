@@ -1,13 +1,46 @@
 local lib = loadstring(Game:HttpGet("https://raw.githubusercontent.com/NoobHubV1/NoobHubV1/main/Wizard%20Lib.lua"))()
+local pos
+function missing(t, f, fallback)
+  if type(f) == t then return f end
+  return fallback
+end
+replicatesignal = missing("function", replicatesignal)
 local Window = lib:NewWindow("Find the Auras")
 local Section = Window:NewSection("Main")
+Section:CreateButton("Refresh", function()
+  pos = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
+  replicatesignal(game.Players.LocalPlayer.ConnectDiedSignalBackend)
+  task.wait(game.Players.RespawnTime-0.15)
+  game.Players.LocalPlayer.Character.Humanoid.RigType = Enum.HumanoidRigType.R15
+  game.Players.LocalPlayer.CharacterAdded:Wait() wait(.005)
+  if pos then
+     for i = 1,15 do
+        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = pos
+        task.wait()
+     end
+     pos = nil
+  end
+end)
+Section:CreateToggle("Auto All Aura", function()
+  for _,Aura in next, workspace.Morphs:GetChildren() do
+  if Aura:FindFirstChild("ProximityPrompt") then
+    local saved = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
+    repeat task.wait()
+       game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = Aura.CFrame
+       fireproximityprompt(Aura:FindFirstChild("ProximityPrompt"))
+    until Aura.Transparency ~= 0
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = saved
+  end
+  end
+end)
 Section:CreateTextbox("Aura Name", function(text)
   local Aura = game.Workspace:FindFirstChild("Morphs")[text.." Aura"]
   if Aura:FindFirstChild("ProximityPrompt") then
     local saved = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
-    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = Aura.CFrame
-    wait(.1625)
-    fireproximityprompt(Aura:FindFirstChild("ProximityPrompt"))
+    repeat task.wait()
+       game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = Aura.CFrame
+       fireproximityprompt(Aura:FindFirstChild("ProximityPrompt"))
+    until Aura.Transparency ~= 0
     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = saved
   end
 end)
