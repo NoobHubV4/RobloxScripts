@@ -2,11 +2,12 @@ local lib = loadstring(Game:HttpGet("https://raw.githubusercontent.com/NoobHubV1
 local Window = lib:NewWindow("Find the Auras")
 local Section = Window:NewSection("Main")
 Section:CreateTextbox("Aura Name", function(text)
-  for i,v in next, game.Workspace.Morphs:GetChildren() do
-    if v.Name == text.." Aura" and v:FindFirstChild("ProximityPrompt") then
-      game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.CFrame
-      wait(.1375)
-      fireproximityprompt(v:FindFirstChild("ProximityPrompt"))
-    end
+  local Aura = game.Workspace:FindFirstChild("Morphs")[text.." Aura"]
+  if Aura:FindFirstChild("ProximityPrompt") then
+    local saved = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = Aura.CFrame
+    wait(.1375)
+    fireproximityprompt(Aura:FindFirstChild("ProximityPrompt"))
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = saved
   end
 end)
