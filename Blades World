@@ -1,6 +1,7 @@
 local lib = loadstring(Game:HttpGet("https://raw.githubusercontent.com/NoobHubV1/NoobHubV1/main/Wizard%20Lib.lua"))()
 local autoOrbs
 local autoStrength
+local autoFarm
 local Window = lib:NewWindow("Blades World")
 local Section = Window:NewSection("Main")
 Section:CreateToggle("Auto Orbs", function(state)
@@ -8,6 +9,24 @@ Section:CreateToggle("Auto Orbs", function(state)
 end)
 Section:CreateToggle("Auto Strength", function(state)
   autoStrength = state
+end)
+Section:CreateToggle("Auto Farm", function(state)
+  autoFarm = state
+end)
+Section:CreateButton("Complete Quest 1", function()
+  for i,v in next, game.Workspace.RoseHuntMission:GetChildren() do
+    if v:FindFirstChild("ProximityPrompt") then
+      game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.CFrame
+      wait(.15)
+      fireproximityprompt(v:FindFirstChild("ProximityPrompt"), 2, false)
+    end
+  end
+end)
+Section:CreateButton("Complete Quest 3", function()
+  local pos = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
+  game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(0, 0, 1e7)
+  task.wait(.5)
+  game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = pos
 end)
 spawn(function()
   task0 = function()
@@ -20,6 +39,15 @@ spawn(function()
     end
     if autoStrength then
       workspace:FindFirstChild("BladePowerGiver")["RemoteEvent"]:FireServer()
+    end
+    if autoFarm then
+      if not autoOrbs == true then
+        autoOrbs = true
+      end
+      if not autoStrength then
+        autoStrength = true
+      end
+      game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(0, 10000, 0)
     end
   end
   while task.wait() do
