@@ -61,10 +61,12 @@ Toggles:AddToggle({
             end
 Heartbeat = game.RunService.Heartbeat:Connect(function()
 if _G.killaura then
-for i = 1,3 do
+for i = 1,4 do
 pcall(function()
 for i,v in pairs(game.Players:GetPlayers()) do
     if v.Team ~= game.Players.LocalPlayer.Team then
+
+    if not v.Character:FindFirstChildWhichIsA("ForceField") and v.Character.Humanoid.Health ~= 0 then
         
     local lp = game.Players.LocalPlayer
     local character = v.Character
@@ -82,6 +84,7 @@ local ohInstance2 = v.Character.Humanoid
 local ohVector33 = Vector3.new(game.Players.LocalPlayer.Character.HumanoidRootPart.Position) or Vector3.new()
 
 game.Players.LocalPlayer.Character:FindFirstChildWhichIsA("Tool").Remote.Hit:FireServer(ohInstance1, ohInstance2, ohVector33)
+end
 end
 end
 end
