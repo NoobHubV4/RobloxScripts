@@ -1,1 +1,24 @@
---Patched
+local lib = loadstring(Game:HttpGet("https://raw.githubusercontent.com/NoobHubV1/NoobHubV1/main/Wizard%20Lib.lua"))()
+local Window = lib:NewWindow("Find the Hamsters")
+local Section = Window:NewSection("Main")
+Section:CreateButton("Get All Hamsters", function()
+  local pos = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
+  for i,v in pairs(game.Workspace.Collectibles:GetChildren()) do
+local hamster = v:FindFirstChild("DetectionPart")
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = hamster.CFrame
+wait(.05)
+end
+wait(.2)
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = pos
+end)
+Section:CreateTextbox("Hamsters Name", function(text)
+    local pos = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
+    for i,v in pairs(game.Workspace.Collectibles:GetChildren()) do
+if v.Name == text.."_ham" then
+local hamster = v:FindFirstChild("DetectionPart")
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = hamster.CFrame
+end
+end
+wait(.2)
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = pos
+end)
