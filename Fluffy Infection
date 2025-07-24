@@ -28,6 +28,22 @@ function notify(name,text)
 })
 end
 
+function KillAura(player)
+    if player.Character and player.Character.Torso then
+      if game.Players.LocalPlayer.Character:FindFirstChildOfClass("Tool") and game.Players.LocalPlayer.Character:FindFirstChildOfClass("Tool"):FindFirstChild("Remote") and game.Players.LocalPlayer.Character:FindFirstChildOfClass("Tool"):FindFirstChild("Remote"):FindFirstChild("Hit") then
+        if game.Players.LocalPlayer.Character:FindFirstChildOfClass("Tool"):FindFirstChild("Handler") then
+          if player.Team ~= game.Players.LocalPlayer.Team and player ~= game.Players.LocalPlayer then
+            if (game.Players.LocalPlayer.Character:FindFirstChild("Torso").Position - player.Character:FindFirstChild("Torso").Position).Magnitude <= 20 then
+              if not player.Character:FindFirstChildWhichIsA("ForceField") and player.Character.Humanoid.Health ~= 0 then
+                game.Players.LocalPlayer.Character:FindFirstChildOfClass("Tool"):FindFirstChild("Remote"):FindFirstChild("Hit"):FireServer(player.Character:FindFirstChild("Torso"),player.Character:FindFirstChild("Humanoid"),player.Character:FindFirstChild("Torso").Position or Vector3.new())
+              end
+            end
+          end
+        end
+      end
+    end
+end
+
 local Toggles = W1:MakeTab({
     Name = "Main",
     Icon = "rbxassetid://6890648157", --- rbxassetid://4483345998
@@ -60,29 +76,10 @@ Toggles:AddToggle({
             end
 Heartbeat = game.RunService.Heartbeat:Connect(function()
 if _G.killaura then
-for i = 1,5 do
+for i = 1,6 do
 pcall(function()
-for i,v in pairs(game.Players:GetPlayers()) do
-    if v.Team ~= game.Players.LocalPlayer.Team then
-
-    if not v.Character:FindFirstChildWhichIsA("ForceField") and v.Character.Humanoid.Health ~= 0 then
-        
-    local lp = game.Players.LocalPlayer
-    local character = v.Character
-    local charactername = v.Name
-    
-	if not v:IsFriendsWith(game:GetService("Players").LocalPlayer.UserId) then
-        
-        if (lp.Character and lp.Character:FindFirstChild("Torso") and character:FindFirstChild("Torso")) then
-            local mag = (v.Character.Torso.Position - lp.Character.Torso.Position).Magnitude
-            local tool = game.Players.LocalPlayer.Character:FindFirstChildWhichIsA("Tool")
-                  if mag < 17.5 and tool then
-tool.Remote.Hit:FireServer(v.Character.Torso, v.Character.Humanoid, Vector3.new(game.Players.LocalPlayer.Character.Torso.Position) or Vector3.new())
-end
-end
-end
-end
-end
+for _,player in next, game:GetService("Players"):GetPlayers() do 
+    KillAura(player)
 end
 end)
 end
@@ -138,16 +135,12 @@ Toggles:AddButton({
             
             else    
             if v.Team == game.Teams["Transfured"] then
-                game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(v.Character.HumanoidRootPart.Position)
+                game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.Character.HumanoidRootPart.CFrame
                 oldposition = game.Players.LocalPlayer.Character.HumanoidRootPart.Position
                 repeat task.wait()
                     if game.Players.LocalPlayer.Character:FindFirstChild("Bat") or game.Players.LocalPlayer.Character:FindFirstChild("Metal Bat") then
-                    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(v.Character.HumanoidRootPart.Position+Vector3.new(0,5,0))
-                    local ohInstance1 = v.Character.HumanoidRootPart
-                    local ohInstance2 = v.Character.Humanoid
-                    local ohVector33 = Vector3.new(game.Players.LocalPlayer.Character.HumanoidRootPart.Position)
-
-                    game.Players.LocalPlayer.Character:FindFirstChildWhichIsA("Tool").Remote.Hit:FireServer(ohInstance1, ohInstance2, ohVector33)
+                    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.Character.HumanoidRootPart.CFrame * CFrame.new(0,5,0)
+                    KillAura(v)
                     elseif game.Players.LocalPlayer.Backpack:FindFirstChild("Bat") then
                         game.Players.LocalPlayer.Character.Humanoid:EquipTool(game.Players.LocalPlayer.Backpack:FindFirstChild("Bat"))
                     elseif game.Players.LocalPlayer.Backpack:FindFirstChild("Metal Bat") then
@@ -213,16 +206,11 @@ while _G.killall do task.wait()
             
             else    
             if v.Team == game.Teams["Transfured"] then
-                game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(v.Character.HumanoidRootPart.Position)
+                game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.Character.HumanoidRootPart.CFrame
                 oldposition = game.Players.LocalPlayer.Character.HumanoidRootPart.Position
                 repeat task.wait()
                     if game.Players.LocalPlayer.Character:FindFirstChild("Bat") or game.Players.LocalPlayer.Character:FindFirstChild("Metal Bat") then
-                    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(v.Character.HumanoidRootPart.Position+Vector3.new(0,5,0))
-                    local ohInstance1 = v.Character.HumanoidRootPart
-                    local ohInstance2 = v.Character.Humanoid
-                    local ohVector33 = Vector3.new(game.Players.LocalPlayer.Character.HumanoidRootPart.Position)
-
-                    game.Players.LocalPlayer.Character:FindFirstChildWhichIsA("Tool").Remote.Hit:FireServer(ohInstance1, ohInstance2, ohVector33)
+                    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.Character.HumanoidRootPart.CFrame * CFrame.new(0,5,0)
                     elseif game.Players.LocalPlayer.Backpack:FindFirstChild("Bat") then
                         game.Players.LocalPlayer.Character.Humanoid:EquipTool(game.Players.LocalPlayer.Backpack:FindFirstChild("Bat"))
                     elseif game.Players.LocalPlayer.Backpack:FindFirstChild("Metal Bat") then
@@ -322,6 +310,32 @@ mt.__namecall = newcclosure(function(self, ...)
     end
     end
     return namecall(self, table.unpack(args))
-end) 
+end)
+
+Toggles:AddToggle({
+	Name = "Spam Bat Sound",
+	Callback = function(spamsounds)
+	    spawn(function()
+	        if spamsounds then
+	            _G.spambatsounds = true
+	            notify("Furry Infection NoobHubV4","Spam Bat Sounds On")
+	       else 
+	           _G.spambatsounds = false
+	           notify("Furry Infection NoobHubV4","Spam Bat Sounds Off")
+	        end
+	        
+local RenderStepped
+RenderStepped = game:GetService("RunService").RenderStepped:Connect(function()
+pcall(function()
+if _G.spambatsounds then  
+    game.Players.LocalPlayer.Character:FindFirstChildOfClass("Tool").Remote.PlaySound:FireServer("Swing")
+else
+    RenderStepped:Disconnect()
+end    
+end)
+end)
+end)
+end
+})
 
 end)
