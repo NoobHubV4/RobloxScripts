@@ -46,6 +46,10 @@ end)
 Section:CreateToggle("Auto Move", function(state)
        AutoMove = state
 end)
+workspace.Balls.ChildAdded:Connect(function()
+        Parried = false
+        getgenv().loop = false
+end)
 spawn(function()
     function Parry()
     local Ball, HRP = GetBall(), Player.Character.HumanoidRootPart
@@ -56,18 +60,23 @@ spawn(function()
     local Speed = Ball.LinearVelocity.VectorVelocity.Magnitude
     local Distance = (HRP.Position - Ball.Position).Magnitude
     
-    if Player.Character.Highlight and not Parried and Distance / Speed <= 0.6 and AutoParry then
+    if Ball.BallHighlight2.Enabled and not Parried and Distance / Speed <= 0.6 and AutoParry then
       game.ReplicatedStorage.Framework.RemoteFunction:InvokeServer("SwordService", "Block", {0})
       Parried = true
       Cooldown = tick()
       if (tick() - Cooldown) >= 1 then
              Parried = false
       end
-      task.wait(.55)
-      Parried = false
+      getgenv().loop = true
+      while task.wait() and getgenv().loop do
+              if not Ball.BallHighlight2.Enabled then
+                      Parried = false
+                      getgenv().loop = false
+              end
+      end
     end
     end
-while wait() do
+while task.wait() do
     pcall(Parry)
 end
 end)
