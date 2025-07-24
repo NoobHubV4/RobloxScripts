@@ -14,7 +14,7 @@ spawn(function()
 	       if Targets.Character and not Targets.Character:FindFirstChildWhichIsA("ForceField") and Targets.Character:FindFirstChildOfClass("Humanoid").Health ~= 0 then
 		       local TPart = Targets.Character:FindFirstChildWhichIsA("BasePart")
 		       if VPart and TPart and Targets ~= LocalPlayer then
-			         if (TPart.Position-VPart.Position).Magnitude <= 20 then
+			         if (TPart.Position-VPart.Position).Magnitude <= 25 then
 				         game.ReplicatedStorage.Remotes.Replication.Fighter.HitPlayer:FireServer(Targets.Character, false)
 			         end
 		       end
