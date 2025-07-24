@@ -63,12 +63,11 @@ spawn(function()
       if (tick() - Cooldown) >= 1 then
              Parried = false
       end
-      wait(.2)
-      Parried = true
-      t("Test Script", "Test", 0)
+      task.wait(.55)
+      Parried = false
     end
     end
-while wait(.025) do
+while wait() do
     pcall(Parry)
 end
 end)
