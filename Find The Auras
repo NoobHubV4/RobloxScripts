@@ -5,6 +5,7 @@ function missing(t, f, fallback)
   return fallback
 end
 replicatesignal = missing("function", replicatesignal)
+local autoAuras
 local Window = lib:NewWindow("Find the Auras")
 local Section = Window:NewSection("Main")
 Section:CreateButton("Refresh", function()
@@ -12,7 +13,7 @@ Section:CreateButton("Refresh", function()
   replicatesignal(game.Players.LocalPlayer.ConnectDiedSignalBackend)
   task.wait(game.Players.RespawnTime-0.15)
   game.Players.LocalPlayer.Character.Humanoid.RigType = Enum.HumanoidRigType.R15
-  game.Players.LocalPlayer.CharacterAdded:Wait() wait(.005)
+  game.Players.LocalPlayer.CharacterAdded:Wait() wait(.0025)
   if pos then
      for i = 1,15 do
         game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = pos
@@ -21,26 +22,64 @@ Section:CreateButton("Refresh", function()
      pos = nil
   end
 end)
-Section:CreateToggle("Auto All Aura", function()
-  for _,Aura in next, workspace.Morphs:GetChildren() do
-  if Aura:FindFirstChild("ProximityPrompt") then
-    local saved = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
-    repeat task.wait()
-       game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = Aura.CFrame
-       fireproximityprompt(Aura:FindFirstChild("ProximityPrompt"))
-    until Aura.Transparency ~= 0
-    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = saved
-  end
-  end
+Section:CreateToggle("Auto All Aura", function(state)
+  autoAuras = state
 end)
 Section:CreateTextbox("Aura Name", function(text)
-  local Aura = game.Workspace:FindFirstChild("Morphs")[text.." Aura"]
-  if Aura:FindFirstChild("ProximityPrompt") then
-    local saved = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
+  local saved = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
+  local auras = {}
+  for i,v in next, game.Players.LocalPlayer.PlayerGui.MainGui.Morphs.List:GetChildren() do
+    if v.Name == text then
+      if v:IsA("Frame") then
+        if v.lock.ImageTransparency ~= 1 and v.rebirth.ImageTransparency == 1 and v.vip.ImageTransparency == 1 and workspace.Morphs[v.Name].ProximityPrompt.MaxActivationDistance ~= 0 then
+          table.insert(auras, v.Name)
+        end
+      end
+    end
+  end
+  for i,v in next, auras do
     repeat task.wait()
-       game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = Aura.CFrame
-       fireproximityprompt(Aura:FindFirstChild("ProximityPrompt"))
-    until Aura.Transparency ~= 0
-    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = saved
+      game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = workspace.Morphs[v].CFrame + Vector3.new(0,3,0)
+      if workspace.Morphs[v].ProximityPrompt then
+        fireproximityprompt(workspace.Morphs[v].ProximityPrompt, 15, true)
+      end
+      for i,v in next, game.Players.LocalPlayer.PlayerGui:GetChildren() do
+        if v.Name == "ConfettiCannon" then v:Destroy() end
+      end
+    until workspace.Morphs[v].Transparency == 1
+  end
+  game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = saved
+end)
+Section:CreateButton("Destroy Aura Notification", function()
+  if game.Players.LocalPlayer.PlayerGui.MainGui:FindFirstChild("PutFoundHere") then
+    game.Players.LocalPlayer.PlayerGui.MainGui["PutFoundHere"]:Destroy()
+  end
+end)
+spawn(function()
+  task0 = function()
+    if autoAuras then
+      local auras = {}
+      for i,v in next, game.Players.LocalPlayer.PlayerGui.MainGui.Morphs.List:GetChildren() do
+        if v:IsA("Frame") then
+          if v.lock.ImageTransparency ~= 1 and v.rebirth.ImageTransparency == 1 and v.vip.ImageTransparency == 1 and workspace.Morphs[v.Name].ProximityPrompt.MaxActivationDistance ~= 0 then
+            table.insert(auras, v.Name)
+          end
+        end
+      end
+      for i,v in next, auras do
+        repeat task.wait()
+          game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(workspace.Morphs[v].CFrame.p)
+          if workspace.Morphs[v].ProximityPrompt then
+            fireproximityprompt(workspace.Morphs[v].ProximityPrompt, 15, true)
+          end
+          for i,v in next, game.Players.LocalPlayer.PlayerGui:GetChildren() do
+            if v.Name == "ConfettiCannon" then v:Destroy() end
+          end
+        until workspace.Morphs[v].Transparency == 1
+      end
+    end
+  end
+  while task.wait() do
+    pcall(task0)
   end
 end)
