@@ -26,7 +26,7 @@ Section:CreateToggle("Auto Kill", function(state)
 end)
 game.RunService.Heartbeat:Connect(function()
   if autoKill then
-    for i = 1,5 do
+    for i = 1,6 do
       local Giant = GetGiant()
       if Giant then
         workspace:WaitForChild("__THINGS"):WaitForChild("__REMOTES"):WaitForChild("giant_dealdamage"):FireServer({Giant.Name, 20, -0.028954521711628635})
@@ -34,7 +34,7 @@ game.RunService.Heartbeat:Connect(function()
     end
   end
   if autoMoney then
-    for i = 1,5 do
+    for i = 1,6 do
       workspace:WaitForChild("__THINGS"):WaitForChild("__REMOTES"):WaitForChild("currencycollected"):FireServer({})
     end
   end
