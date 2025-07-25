@@ -132,4 +132,3 @@ game.RunService.Heartbeat:Connect(function()
             humanoid:MoveTo(Ball.Position)
      end
 end)
-t("Test Script", "Script is Work", 3)
