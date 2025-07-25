@@ -100,10 +100,9 @@ workspace.Balls.ChildAdded:Connect(function()
         ResetConnection()
         Connection = Ball:GetAttributeChangedSignal("Target"):Connect(function()
                Parried = false
-        end
+        end)
 end)
-spawn(function()
-    function Parry()
+game.RunService.PreSimulation:Connect(function()
     local Ball, HRP = GetBall(), GetRoot()
     if not Ball or not HRP then
       return
@@ -120,10 +119,6 @@ spawn(function()
              Parried = false
       end
     end
-    end
-while wait() do
-    pcall(Parry)
-end
 end)
 game.RunService.Stepped:Connect(function()
      if SpamParry then
@@ -137,3 +132,4 @@ game.RunService.Heartbeat:Connect(function()
             humanoid:MoveTo(Ball.Position)
      end
 end)
+t("Test Script", "Script is Work", 3)
