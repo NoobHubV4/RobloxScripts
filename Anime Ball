@@ -11,10 +11,7 @@ local ScreenGui = Instance.new("ScreenGui", game.CoreGui)
 local TextLabel = Instance.new("TextLabel", ScreenGui)
 local VIM = game:GetService("VirtualInputManager") or game:FindFirstDescendant("VirtualInputManager")
 local AutoMove = false
-local RunService = game:GetService("RunService") or game:FindFirstDescendant("RunService")
-local VirtualInputManager = game:GetService("VirtualInputManager") or game:FindFirstDescendant("VirtualInputManager")
 local AutoParry = false
-local Parried = false
 local Cooldown = tick()
 
 function GetBall()
@@ -47,8 +44,9 @@ Section:CreateToggle("Auto Move", function(state)
        AutoMove = state
 end)
 workspace.Balls.ChildAdded:Connect(function()
+        local Ball = GetBall()
+        if not Ball then return end
         Parried = false
-        getgenv().loop = false
 end)
 spawn(function()
     function Parry()
@@ -60,20 +58,19 @@ spawn(function()
     local Speed = Ball.LinearVelocity.VectorVelocity.Magnitude
     local Distance = (HRP.Position - Ball.Position).Magnitude
     
-    if Ball.BallHighlight2.Enabled and not Parried and Distance / Speed <= 0.6 and AutoParry then
+    if Ball.BallHighlight2.Enabled and not Parried and Distance / Speed <= 0.55 and AutoParry then
       game.ReplicatedStorage.Framework.RemoteFunction:InvokeServer("SwordService", "Block", {0})
       Parried = true
       Cooldown = tick()
       if (tick() - Cooldown) >= 1 then
              Parried = false
       end
-      getgenv().loop = true
-      while task.wait() and getgenv().loop do
+      while Parried do
               if not Ball.BallHighlight2.Enabled then
                       Parried = false
-                      getgenv().loop = false
                       break
               end
+              wait()
       end
     end
     end
