@@ -3,9 +3,9 @@ for i,v in ipairs(game.CoreGui:GetChildren()) do
                 v:Destroy()
         end
 end
-local lib = loadstring(Game:HttpGet("https://raw.githubusercontent.com/NoobHubV1/RobloxScripts/main/Arceus%20X%20V3%20Lib.lua"))()
-lib:SetTitle("Anime Ball")
-lib:SetTitleColor(0, 255, 0)
+local lib = loadstring(Game:HttpGet("https://raw.githubusercontent.com/NoobHubV1/NoobHubV1/main/Wizard%20Lib.lua"))()
+local Window = lib:NewWindow("Anime Ball")
+local Combat = Window:NewSection("Combat")
 local Player = game.Players.LocalPlayer
 local ScreenGui = Instance.new("ScreenGui", game.CoreGui)
 local TextLabel = Instance.new("TextLabel", ScreenGui)
@@ -13,7 +13,7 @@ local VIM = game:GetService("VirtualInputManager") or game:FindFirstDescendant("
 local AutoMove = false
 local AutoParry = false
 local Cooldown = tick()
-local Method = "Remote"
+local Method = "Keypress"
 local ScreenGui = Instance.new("ScreenGui", game.CoreGui)
 local Toggle = Instance.new("TextButton", ScreenGui)
 local SpamParry = false
@@ -71,19 +71,19 @@ function t(Title, Text, Time)
     game:FindService("StarterGui"):SetCore("SendNotification",{Title=Title,Text=Text,Icon="",Duration=Time,})
 end
 
-lib:AddDropdown("Parry Method", {"Keypress","Click","Remote"}, function(select)
+Combat:CreateDropdown("Parry Method", {"Keypress","Click","Remote"}, 1, function(select)
        Method = select
 end)
 
-lib:AddToggle("Auto Parry", function(state)
+Combat:CreateToggle("Auto Parry", function(state)
        AutoParry = state
 end)
 
-lib:AddToggle("Manual Spam", function(state)
+Combat:CreateToggle("Manual Spam", function(state)
        Toggle.Visible = state
 end)
 
-lib:AddToggle("Auto Move", function(state)
+Combat:CreateToggle("Auto Move", function(state)
        AutoMove = state
 end)
 workspace.Balls.ChildAdded:Connect(function()
@@ -133,5 +133,3 @@ game.RunService.Heartbeat:Connect(function()
             humanoid:MoveTo(Ball.Position)
      end
 end)
-lib:SetTheme("Default")
-lib:SetIcon("rbxassetid://99482688387044")
