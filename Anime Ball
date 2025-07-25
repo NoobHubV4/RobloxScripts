@@ -3,9 +3,9 @@ for i,v in ipairs(game.CoreGui:GetChildren()) do
                 v:Destroy()
         end
 end
-local lib = loadstring(Game:HttpGet("https://raw.githubusercontent.com/NoobHubV1/NoobHubV1/main/Wizard%20Lib.lua"))()
-local Window = lib:NewWindow("Anime Ball")
-local Section = Window:NewSection("Main")
+local lib = loadstring(Game:HttpGet("https://raw.githubusercontent.com/NoobHubV1/RobloxScripts/main/Arceus%20X%20V3%20Lib.lua"))()
+lib:SetTitle("Anime Ball")
+lib:SetTitleColor(0, 0, 255)
 local Player = game.Players.LocalPlayer
 local ScreenGui = Instance.new("ScreenGui", game.CoreGui)
 local TextLabel = Instance.new("TextLabel", ScreenGui)
@@ -14,6 +14,34 @@ local AutoMove = false
 local AutoParry = false
 local Cooldown = tick()
 local Method = "Remote"
+local ScreenGui = Instance.new("ScreenGui", game.CoreGui)
+local Toggle = Instance.new("TextButton", ScreenGui)
+local SpamParry = false
+
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+ScreenGui.ResetOnSpawn = true
+
+Toggle.BackgroundColor3 = Color3.fromRGB(50, 100, 150)
+Toggle.BackgroundTransparency = 0
+Toggle.Position = UDim2.new(0, 0, 0, 0)
+Toggle.Size = UDim2.new(0, 180, 0, 40)
+Toggle.Font = Enum.Font.SourceSans
+Toggle.Text = "SpamParry [OFF]"
+Toggle.TextColor3 = Color3.fromRGB(150, 100, 75)
+Toggle.TextScaled = true
+Toggle.TextSize = 15.000
+Toggle.TextStrokeTransparency = 0.000
+Toggle.TextWrapped = true
+Toggle.Draggable = true
+Toggle.Visible = false
+Toggle.MouseButton1Click:Connect(function()
+     SpamParry = not SpamParry
+     if SpamParry then
+           Toggle.Text = "SpamParry [ON]"
+     elseif not SpamParry then
+           Toggle.Text = "SpamParry [OFF]"
+     end
+end)
 
 function GetBall()
   for i,v in next, workspace.Balls:GetChildren() do
@@ -29,29 +57,39 @@ function GetRoot()
   end
 end
 
+function ParryAttempt()
+  if Method == "Keypress" then
+          VIM:SendKeyEvent(true, "F", false, game)
+  elseif Method == "Click" then
+          VIM:SendMouseButtonEvent(0, 0, 0, true, game, false)
+  elseif Method == "Remote" then
+          game.ReplicatedStorage.Framework.RemoteFunction:InvokeServer("SwordService","Block",{0})
+  end
+end
+
 function t(Title, Text, Time)
     game:FindService("StarterGui"):SetCore("SendNotification",{Title=Title,Text=Text,Icon="",Duration=Time,})
 end
 
-Section:CreateDropdown("Parry Method", {"Keypress","Click","Remote"}, 3, function(select)
+lib:AddDropdown("Parry Method", {"Keypress","Click","Remote"}, function(select)
        Method = select
 end)
 
-Section:CreateToggle("Auto Parry", function(state)
+lib:AddToggle("Auto Parry", function(state)
        AutoParry = state
 end)
 
-Section:CreateButton("Manual Spam", function()
-       loadstring(Game:HttpGet("https://raw.githubusercontent.com/NoobHubV4/RobloxScripts/main/Remote%20anime%20ball"))()
+lib:AddToggle("Manual Spam", function(state)
+       Toggle.Visible = state
 end)
 
-Section:CreateToggle("Auto Move", function(state)
+lib:AddToggle("Auto Move", function(state)
        AutoMove = state
 end)
 workspace.Balls.ChildAdded:Connect(function()
-        local Ball = GetBall()
-        if not Ball then return end
-        Parried = false
+        if Parried then
+                Parried = false
+        end
 end)
 spawn(function()
     function Parry()
@@ -63,15 +101,9 @@ spawn(function()
     local Speed = Ball.LinearVelocity.VectorVelocity.Magnitude
     local Distance = (HRP.Position - Ball.Position).Magnitude
     
-    if Ball.BallHighlight2.Enabled and not Parried and Distance / Speed <= 0.55 and AutoParry then
+    if Ball.BallHighlight2.Enabled and not Parried and Distance / Speed <= 0.5 and AutoParry then
       Parried = true
-      if Method == "Keypress" then
-              VIM:SendKeyEvent(true, "F", false, game)
-      elseif Method == "Click" then
-              VIM:SendMouseButtonEvent(0, 0, 0, true, game, false)
-      elseif Method == "Remote" then
-              game.ReplicatedStorage.Framework.RemoteFunction:InvokeServer("SwordService","Block",{0})
-      end
+      ParryAttempt()
       Cooldown = tick()
       if (tick() - Cooldown) >= 1 then
              Parried = false
@@ -85,32 +117,15 @@ spawn(function()
       end
     end
     end
-while task.wait() do
+while wait() do
     pcall(Parry)
 end
 end)
-ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-ScreenGui.ResetOnSpawn = true
-
-TextLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-TextLabel.BackgroundTransparency = 0.5
-TextLabel.Position = UDim2.new(0, 0, 0, 0)
-TextLabel.Size = UDim2.new(0, 180, 0, 40)
-TextLabel.Font = Enum.Font.SourceSans
-TextLabel.TextColor3 = Color3.fromRGB(150, 100, 75)
-TextLabel.TextScaled = true
-TextLabel.TextSize = 15.000
-TextLabel.TextStrokeTransparency = 0.000
-TextLabel.TextWrapped = true
-
 game.RunService.Stepped:Connect(function()
-     local Ball = GetBall()
-     if not Ball then TextLabel.Text = "Speed: 0" end
-     if Ball then
-            TextLabel.Text = "Speed: "..(Ball.LinearVelocity.VectorVelocity).Magnitude
+     if SpamParry then
+           ParryAttempt()
      end
 end)
-
 game.RunService.Heartbeat:Connect(function()
      local Ball, humanoid = GetBall(), Player.Character.Humanoid
      if not Ball or not humanoid then return end
@@ -118,3 +133,6 @@ game.RunService.Heartbeat:Connect(function()
             humanoid:MoveTo(Ball.Position)
      end
 end)
+t("Successfully", "Parry Distance (Default 0.525)", 5)
+lib:SetTheme("Default")
+lib:SetIcon("rbxassetid://99482688387044")
