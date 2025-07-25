@@ -5,7 +5,7 @@ for i,v in ipairs(game.CoreGui:GetChildren()) do
 end
 local lib = loadstring(Game:HttpGet("https://raw.githubusercontent.com/NoobHubV1/RobloxScripts/main/Arceus%20X%20V3%20Lib.lua"))()
 lib:SetTitle("Anime Ball")
-lib:SetTitleColor(0, 0, 255)
+lib:SetTitleColor(0, 255, 0)
 local Player = game.Players.LocalPlayer
 local ScreenGui = Instance.new("ScreenGui", game.CoreGui)
 local TextLabel = Instance.new("TextLabel", ScreenGui)
@@ -93,15 +93,15 @@ workspace.Balls.ChildAdded:Connect(function()
 end)
 spawn(function()
     function Parry()
-    local Ball, HRP = GetBall(), Player.Character.HumanoidRootPart
+    local Ball, HRP = GetBall(), GetRoot()
     if not Ball or not HRP then
       return
     end
     
     local Speed = Ball.LinearVelocity.VectorVelocity.Magnitude
     local Distance = (HRP.Position - Ball.Position).Magnitude
-    
-    if Ball.BallHighlight2.Enabled and not Parried and Distance / Speed <= 0.5 and AutoParry then
+
+    if Ball.BallHighlight2.Enabled and not Parried and Distance / Speed <= 0.45 and AutoParry then
       Parried = true
       ParryAttempt()
       Cooldown = tick()
@@ -133,6 +133,5 @@ game.RunService.Heartbeat:Connect(function()
             humanoid:MoveTo(Ball.Position)
      end
 end)
-t("Successfully", "Parry Distance (Default 0.525)", 5)
 lib:SetTheme("Default")
 lib:SetIcon("rbxassetid://99482688387044")
