@@ -101,7 +101,7 @@ spawn(function()
     local Speed = Ball.LinearVelocity.VectorVelocity.Magnitude
     local Distance = (HRP.Position - Ball.Position).Magnitude
 
-    if Ball.BallHighlight2.Enabled and not Parried and Distance / Speed <= 0.45 and AutoParry then
+    if Ball.BallHighlight2.Enabled and not Parried and Distance / Speed <= 0.5 and AutoParry then
       Parried = true
       ParryAttempt()
       Cooldown = tick()
