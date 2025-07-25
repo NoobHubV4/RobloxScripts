@@ -17,6 +17,7 @@ local Method = "Keypress"
 local ScreenGui = Instance.new("ScreenGui", game.CoreGui)
 local Toggle = Instance.new("TextButton", ScreenGui)
 local SpamParry = false
+local Connection
 
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 ScreenGui.ResetOnSpawn = true
@@ -67,6 +68,13 @@ function ParryAttempt()
   end
 end
 
+function ResetConnection()
+  if Connection then
+    Connection:Disconnect()
+    Connection = nil
+  end
+end
+
 function t(Title, Text, Time)
     game:FindService("StarterGui"):SetCore("SendNotification",{Title=Title,Text=Text,Icon="",Duration=Time,})
 end
@@ -87,8 +95,11 @@ Combat:CreateToggle("Auto Move", function(state)
        AutoMove = state
 end)
 workspace.Balls.ChildAdded:Connect(function()
-        if Parried then
-                Parried = false
+        local Ball = GetBall()
+        if not Ball then return end
+        ResetConnection()
+        Connection = Ball:GetAttributeChangedSignal("Target"):Connect(function()
+               Parried = false
         end
 end)
 spawn(function()
@@ -101,19 +112,12 @@ spawn(function()
     local Speed = Ball.LinearVelocity.VectorVelocity.Magnitude
     local Distance = (HRP.Position - Ball.Position).Magnitude
 
-    if Ball.BallHighlight2.Enabled and not Parried and Speed / Distance >= 1.7 and AutoParry then
+    if Ball:GetAttribute("Target") == Player.Name and not Parried and Speed / Distance >= 1.7 and AutoParry then
       Parried = true
       ParryAttempt()
       Cooldown = tick()
       if (tick() - Cooldown) >= 1 then
              Parried = false
-      end
-      while Parried do
-              if not Ball.BallHighlight2.Enabled then
-                      Parried = false
-                      break
-              end
-              wait()
       end
     end
     end
