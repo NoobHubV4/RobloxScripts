@@ -13,6 +13,7 @@ local VIM = game:GetService("VirtualInputManager") or game:FindFirstDescendant("
 local AutoMove = false
 local AutoParry = false
 local Cooldown = tick()
+local Method = "Remote"
 
 function GetBall()
   for i,v in next, workspace.Balls:GetChildren() do
@@ -31,6 +32,10 @@ end
 function t(Title, Text, Time)
     game:FindService("StarterGui"):SetCore("SendNotification",{Title=Title,Text=Text,Icon="",Duration=Time,})
 end
+
+Section:CreateDropdown("Parry Method", {"Keypress","Click","Remote"}, 3, function(select)
+       Method = select
+end)
 
 Section:CreateToggle("Auto Parry", function(state)
        AutoParry = state
@@ -59,8 +64,14 @@ spawn(function()
     local Distance = (HRP.Position - Ball.Position).Magnitude
     
     if Ball.BallHighlight2.Enabled and not Parried and Distance / Speed <= 0.55 and AutoParry then
-      game.ReplicatedStorage.Framework.RemoteFunction:InvokeServer("SwordService", "Block", {0})
       Parried = true
+      if Method == "Keypress" then
+              VIM:SendKeyEvent(true, "F", false, game)
+      elseif Method == "Click" then
+              VIM:SendMouseButtonEvent(0, 0, 0, true, game, false)
+      elseif Method == "Remote" then
+              game.ReplicatedStorage.Framework.RemoteFunction:InvokeServer("SwordService","Block",{0})
+      end
       Cooldown = tick()
       if (tick() - Cooldown) >= 1 then
              Parried = false
