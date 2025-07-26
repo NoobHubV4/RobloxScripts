@@ -116,16 +116,10 @@ workspace.Balls.ChildAdded:Connect(function()
 end)
 game.RunService.PreSimulation:Connect(function()
     local Ball, HRP = GetBall(), GetRoot()
-    if not Ball or not HRP then
-      return
-    end
-    
-    local Speed = Ball.LinearVelocity.VectorVelocity.Magnitude
-    local Distance = (HRP.Position - Ball.Position).Magnitude
-
-    if Ball:GetAttribute("Target") == Player.Name and not Parried and Speed / Distance >= ParryMulti and AutoParry then
-      Parried = true
+    if not Ball or not HRP then return end
+    if Ball:GetAttribute("Target") == Player.Name and not Parried and Ball.LinearVelocity.VectorVelocity.Magnitude / (HRP.Position - Ball.Position).Magnitude >= ParryMulti and AutoParry then
       ParryAttempt()
+      Parried = true
       Cooldown = tick()
       if (tick() - Cooldown) >= 1 then
              Parried = false
