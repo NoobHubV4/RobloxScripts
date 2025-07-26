@@ -110,7 +110,7 @@ end)
 Combat.newToggle("Auto Move", "", false, function(state)
     AutoMove = state
 end)
-Combat.newSlider("Parry Distance", "", 2.5, false, function(value)
+Combat.newSlider("Parry Distance", "", 3, true, function(value)
     ParryMulti = value
 end)
 Combat.newToggle("Show Visualizer", "", false, function(state)
