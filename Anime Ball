@@ -82,7 +82,7 @@ function t(Title, Text, Time)
     game:FindService("StarterGui"):SetCore("SendNotification",{Title=Title,Text=Text,Icon="",Duration=Time,})
 end
 
-function createHitbox()
+function createVisualizer()
     part = Instance.new("Part") 
     part.Name = "PFA" 
     part.Parent = game.workspace 
@@ -92,8 +92,9 @@ function createHitbox()
     part.Reflectance = 0
     part.CanCollide = false
     part.Transparency = 0
-    part.Color = Color3.fromRGB(0, 0, 0)
+    part.Color = Color3.fromRGB(255, 255, 255)
     part.Material = Enum.Material.ForceField
+    part.Shape = "Ball"
 end
 
 Combat:CreateDropdown("Parry Method", {"Keypress","Click","Remote"}, 1, function(select)
@@ -102,12 +103,6 @@ end)
 
 Combat:CreateToggle("Auto Parry", function(state)
        AutoParry = state
-       if AutoParry then
-              createHitbox()
-       else
-              part:Destroy()
-              part = nil
-       end
 end)
 
 Combat:CreateToggle("Manual Spam", function(state)
@@ -127,20 +122,26 @@ Settings:CreateButton("Parry Distance - 0.05 Multiplier", function()
               t("Successfully", "Parry Distance "..ParryMulti.." Multiplier", 0)
        end
 end)
+Settings:CreateToggle("Show Visualizer", function(state)
+       if state then
+              createVisualizer()
+       else
+              part:Destroy()
+              part = nil
+       end
+end)
 workspace.Balls.ChildAdded:Connect(function()
-        local Ball = GetBall()
-        if not Ball then return end
         ResetConnection()
-        Connection = Ball:GetAttributeChangedSignal("Target"):Connect(function()
-               Parried = false
+        Connection = GetBall():GetAttributeChangedSignal("Target"):Connect(function()
+                Parried = false
         end)
 end)
 game.RunService.PreSimulation:Connect(function()
     local Ball, HRP = GetBall(), GetRoot()
-    if not Ball or not HRP then return end
+    if not HRP then return end
     if Ball:GetAttribute("Target") == Player.Name and not Parried and Ball.LinearVelocity.VectorVelocity.Magnitude / (HRP.Position - Ball.Position).Magnitude >= ParryMulti and AutoParry then
-      ParryAttempt()
       Parried = true
+      ParryAttempt()
       Cooldown = tick()
       if (tick() - Cooldown) >= 1 then
              Parried = false
@@ -154,20 +155,22 @@ game.RunService.Stepped:Connect(function()
 end)
 game.RunService.Heartbeat:Connect(function()
      local Ball, humanoid = GetBall(), Player.Character.Humanoid
-     if not Ball or not humanoid then return end
+     if not humanoid then return end
      if Ball and humanoid and AutoMove then
             humanoid:MoveTo(Ball.Position)
      end
 end)
-game.RunService.Heartbeat:Connect(function()
+game.RunService.RenderStepped:Connect(function()
      local Ball = GetBall()
      local speed = Ball.LinearVelocity.VectorVelocity.Magnitude / ParryMulti
-     if not Ball then
-        part.Size = Vector3.new(5, 5, 5)
-        part.CFrame = GetRoot().CFrame
-     end
-     if Ball and speed and part then
+     if speed and part then
             part.Size = Vector3.new(speed, speed, speed)
+            part.CFrame = GetRoot().CFrame
+     end
+end)
+game.RunService.Stepped:Connect(function()
+     if not GetBall() and part then
+            part.Size = Vector3.new(5, 5, 5)
             part.CFrame = GetRoot().CFrame
      end
 end)
