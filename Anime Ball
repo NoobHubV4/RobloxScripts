@@ -3,10 +3,9 @@ for i,v in ipairs(game.CoreGui:GetChildren()) do
                 v:Destroy()
         end
 end
-local lib = loadstring(Game:HttpGet("https://raw.githubusercontent.com/NoobHubV1/NoobHubV1/main/Wizard%20Lib.lua"))()
-local Window = lib:NewWindow("Anime Ball")
-local Combat = Window:NewSection("Combat")
-local Settings = Window:NewSection("Settings")
+local lib = loadstring(Game:HttpGet("https://raw.githubusercontent.com/NoobHubV1/NoobHubV1/refs/heads/main/Dr%20Ray%20Lib.lua"))()
+local Window = lib:Load("Anime Ball", "Default")
+local Combat = lib.newTab("Combat", "")
 local Player = game.Players.LocalPlayer
 local ScreenGui = Instance.new("ScreenGui", game.CoreGui)
 local TextLabel = Instance.new("TextLabel", ScreenGui)
@@ -14,12 +13,12 @@ local VIM = game:GetService("VirtualInputManager") or game:FindFirstDescendant("
 local AutoMove = false
 local AutoParry = false
 local Cooldown = tick()
-local Method = "Keypress"
+local Method = nil
 local ScreenGui = Instance.new("ScreenGui", game.CoreGui)
 local Toggle = Instance.new("TextButton", ScreenGui)
 local SpamParry = false
 local Connection
-local ParryMulti = 1.85
+local ParryMulti = 0
 local part
 
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
@@ -67,7 +66,7 @@ function ParryAttempt()
   elseif Method == "Click" then
           VIM:SendMouseButtonEvent(0, 0, 0, true, game, false)
   elseif Method == "Remote" then
-          game.ReplicatedStorage.Framework.RemoteFunction:InvokeServer("SwordService","Block",{0}) --Remote not visible block and animation
+          game.ReplicatedStorage.Framework.RemoteFunction:InvokeServer("SwordService","Block",{0})
   end
 end
 
@@ -96,32 +95,25 @@ function createVisualizer()
     part.Shape = "Ball"
 end
 
-Combat:CreateDropdown("Parry Method", {"Keypress","Click","Remote"}, 1, function(select)
-       Method = select
+Combat.newDropdown("Parry Method", "", {"Keypress","Click","Remote"}, function(select)
+    Method = select
 end)
 
-Combat:CreateToggle("Auto Parry", function(state)
-       AutoParry = state
+Combat.newToggle("Auto Parry", "", false, function(state)
+    AutoParry = state
 end)
 
-Combat:CreateToggle("Manual Spam", function(state)
-       Toggle.Visible = state
+Combat.newToggle("Manual Spam", "", false, function(state)
+    Toggle.Visible = state
 end)
 
-Combat:CreateToggle("Auto Move", function(state)
-       AutoMove = state
+Combat.newToggle("Auto Move", "", false, function(state)
+    AutoMove = state
 end)
-Settings:CreateButton("Parry Distance + 0.05 Multiplier", function()
-       ParryMulti = ParryMulti + 0.05
-       t("Successfully", "Parry Distance "..ParryMulti.." Multiplier", 0)
+Combat.newSlider("Parry Distance", "", 2.5, false, function(value)
+    ParryMulti = value
 end)
-Settings:CreateButton("Parry Distance - 0.05 Multiplier", function()
-       if ParryMulti > 0 then
-              ParryMulti = ParryMulti - 0.05
-              t("Successfully", "Parry Distance "..ParryMulti.." Multiplier", 0)
-       end
-end)
-Settings:CreateToggle("Show Visualizer", function(state)
+Combat.newToggle("Show Visualizer", "", false, function(state)
        if state then
               createVisualizer()
        else
@@ -132,7 +124,7 @@ end)
 workspace.Balls.ChildAdded:Connect(function()
         ResetConnection()
         Connection = GetBall():GetAttributeChangedSignal("Target"):Connect(function()
-                Parried = false
+                 Parried = false
         end)
 end)
 spawn(function()
@@ -140,8 +132,8 @@ spawn(function()
         local Ball, HRP = GetBall(), GetRoot()
         if not HRP then return end
         if Ball:GetAttribute("Target") == Player.Name and not Parried and Ball.LinearVelocity.VectorVelocity.Magnitude / (HRP.Position - Ball.Position).Magnitude >= ParryMulti and AutoParry then
-          Parried = true
           ParryAttempt()
+          Parried = true
           Cooldown = tick()
           if (tick() - Cooldown) >= 1 then
                  Parried = false
