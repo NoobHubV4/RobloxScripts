@@ -20,6 +20,7 @@ local Toggle = Instance.new("TextButton", ScreenGui)
 local SpamParry = false
 local Connection
 local ParryMulti = 1.75
+local part
 
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 ScreenGui.ResetOnSpawn = true
@@ -81,12 +82,32 @@ function t(Title, Text, Time)
     game:FindService("StarterGui"):SetCore("SendNotification",{Title=Title,Text=Text,Icon="",Duration=Time,})
 end
 
+function createHitbox()
+    part = Instance.new("Part") 
+    part.Name = "PFA" 
+    part.Parent = game.workspace 
+    part.CFrame = Player.Character.HumanoidRootPart.CFrame
+    part.Size = Vector3.new(5, 0, 5) 
+    part.Anchored = 1 
+    part.Reflectance = 1
+    part.CanCollide = false
+    part.Transparency = 0
+    part.Color = Color3.fromRGB(0, 0, 0)
+    part.Material = Enum.Material.ForceField
+end
+
 Combat:CreateDropdown("Parry Method", {"Keypress","Click","Remote"}, 1, function(select)
        Method = select
 end)
 
 Combat:CreateToggle("Auto Parry", function(state)
        AutoParry = state
+       if AutoParry then
+              createHitbox()
+       else
+              part:Destroy()
+              part = nil
+       end
 end)
 
 Combat:CreateToggle("Manual Spam", function(state)
@@ -137,4 +158,16 @@ game.RunService.Heartbeat:Connect(function()
      if Ball and humanoid and AutoMove then
             humanoid:MoveTo(Ball.Position)
      end
-end) 
+end)
+game.RunService.Heartbeat:Connect(function()
+     local Ball = GetBall()
+     local speed = Ball.LinearVelocity.VectorVelocity.Magnitude / ParryMulti
+     if not Ball then
+        part.Size = Vector3.new(5, 5, 5)
+        part.CFrame = GetRoot().CFrame
+     end
+     if Ball and part then
+            part.Size = Vector3.new(speed, speed, speed)
+            part.CFrame = GetRoot().CFrame
+     end
+end)
