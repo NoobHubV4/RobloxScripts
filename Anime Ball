@@ -19,7 +19,7 @@ local ScreenGui = Instance.new("ScreenGui", game.CoreGui)
 local Toggle = Instance.new("TextButton", ScreenGui)
 local SpamParry = false
 local Connection
-local ParryMulti = 1.75
+local ParryMulti = 1.85
 local part
 
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
@@ -162,11 +162,11 @@ end)
 game.RunService.Heartbeat:Connect(function()
      local Ball = GetBall()
      local speed = Ball.LinearVelocity.VectorVelocity.Magnitude / ParryMulti
-     if not Ball then
+     if not Ball and part then
         part.Size = Vector3.new(5, 5, 5)
         part.CFrame = GetRoot().CFrame
      end
-     if Ball and part then
+     if Ball and speed and part then
             part.Size = Vector3.new(speed, speed, speed)
             part.CFrame = GetRoot().CFrame
      end
