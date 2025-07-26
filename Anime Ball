@@ -84,12 +84,11 @@ end
 
 function createVisualizer()
     part = Instance.new("Part") 
-    part.Name = "PFA" 
+    part.Name = "Visualizer" 
     part.Parent = game.workspace 
     part.CFrame = Player.Character.HumanoidRootPart.CFrame
     part.Size = Vector3.new(5, 5, 5) 
     part.Anchored = true
-    part.Reflectance = 0
     part.CanCollide = false
     part.Transparency = 0
     part.Color = Color3.fromRGB(255, 255, 255)
@@ -136,41 +135,66 @@ workspace.Balls.ChildAdded:Connect(function()
                 Parried = false
         end)
 end)
-game.RunService.PreSimulation:Connect(function()
-    local Ball, HRP = GetBall(), GetRoot()
-    if not HRP then return end
-    if Ball:GetAttribute("Target") == Player.Name and not Parried and Ball.LinearVelocity.VectorVelocity.Magnitude / (HRP.Position - Ball.Position).Magnitude >= ParryMulti and AutoParry then
-      Parried = true
-      ParryAttempt()
-      Cooldown = tick()
-      if (tick() - Cooldown) >= 1 then
-             Parried = false
-      end
+spawn(function()
+    function Parry()
+        local Ball, HRP = GetBall(), GetRoot()
+        if not HRP then return end
+        if Ball:GetAttribute("Target") == Player.Name and not Parried and Ball.LinearVelocity.VectorVelocity.Magnitude / (HRP.Position - Ball.Position).Magnitude >= ParryMulti and AutoParry then
+          Parried = true
+          ParryAttempt()
+          Cooldown = tick()
+          if (tick() - Cooldown) >= 1 then
+                 Parried = false
+          end
+        end
+    end
+    while task.wait() do
+        pcall(Parry)
     end
 end)
-game.RunService.Stepped:Connect(function()
-     if SpamParry then
-           ParryAttempt()
+spawn(function()
+    function task0()
+        if SpamParry then
+            ParryAttempt()
+        end
+    end
+    while task.wait() do
+        pcall(task0)
+    end
+end)
+spawn(function()
+     function task1()
+         local Ball, humanoid = GetBall(), Player.Character.Humanoid
+         if not humanoid then return end
+         if Ball and humanoid and AutoMove then
+                humanoid:MoveTo(Ball.Position)
+         end
+     end
+     while task.wait() do
+         pcall(task1)
      end
 end)
-game.RunService.Heartbeat:Connect(function()
-     local Ball, humanoid = GetBall(), Player.Character.Humanoid
-     if not humanoid then return end
-     if Ball and humanoid and AutoMove then
-            humanoid:MoveTo(Ball.Position)
+spawn(function()
+     task2 = function()
+         local Ball = GetBall()
+         local speed = Ball.LinearVelocity.VectorVelocity.Magnitude / ParryMulti
+         if speed and part then
+                part.Size = Vector3.new(speed, speed, speed)
+                part.CFrame = GetRoot().CFrame
+         end
+     end
+     while task.wait() do
+         pcall(task2)
      end
 end)
-game.RunService.RenderStepped:Connect(function()
-     local Ball = GetBall()
-     local speed = Ball.LinearVelocity.VectorVelocity.Magnitude / ParryMulti
-     if speed and part then
-            part.Size = Vector3.new(speed, speed, speed)
-            part.CFrame = GetRoot().CFrame
-     end
-end)
-game.RunService.Stepped:Connect(function()
-     if not GetBall() and part then
-            part.Size = Vector3.new(5, 5, 5)
-            part.CFrame = GetRoot().CFrame
-     end
+spawn(function()
+      task3 = function()
+           if not GetBall() and part then
+                  part.Size = Vector3.new(5, 5, 5)
+                  part.CFrame = GetRoot().CFrame
+           end
+      end
+      while task.wait() do
+           pcall(task3)
+      end
 end)
