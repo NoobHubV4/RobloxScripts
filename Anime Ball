@@ -67,7 +67,7 @@ function ParryAttempt()
   elseif Method == "Click" then
           VIM:SendMouseButtonEvent(0, 0, 0, true, game, false)
   elseif Method == "Remote" then
-          game.ReplicatedStorage.Framework.RemoteFunction:InvokeServer("SwordService","Block",{0})
+          game.ReplicatedStorage.Framework.RemoteFunction:InvokeServer("SwordService","Block",{0}) --Remote not visible block and animation
   end
 end
 
