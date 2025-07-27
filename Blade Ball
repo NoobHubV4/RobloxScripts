@@ -1,0 +1,185 @@
+for i,v in ipairs(game.CoreGui:GetChildren()) do
+        if v.Name == "ScreenGui" then
+                v:Destroy()
+        end
+end
+local DrRayLibrary = loadstring(game:HttpGet("https://raw.githubusercontent.com/AZYsGithub/DrRay-UI-Library/main/DrRay.lua"))()
+local window = DrRayLibrary:Load("Anime Ball", "Default")
+local tab = DrRayLibrary.newTab("Combat", "")
+local Player = game.Players.LocalPlayer
+local VIM = game:GetService("VirtualInputManager") or game:FindFirstDescendant("VirtualInputManager")
+local AutoMove = false
+local AutoParry
+local Cooldown = tick()
+local ScreenGui = Instance.new("ScreenGui", game.CoreGui)
+local Toggle = Instance.new("TextButton", ScreenGui)
+local SpamParry = false
+local Connection
+local part
+local ParryDistance = 2
+
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+ScreenGui.ResetOnSpawn = true
+
+Toggle.BackgroundColor3 = Color3.fromRGB(50, 100, 150)
+Toggle.BackgroundTransparency = 0
+Toggle.Position = UDim2.new(0, 0, 0, 0)
+Toggle.Size = UDim2.new(0, 180, 0, 40)
+Toggle.Font = Enum.Font.SourceSans
+Toggle.Text = "SpamParry [OFF]"
+Toggle.TextColor3 = Color3.fromRGB(150, 100, 75)
+Toggle.TextScaled = true
+Toggle.TextSize = 15.000
+Toggle.TextStrokeTransparency = 0.000
+Toggle.TextWrapped = true
+Toggle.Draggable = true
+Toggle.Visible = false
+Toggle.MouseButton1Click:Connect(function()
+     SpamParry = not SpamParry
+     if SpamParry then
+           Toggle.Text = "SpamParry [ON]"
+     elseif not SpamParry then
+           Toggle.Text = "SpamParry [OFF]"
+     end
+end)
+
+function GetBall()
+  for i,v in next, workspace.Balls:GetChildren() do
+    if v:GetAttribute("realBall") then
+      return v
+    end
+  end
+end
+
+function GetRoot()
+  for i,v in ipairs(game.Players.LocalPlayer.Character:GetChildren()) do
+    if v:IsA("BasePart") and v.Name == "HumanoidRootPart" then
+      return v
+    end
+  end
+end
+
+function ResetConnection()
+  if Connection then
+    Connection:Disconnect()
+    Connection = nil
+  end
+end
+
+function t(Title, Text, Time)
+    game:FindService("StarterGui"):SetCore("SendNotification",{Title=Title,Text=Text,Icon="",Duration=Time,})
+end
+
+function createVisualizer()
+    part = Instance.new("Part") 
+    part.Name = "Visualizer" 
+    part.Parent = game.Workspace
+    part.CFrame = Player.Character.HumanoidRootPart.CFrame
+    part.Size = Vector3.new(5, 5, 5) 
+    part.Anchored = true
+    part.CanCollide = false
+    part.Transparency = 0
+    part.Color = Color3.fromHSV(50, 100, 150)
+    part.Material = "ForceField"
+    part.Shape = "Ball"
+    part:GetAttribute("_v") = "ForceField"
+end
+tab.newToggle("Auto Parry", "", false, function(State)
+    AutoParry = State
+end)
+tab.newToggle("Manual Spam", "", false, function(State)
+    Toggle.Visible = State
+end)
+tab.newToggle("Auto Move", "", false, function(State)
+    AutoMove = State
+end)
+tab.newSlider("Parry Distance", "", 3, false, function(value)
+    ParryDistance = value
+end)
+tab.newToggle("Show Visualizer", "", false, function(State)
+    if State then
+           createVisualizer()
+    else
+           part:Destroy()
+           part = nil
+    end
+end)
+workspace.Balls.ChildAdded:Connect(function()
+        ResetConnection()
+        Connection = GetBall():GetAttributeChangedSignal("target"):Connect(function()
+                 Parried = false
+        end)
+end)
+spawn(function()
+    function Parry()
+        local Ball, HRP = GetBall(), GetRoot()
+        if not HRP then return end
+        if Ball:GetAttribute("target") == Player.Name and not Parried and Ball.zoomies.VectorVelocity.Magnitude / (HRP.Position - Ball.Position).Magnitude >= ParryDistance and AutoParry then
+                VIM:SendMouseButtonEvent(0, 0, 0, true, game, false)
+                Parried = true
+                Cooldown = tick()
+                if (tick() - Cooldown) >= 1 then
+                       Parried = false
+                end
+        end
+    end
+    while task.wait() do
+        pcall(Parry)
+    end
+end)
+spawn(function()
+    function task0()
+        if SpamParry then
+            game.ReplicatedStorage.Framework.RemoteFunction:InvokeServer("SwordService","Block",{0})
+        end
+    end
+    while task.wait() do
+        pcall(task0)
+    end
+end)
+spawn(function()
+     function task1()
+         local Ball, humanoid = GetBall(), Player.Character.Humanoid
+         if not humanoid then return end
+         if Ball and humanoid and AutoMove then
+                humanoid:MoveTo(Ball.Position)
+         end
+     end
+     while task.wait() do
+         pcall(task1)
+     end
+end)
+spawn(function()
+     task2 = function()
+         local Ball = GetBall()
+         local speed = Ball.zoomies.VectorVelocity.Magnitude / ParryDistance
+         if speed and part then
+                part.Size = Vector3.new(speed, speed, speed)
+                part.CFrame = GetRoot().CFrame
+         end
+     end
+     while task.wait() do
+         pcall(task2)
+     end
+end)
+spawn(function()
+      task3 = function()
+           if not GetBall() and part then
+                  part.Size = Vector3.new(5, 5, 5)
+                  part.CFrame = GetRoot().CFrame
+           end
+      end
+      while task.wait() do
+           pcall(task3)
+      end
+end)
+spawn(function()
+      task4 = function()
+           if part then
+                  part.Color = Color3.fromHSV(tick() % (10/5) / (10/5), 1, 1)
+           end
+      end
+      while task.wait() do
+           pcall(task4)
+      end
+end)
