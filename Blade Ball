@@ -82,6 +82,15 @@ function createVisualizer()
     part.Color = Color3.fromHSV(50, 100, 150)
     part.Material = "ForceField"
     part.Shape = "Ball"
+    part.Massless = true
+    while task.wait() do
+        if part.Material ~= "ForceField" then
+            part.Material = "ForceField"
+        end
+        if not part then
+            break
+        end
+    end
 end
 tab.newToggle("Auto Parry", "", false, function(State)
     AutoParry = State
@@ -113,13 +122,19 @@ spawn(function()
     function Parry()
         local Ball, HRP = GetBall(), GetRoot()
         if not HRP then return end
-        if Ball:GetAttribute("target") == Player.Name and not Parried and Ball.zoomies.VectorVelocity.Magnitude / (HRP.Position - Ball.Position).Magnitude >= ParryDistance / 1.125 and AutoParry then
+        local Speed = Ball.zoomies.VectorVelocity.Magnitude
+        local Distance = (HRP.Position - Ball.Position).Magnitude
+        if Ball:GetAttribute("target") == Player.Name and not Parried and Speed / Distance >= ParryDistance / 1.1 and AutoParry then
                 VIM:SendMouseButtonEvent(0, 0, 0, true, game, false)
                 Parried = true
                 Cooldown = tick()
                 if (tick() - Cooldown) >= 1 then
                        Parried = false
                 end
+        end
+        if Speed and part then
+                part.Size = Vector3.new(Speed / ParryDistance / 1.1, Speed / ParryDistance / 1.1, Speed / ParryDistance / 1.1)
+                part.CFrame = HRP.CFrame
         end
     end
     while task.wait() do
@@ -149,36 +164,23 @@ spawn(function()
      end
 end)
 spawn(function()
-     task2 = function()
-         local Ball = GetBall()
-         local speed = Ball.zoomies.VectorVelocity.Magnitude / ParryDistance / 1.125
-         if speed and part then
-                part.Size = Vector3.new(speed, speed, speed)
-                part.CFrame = GetRoot().CFrame
-         end
-     end
-     while task.wait() do
-         pcall(task2)
-     end
-end)
-spawn(function()
-      task3 = function()
+      task2 = function()
            if not GetBall() and part then
                   part.Size = Vector3.new(5, 5, 5)
                   part.CFrame = GetRoot().CFrame
            end
       end
       while task.wait() do
-           pcall(task3)
+           pcall(task2)
       end
 end)
 spawn(function()
-      task4 = function()
+      task3 = function()
            if part then
                   part.Color = Color3.fromHSV(tick() % (10/5) / (10/5), 1, 1)
            end
       end
       while task.wait() do
-           pcall(task4)
+           pcall(task3)
       end
 end)
