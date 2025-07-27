@@ -3,23 +3,20 @@ for i,v in ipairs(game.CoreGui:GetChildren()) do
                 v:Destroy()
         end
 end
-local lib = loadstring(Game:HttpGet("https://raw.githubusercontent.com/NoobHubV1/NoobHubV1/refs/heads/main/Dr%20Ray%20Lib.lua"))()
-local Window = lib:Load("Anime Ball", "Default")
-local Combat = lib.newTab("Combat", "")
+local Fluent = loadstring(game:HttpGet("https://github.com/NoobHubV4/RobloxScripts/blob/main/Fluent/Lib?raw=true"))()
+local Window = Fluent:CreateWindow({Title = "NoobHubV4 Hub | Anime Ball", SubTitle = "v1", TabWidth = 130, Size = UDim2.fromOffset(460, 340), Acrylic = true, Theme = "Amethyst", MinimizeKey = Enum.KeyCode.RightShift})
+local Tabs = {Combat = Window:AddTab({ Title = "Combat", Icon = "" }),}
 local Player = game.Players.LocalPlayer
-local ScreenGui = Instance.new("ScreenGui", game.CoreGui)
-local TextLabel = Instance.new("TextLabel", ScreenGui)
 local VIM = game:GetService("VirtualInputManager") or game:FindFirstDescendant("VirtualInputManager")
 local AutoMove = false
-local AutoParry = false
+local AutoParry
 local Cooldown = tick()
-local Method = nil
 local ScreenGui = Instance.new("ScreenGui", game.CoreGui)
 local Toggle = Instance.new("TextButton", ScreenGui)
 local SpamParry = false
 local Connection
-local ParryMulti = 0
 local part
+local showVisualizer
 
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 ScreenGui.ResetOnSpawn = true
@@ -60,16 +57,6 @@ function GetRoot()
   end
 end
 
-function ParryAttempt()
-  if Method == "Keypress" then
-          VIM:SendKeyEvent(true, "F", false, game)
-  elseif Method == "Click" then
-          VIM:SendMouseButtonEvent(0, 0, 0, true, game, false)
-  elseif Method == "Remote" then
-          game.ReplicatedStorage.Framework.RemoteFunction:InvokeServer("SwordService","Block",{0})
-  end
-end
-
 function ResetConnection()
   if Connection then
     Connection:Disconnect()
@@ -78,7 +65,7 @@ function ResetConnection()
 end
 
 function t(Title, Text, Time)
-    game:FindService("StarterGui"):SetCore("SendNotification",{Title=Title,Text=Text,Icon="",Duration=Time,})
+    Fluent:Notify({Title = Title, Content = Text, SubContent = "SubContent", Duration = Time})
 end
 
 function createVisualizer()
@@ -95,32 +82,32 @@ function createVisualizer()
     part.Shape = "Ball"
 end
 
-Combat.newDropdown("Parry Method", "", {"Keypress","Click","Remote"}, function(select)
-    Method = select
-end)
+local Options = Fluent.Options
+do
+    local autoparry = Tabs.Combat:AddToggle("State1", {Title = "Auto Parry", Default = false })
 
-Combat.newToggle("Auto Parry", "", false, function(state)
-    AutoParry = state
-end)
+    autoparry:OnChanged(function()
+        AutoParry = Options.State1.Value
+    end)
 
-Combat.newToggle("Manual Spam", "", false, function(state)
-    Toggle.Visible = state
-end)
+    local ManualSpam = Tabs.Combat:AddToggle("State2", {Title = "Manual Spam", Default = false })
 
-Combat.newToggle("Auto Move", "", false, function(state)
-    AutoMove = state
-end)
-Combat.newSlider("Parry Distance", "", 3, true, function(value)
-    ParryMulti = value
-end)
-Combat.newToggle("Show Visualizer", "", false, function(state)
-       if state then
-              createVisualizer()
-       else
-              part:Destroy()
-              part = nil
-       end
-end)
+    ManualSpam:OnChanged(function()
+        Toggle.Visible = Options.State2.Value
+    end)
+
+    local automove = Tabs.Combat:AddToggle("State3", {Title = "Auto Move", Default = false })
+
+    automove:OnChanged(function()
+        AutoMove = Options.State3.Value
+    end)
+
+    local visualizer = Tabs.Combat:AddToggle("State4", {Title = "Show Visualizer", Default = false })
+
+    visualizer:OnChanged(function()
+        showVisualizer = Options.State4.Value
+    end)
+end
 workspace.Balls.ChildAdded:Connect(function()
         ResetConnection()
         Connection = GetBall():GetAttributeChangedSignal("Target"):Connect(function()
@@ -131,13 +118,13 @@ spawn(function()
     function Parry()
         local Ball, HRP = GetBall(), GetRoot()
         if not HRP then return end
-        if Ball:GetAttribute("Target") == Player.Name and not Parried and Ball.LinearVelocity.VectorVelocity.Magnitude / (HRP.Position - Ball.Position).Magnitude >= ParryMulti and AutoParry then
-          ParryAttempt()
-          Parried = true
-          Cooldown = tick()
-          if (tick() - Cooldown) >= 1 then
-                 Parried = false
-          end
+        if Ball:GetAttribute("Target") == Player.Name and not Parried and Ball.LinearVelocity.VectorVelocity.Magnitude / (HRP.Position - Ball.Position).Magnitude >= 2.25 and AutoParry then
+                game.ReplicatedStorage.Framework.RemoteFunction:InvokeServer("SwordService","Block",{0})
+                Parried = true
+                Cooldown = tick()
+                if (tick() - Cooldown) >= 1 then
+                       Parried = false
+                end
         end
     end
     while task.wait() do
@@ -147,7 +134,7 @@ end)
 spawn(function()
     function task0()
         if SpamParry then
-            ParryAttempt()
+            game.ReplicatedStorage.Framework.RemoteFunction:InvokeServer("SwordService","Block",{0})
         end
     end
     while task.wait() do
@@ -161,6 +148,16 @@ spawn(function()
          if Ball and humanoid and AutoMove then
                 humanoid:MoveTo(Ball.Position)
          end
+         if showVisualizer then
+                if not part then
+                       createVisualizer()
+                end
+         else
+                if part then
+                       part:Destroy()
+                       part = nil
+                end
+         end
      end
      while task.wait() do
          pcall(task1)
@@ -169,7 +166,7 @@ end)
 spawn(function()
      task2 = function()
          local Ball = GetBall()
-         local speed = Ball.LinearVelocity.VectorVelocity.Magnitude / ParryMulti
+         local speed = Ball.LinearVelocity.VectorVelocity.Magnitude / 2.25
          if speed and part then
                 part.Size = Vector3.new(speed, speed, speed)
                 part.CFrame = GetRoot().CFrame
@@ -190,3 +187,5 @@ spawn(function()
            pcall(task3)
       end
 end)
+
+Window:SelectTab(1)
