@@ -71,13 +71,13 @@ end
 function createVisualizer()
     part = Instance.new("Part") 
     part.Name = "Visualizer" 
-    part.Parent = Player.Character
+    part.Parent = game.Workspace
     part.CFrame = Player.Character.HumanoidRootPart.CFrame
     part.Size = Vector3.new(5, 5, 5) 
     part.Anchored = true
     part.CanCollide = false
     part.Transparency = 0
-    part.Color = Color3.fromRGB(255, 255, 255)
+    part.Color = Color3.fromHSV(50, 100, 150)
     part.Material = Enum.Material.ForceField
     part.Shape = "Ball"
 end
@@ -111,7 +111,7 @@ spawn(function()
     function Parry()
         local Ball, HRP = GetBall(), GetRoot()
         if not HRP then return end
-        if Ball:GetAttribute("Target") == Player.Name and not Parried and Ball.LinearVelocity.VectorVelocity.Magnitude / (HRP.Position - Ball.Position).Magnitude >= ParryDistance and AutoParry then
+        if Ball:GetAttribute("Target") == Player.Name and not Parried and Ball.LinearVelocity.VectorVelocity.Magnitude / (HRP.Position - Ball.Position).Magnitude >= ParryDistance / 0.85 and AutoParry then
                 game.ReplicatedStorage.Framework.RemoteFunction:InvokeServer("SwordService","Block",{0})
                 Parried = true
                 Cooldown = tick()
@@ -149,7 +149,7 @@ end)
 spawn(function()
      task2 = function()
          local Ball = GetBall()
-         local speed = Ball.LinearVelocity.VectorVelocity.Magnitude / ParryDistance
+         local speed = Ball.LinearVelocity.VectorVelocity.Magnitude / ParryDistance / 0.85
          if speed and part then
                 part.Size = Vector3.new(speed, speed, speed)
                 part.CFrame = GetRoot().CFrame
@@ -168,5 +168,15 @@ spawn(function()
       end
       while task.wait() do
            pcall(task3)
+      end
+end)
+spawn(function()
+      task4 = function()
+           if part then
+                  part.Color = Color3.fromHSV(tick() % (10/7.5) / (10/7.5), 1, 1)
+           end
+      end
+      while task.wait() do
+           pcall(task4)
       end
 end)
