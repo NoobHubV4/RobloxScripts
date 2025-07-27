@@ -113,7 +113,7 @@ spawn(function()
     function Parry()
         local Ball, HRP = GetBall(), GetRoot()
         if not HRP then return end
-        if Ball:GetAttribute("target") == Player.Name and not Parried and Ball.zoomies.VectorVelocity.Magnitude / (HRP.Position - Ball.Position).Magnitude >= ParryDistance and AutoParry then
+        if Ball:GetAttribute("target") == Player.Name and not Parried and Ball.zoomies.VectorVelocity.Magnitude / (HRP.Position - Ball.Position).Magnitude >= ParryDistance / 1.125 and AutoParry then
                 VIM:SendMouseButtonEvent(0, 0, 0, true, game, false)
                 Parried = true
                 Cooldown = tick()
@@ -129,7 +129,7 @@ end)
 spawn(function()
     function task0()
         if SpamParry then
-            game.ReplicatedStorage.Framework.RemoteFunction:InvokeServer("SwordService","Block",{0})
+            VIM:SendMouseButtonEvent(0, 0, 0, true, game, false)
         end
     end
     while task.wait() do
@@ -151,7 +151,7 @@ end)
 spawn(function()
      task2 = function()
          local Ball = GetBall()
-         local speed = Ball.zoomies.VectorVelocity.Magnitude / ParryDistance
+         local speed = Ball.zoomies.VectorVelocity.Magnitude / ParryDistance / 1.125
          if speed and part then
                 part.Size = Vector3.new(speed, speed, speed)
                 part.CFrame = GetRoot().CFrame
