@@ -82,7 +82,6 @@ function createVisualizer()
     part.Color = Color3.fromHSV(50, 100, 150)
     part.Material = "ForceField"
     part.Shape = "Ball"
-    part:GetAttribute("_v") = "ForceField"
 end
 tab.newToggle("Auto Parry", "", false, function(State)
     AutoParry = State
