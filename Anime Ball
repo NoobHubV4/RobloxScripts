@@ -111,7 +111,7 @@ spawn(function()
     function Parry()
         local Ball, HRP = GetBall(), GetRoot()
         if not HRP then return end
-        if Ball:GetAttribute("Target") == Player.Name and not Parried and Ball.LinearVelocity.VectorVelocity.Magnitude / (HRP.Position - Ball.Position).Magnitude >= ParryDistance / 0.8625 and AutoParry then
+        if Ball:GetAttribute("Target") == Player.Name and not Parried and Ball.LinearVelocity.VectorVelocity.Magnitude / (HRP.Position - Ball.Position).Magnitude >= ParryDistance / 0.875 and AutoParry then
                 game.ReplicatedStorage.Framework.RemoteFunction:InvokeServer("SwordService","Block",{0})
                 Parried = true
                 Cooldown = tick()
@@ -149,7 +149,7 @@ end)
 spawn(function()
      task2 = function()
          local Ball = GetBall()
-         local speed = Ball.LinearVelocity.VectorVelocity.Magnitude / ParryDistance / 0.8625
+         local speed = Ball.LinearVelocity.VectorVelocity.Magnitude / ParryDistance / 0.875
          if speed and part then
                 part.Size = Vector3.new(speed, speed, speed)
                 part.CFrame = GetRoot().CFrame
