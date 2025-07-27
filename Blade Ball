@@ -4,7 +4,7 @@ for i,v in ipairs(game.CoreGui:GetChildren()) do
         end
 end
 local DrRayLibrary = loadstring(game:HttpGet("https://raw.githubusercontent.com/AZYsGithub/DrRay-UI-Library/main/DrRay.lua"))()
-local window = DrRayLibrary:Load("Anime Ball", "Default")
+local window = DrRayLibrary:Load("Blade Ball", "Default")
 local tab = DrRayLibrary.newTab("Combat", "")
 local Player = game.Players.LocalPlayer
 local VIM = game:GetService("VirtualInputManager") or game:FindFirstDescendant("VirtualInputManager")
