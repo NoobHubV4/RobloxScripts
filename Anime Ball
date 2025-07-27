@@ -3,9 +3,9 @@ for i,v in ipairs(game.CoreGui:GetChildren()) do
                 v:Destroy()
         end
 end
-local Fluent = loadstring(game:HttpGet("https://github.com/NoobHubV4/RobloxScripts/blob/main/Fluent/Lib?raw=true"))()
-local Window = Fluent:CreateWindow({Title = "NoobHubV4 Hub | Anime Ball", SubTitle = "v1", TabWidth = 130, Size = UDim2.fromOffset(460, 340), Acrylic = true, Theme = "Amethyst", MinimizeKey = Enum.KeyCode.RightShift})
-local Tabs = {Combat = Window:AddTab({ Title = "Combat", Icon = "" }),}
+local DrRayLibrary = loadstring(game:HttpGet("https://raw.githubusercontent.com/AZYsGithub/DrRay-UI-Library/main/DrRay.lua"))()
+local window = DrRayLibrary:Load("Anime Ball", "Default")
+local tab = DrRayLibrary.newTab("Combat", "")
 local Player = game.Players.LocalPlayer
 local VIM = game:GetService("VirtualInputManager") or game:FindFirstDescendant("VirtualInputManager")
 local AutoMove = false
@@ -16,7 +16,7 @@ local Toggle = Instance.new("TextButton", ScreenGui)
 local SpamParry = false
 local Connection
 local part
-local showVisualizer
+local ParryDistance = 2
 
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 ScreenGui.ResetOnSpawn = true
@@ -65,7 +65,7 @@ function ResetConnection()
 end
 
 function t(Title, Text, Time)
-    Fluent:Notify({Title = Title, Content = Text, SubContent = "SubContent", Duration = Time})
+    game:FindService("StarterGui"):SetCore("SendNotification",{Title=Title,Text=Text,Icon="",Duration=Time,})
 end
 
 function createVisualizer()
@@ -81,33 +81,26 @@ function createVisualizer()
     part.Material = Enum.Material.ForceField
     part.Shape = "Ball"
 end
-
-local Options = Fluent.Options
-do
-    local autoparry = Tabs.Combat:AddToggle("State1", {Title = "Auto Parry", Default = false })
-
-    autoparry:OnChanged(function()
-        AutoParry = Options.State1.Value
-    end)
-
-    local ManualSpam = Tabs.Combat:AddToggle("State2", {Title = "Manual Spam", Default = false })
-
-    ManualSpam:OnChanged(function()
-        Toggle.Visible = Options.State2.Value
-    end)
-
-    local automove = Tabs.Combat:AddToggle("State3", {Title = "Auto Move", Default = false })
-
-    automove:OnChanged(function()
-        AutoMove = Options.State3.Value
-    end)
-
-    local visualizer = Tabs.Combat:AddToggle("State4", {Title = "Show Visualizer", Default = false })
-
-    visualizer:OnChanged(function()
-        showVisualizer = Options.State4.Value
-    end)
-end
+tab.newToggle("Auto Parry", "", false, function(State)
+    AutoParry = State
+end)
+tab.newToggle("Manual Spam", "", false, function(State)
+    Toggle.Visible = State
+end)
+tab.newToggle("Auto Move", "", false, function(State)
+    AutoMove = State
+end)
+tab.newSlider("Parry Distance", "", 3, false, function(value)
+    ParryDistance = value
+end)
+tab.newToggle("Show Visualizer", "", false, function(State)
+    if State then
+           createVisualizer()
+    else
+           part:Destroy()
+           part = nil
+    end
+end)
 workspace.Balls.ChildAdded:Connect(function()
         ResetConnection()
         Connection = GetBall():GetAttributeChangedSignal("Target"):Connect(function()
@@ -118,7 +111,7 @@ spawn(function()
     function Parry()
         local Ball, HRP = GetBall(), GetRoot()
         if not HRP then return end
-        if Ball:GetAttribute("Target") == Player.Name and not Parried and Ball.LinearVelocity.VectorVelocity.Magnitude / (HRP.Position - Ball.Position).Magnitude >= 2.25 and AutoParry then
+        if Ball:GetAttribute("Target") == Player.Name and not Parried and Ball.LinearVelocity.VectorVelocity.Magnitude / (HRP.Position - Ball.Position).Magnitude >= ParryDistance and AutoParry then
                 game.ReplicatedStorage.Framework.RemoteFunction:InvokeServer("SwordService","Block",{0})
                 Parried = true
                 Cooldown = tick()
@@ -148,16 +141,6 @@ spawn(function()
          if Ball and humanoid and AutoMove then
                 humanoid:MoveTo(Ball.Position)
          end
-         if showVisualizer then
-                if not part then
-                       createVisualizer()
-                end
-         else
-                if part then
-                       part:Destroy()
-                       part = nil
-                end
-         end
      end
      while task.wait() do
          pcall(task1)
@@ -166,7 +149,7 @@ end)
 spawn(function()
      task2 = function()
          local Ball = GetBall()
-         local speed = Ball.LinearVelocity.VectorVelocity.Magnitude / 2.25
+         local speed = Ball.LinearVelocity.VectorVelocity.Magnitude / ParryDistance
          if speed and part then
                 part.Size = Vector3.new(speed, speed, speed)
                 part.CFrame = GetRoot().CFrame
@@ -187,5 +170,3 @@ spawn(function()
            pcall(task3)
       end
 end)
-
-Window:SelectTab(1)
