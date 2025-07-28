@@ -1,0 +1,208 @@
+for i,v in ipairs(game.CoreGui:GetChildren()) do
+        if v.Name == "ScreenGui" then
+                v:Destroy()
+        end
+end
+local Fluent = loadstring(game:HttpGet("https://github.com/NoobHubV4/RobloxScripts/blob/main/Fluent/Lib?raw=true"))()
+local Window = Fluent:CreateWindow({Title = "NoobHubV4 Hub | Blade Ball",SubTitle = "v1",TabWidth = 0,Size = UDim2.fromOffset(340, 220),Acrylic = false,Theme = "Amethyst",MinimizeKey = Enum.KeyCode.LeftShift})
+local Tabs = {Combat = Window:AddTab({ Title = "Combat", Icon = "" }),}
+local Player = game.Players.LocalPlayer
+local VIM = game:GetService("VirtualInputManager") or game:FindFirstDescendant("VirtualInputManager")
+local AutoMove = false
+local AutoParry
+local Cooldown = tick()
+local ScreenGui = Instance.new("ScreenGui", game.CoreGui)
+local Toggle = Instance.new("TextButton", ScreenGui)
+local SpamParry = false
+local Connection
+local part
+local ParryDistance = 0
+local showVisualizer
+
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+ScreenGui.ResetOnSpawn = true
+
+Toggle.BackgroundColor3 = Color3.fromRGB(50, 100, 150)
+Toggle.BackgroundTransparency = 0
+Toggle.Position = UDim2.new(0, 0, 0, 0)
+Toggle.Size = UDim2.new(0, 180, 0, 40)
+Toggle.Font = Enum.Font.SourceSans
+Toggle.Text = "SpamParry [OFF]"
+Toggle.TextColor3 = Color3.fromRGB(150, 100, 75)
+Toggle.TextScaled = true
+Toggle.TextSize = 15.000
+Toggle.TextStrokeTransparency = 0.000
+Toggle.TextWrapped = true
+Toggle.Draggable = true
+Toggle.Visible = false
+Toggle.MouseButton1Click:Connect(function()
+     SpamParry = not SpamParry
+     if SpamParry then
+           Toggle.Text = "SpamParry [ON]"
+     elseif not SpamParry then
+           Toggle.Text = "SpamParry [OFF]"
+     end
+end)
+
+function GetBall()
+  for i,v in next, workspace.Balls:GetChildren() do
+    if v:GetAttribute("realBall") then
+      return v
+    end
+  end
+end
+
+function GetRoot()
+  for i,v in ipairs(game.Players.LocalPlayer.Character:GetChildren()) do
+    if v:IsA("BasePart") and v.Name == "HumanoidRootPart" then
+      return v
+    end
+  end
+end
+
+function ResetConnection()
+  if Connection then
+    Connection:Disconnect()
+    Connection = nil
+  end
+end
+
+function t(Title, Text, Time)
+    game:FindService("StarterGui"):SetCore("SendNotification",{Title=Title,Text=Text,Icon="",Duration=Time,})
+end
+
+function createVisualizer()
+    part = Instance.new("Part") 
+    part.Name = "Visualizer" 
+    part.Parent = game.Workspace
+    part.CFrame = Player.Character.HumanoidRootPart.CFrame
+    part.Size = Vector3.new(5, 5, 5) 
+    part.Anchored = true
+    part.CanCollide = false
+    part.Transparency = 0
+    part.Color = Color3.fromHSV(50, 100, 150)
+    part.Material = Enum.Material.ForceField
+    part.Shape = "Ball"
+    part.Massless = true
+    while task.wait() do
+           if part and part.Material ~= Enum.Material.ForceField then
+                  part.Material = Enum.Material.ForceField
+           end
+    end
+end
+
+local Options = Fluent.Options
+do
+       local autoblock = Tabs.Combat:AddToggle("State1", {Title = "Auto Parry", Default = false })
+       local manualspam = Tabs.Combat:AddToggle("State2", {Title = "Manual Spam", Default = false })
+       local automove = Tabs.Combat:AddToggle("State3", {Title = "Auto Move", Default = false })
+       local parrydistance = Tabs.Combat:AddSlider("Slider", {Title = "Parry Distance",Description = "",Default = 3,Min = 1,Max = 3,Rounding = 2})
+       local Show = Tabs.Combat:AddToggle("State4", {Title = "Show Visualizer", Default = false })
+       autoblock:OnChanged(function()
+              AutoParry = Options.State1.Value
+       end)
+       manualspam:OnChanged(function()
+              Toggle.Visible = Options.State2.Value
+       end)
+       automove:OnChanged(function()
+              AutoMove = Options.State3.Value
+       end)
+       parrydistance:OnChanged(function(value)
+              ParryDistance = value
+       end)
+       Show:OnChanged(function()
+              showVisualizer = Options.State4.Value
+       end)
+end
+workspace.Balls.ChildAdded:Connect(function(newBall)
+        ResetConnection()
+        Connection = newBall:GetAttributeChangedSignal("target"):Connect(function()
+                 Parried = false
+        end)
+end)
+spawn(function()
+    function Parry()
+        local Ball, HRP = GetBall(), GetRoot()
+        local block = ParryDistance / 0.875
+        if not HRP then return end
+        if Ball:GetAttribute("target") == Player.Name and not Parried and Ball.zoomies.VectorVelocity.Magnitude / (HRP.Position - Ball.Position).Magnitude >= block and AutoParry then
+                VIM:SendMouseButtonEvent(0, 0, 0, true, game, false)
+                Parried = true
+                Cooldown = tick()
+                if (tick() - Cooldown) >= 1 then
+                       Parried = false
+                end
+        end
+    end
+    while task.wait() do
+        pcall(Parry)
+    end
+end)
+spawn(function()
+    function task0()
+        if SpamParry then
+            VIM:SendMouseButtonEvent(0, 0, 0, true, game, false)
+        end
+        if showVisualizer then
+            if not part then
+                createVisualizer()
+            end
+        else
+            if part then
+                part:Destroy()
+                part = nil
+            end
+        end
+    end
+    while task.wait() do
+        pcall(task0)
+    end
+end)
+spawn(function()
+     function task1()
+         local Ball, humanoid = GetBall(), Player.Character.Humanoid
+         if not humanoid then return end
+         if Ball and humanoid and AutoMove then
+                humanoid:MoveTo(Ball.Position)
+         end
+     end
+     while task.wait() do
+         pcall(task1)
+     end
+end)
+spawn(function()
+     task2 = function()
+         local Ball = GetBall()
+         local speed = Ball.zoomies.VectorVelocity.Magnitude / ParryDistance / 0.875
+         if speed and part then
+                part.Size = Vector3.new(speed, speed, speed)
+                part.CFrame = GetRoot().CFrame
+         end
+     end
+     while task.wait() do
+         pcall(task2)
+     end
+end)
+spawn(function()
+      task3 = function()
+           if not GetBall() and part then
+                  part.Size = Vector3.new(5, 5, 5)
+                  part.CFrame = GetRoot().CFrame
+           end
+      end
+      while task.wait() do
+           pcall(task3)
+      end
+end)
+spawn(function()
+      task4 = function()
+           if part then
+                  part.Color = Color3.fromHSV(tick() % (10/5) / (10/5), 1, 1)
+           end
+      end
+      while task.wait() do
+           pcall(task4)
+      end
+end)
+
+Window:SelectTab(1)
