@@ -177,7 +177,7 @@ end)
 spawn(function()
       task3 = function()
            if part then
-                  part.Color = Color3.fromHSV(tick() % (10/5) / (10/5), 1, 1)
+                  part.Color = Color3.fromHSV(tick() % (10/2.5) / (10/2.5), 1, 1)
            end
       end
       while task.wait() do
