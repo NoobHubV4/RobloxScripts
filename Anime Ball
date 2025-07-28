@@ -119,7 +119,7 @@ spawn(function()
         local block = ParryDistance / 0.875
         if not HRP then return end
         if Ball:GetAttribute("Target") == Player.Name and not Parried and Ball.LinearVelocity.VectorVelocity.Magnitude / (HRP.Position - Ball.Position).Magnitude >= block and AutoParry then
-                game.ReplicatedStorage.Framework.RemoteFunction:InvokeServer("SwordService","Block",{0})
+                game.Players.LocalPlayer.Remotes.RemoteFunction:InvokeServer("SwordService","Block",{0})
                 Parried = true
                 Cooldown = tick()
                 if (tick() - Cooldown) >= 1 then
@@ -134,7 +134,7 @@ end)
 spawn(function()
     function task0()
         if SpamParry then
-            game.ReplicatedStorage.Framework.RemoteFunction:InvokeServer("SwordService","Block",{0})
+            game.Players.LocalPlayer.Remotes.RemoteFunction:InvokeServer("SwordService","Block",{0})
         end
         if showVisualizer then
             if not part then
@@ -199,3 +199,5 @@ spawn(function()
 end)
 
 Window:SelectTab(1)
+game.ReplicatedStorage.Framework.Name = "Remotes"
+game.ReplicatedStorage.Remotes.Parent = Player
