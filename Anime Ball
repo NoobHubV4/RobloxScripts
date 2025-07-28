@@ -3,9 +3,9 @@ for i,v in ipairs(game.CoreGui:GetChildren()) do
                 v:Destroy()
         end
 end
-local DrRayLibrary = loadstring(game:HttpGet("https://raw.githubusercontent.com/AZYsGithub/DrRay-UI-Library/main/DrRay.lua"))()
-local window = DrRayLibrary:Load("Anime Ball", "Default")
-local tab = DrRayLibrary.newTab("Combat", "")
+local Fluent = loadstring(game:HttpGet("https://github.com/NoobHubV4/RobloxScripts/blob/main/Fluent/Lib?raw=true"))()
+local Window = Fluent:CreateWindow({Title = "NoobHubV4 Hub | Anime Ball",SubTitle = "v1.1",TabWidth = 0,Size = UDim2.fromOffset(340, 220),Acrylic = false,Theme = "Amethyst",MinimizeKey = Enum.KeyCode.LeftShift})
+local Tabs = {Combat = Window:AddTab({ Title = "Combat", Icon = "" }),}
 local Player = game.Players.LocalPlayer
 local VIM = game:GetService("VirtualInputManager") or game:FindFirstDescendant("VirtualInputManager")
 local AutoMove = false
@@ -16,7 +16,8 @@ local Toggle = Instance.new("TextButton", ScreenGui)
 local SpamParry = false
 local Connection
 local part
-local ParryDistance = 2
+local ParryDistance = 0
+local showVisualizer
 
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 ScreenGui.ResetOnSpawn = true
@@ -81,26 +82,30 @@ function createVisualizer()
     part.Material = Enum.Material.ForceField
     part.Shape = "Ball"
 end
-tab.newToggle("Auto Parry", "", false, function(State)
-    AutoParry = State
-end)
-tab.newToggle("Manual Spam", "", false, function(State)
-    Toggle.Visible = State
-end)
-tab.newToggle("Auto Move", "", false, function(State)
-    AutoMove = State
-end)
-tab.newSlider("Parry Distance", "", 3, false, function(value)
-    ParryDistance = value
-end)
-tab.newToggle("Show Visualizer", "", false, function(State)
-    if State then
-           createVisualizer()
-    else
-           part:Destroy()
-           part = nil
-    end
-end)
+
+local Options = Fluent.Options
+do
+       local autoblock = Tabs.Combat:AddToggle("State1", {Title = "Auto Parry", Default = false })
+       local manualspam = Tabs.Combat:AddToggle("State2", {Title = "Manual Spam", Default = false })
+       local automove = Tabs.Combat:AddToggle("State3", {Title = "Auto Move", Default = false })
+       local parrydistance = Tabs.Combat:AddSlider("Slider", {Title = "Parry Distance",Description = "",Default = 3,Min = 1,Max = 3,Rounding = 2})
+       local Show = Tabs.Combat:AddToggle("State4", {Title = "Show Visualizer", Default = false })
+       autoblock:OnChanged(function()
+              AutoParry = Options.State1.Value
+       end)
+       manualspam:OnChanged(function()
+              Toggle.Visible = Options.State2.Value
+       end)
+       automove:OnChanged(function()
+              AutoMove = Options.State3.Value
+       end)
+       parrydistance:OnChanged(function(value)
+              ParryDistance = value
+       end)
+       Show:OnChanged(function()
+              showVisualizer = Options.State4.Value
+       end)
+end
 workspace.Balls.ChildAdded:Connect(function()
         ResetConnection()
         Connection = GetBall():GetAttributeChangedSignal("Target"):Connect(function()
@@ -110,8 +115,9 @@ end)
 spawn(function()
     function Parry()
         local Ball, HRP = GetBall(), GetRoot()
+        local block = ParryDistance / 0.875
         if not HRP then return end
-        if Ball:GetAttribute("Target") == Player.Name and not Parried and Ball.LinearVelocity.VectorVelocity.Magnitude / (HRP.Position - Ball.Position).Magnitude >= ParryDistance / 0.875 and AutoParry then
+        if Ball:GetAttribute("Target") == Player.Name and not Parried and Ball.LinearVelocity.VectorVelocity.Magnitude / (HRP.Position - Ball.Position).Magnitude >= block and AutoParry then
                 game.ReplicatedStorage.Framework.RemoteFunction:InvokeServer("SwordService","Block",{0})
                 Parried = true
                 Cooldown = tick()
@@ -128,6 +134,16 @@ spawn(function()
     function task0()
         if SpamParry then
             game.ReplicatedStorage.Framework.RemoteFunction:InvokeServer("SwordService","Block",{0})
+        end
+        if showVisualizer then
+            if not part then
+                createVisualizer()
+            end
+        else
+            if part then
+                part:Destroy()
+                part = nil
+            end
         end
     end
     while task.wait() do
@@ -180,3 +196,5 @@ spawn(function()
            pcall(task4)
       end
 end)
+
+Window:SelectTab(1)
