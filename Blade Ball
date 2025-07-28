@@ -18,6 +18,8 @@ local Connection
 local part
 local ParryDistance = 0
 local showVisualizer
+local GameMode
+local Connection2
 
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 ScreenGui.ResetOnSpawn = true
@@ -45,9 +47,15 @@ Toggle.MouseButton1Click:Connect(function()
 end)
 
 function GetBall()
-  for i,v in next, workspace.Balls:GetChildren() do
-    if v:GetAttribute("realBall") then
-      return v
+  if GameMode == "Main Game" then
+    local ball = workspace.Balls:FindFirstChildOfClass("Part")
+    if ball:GetAttribute("realBall") then
+      return ball
+    end
+  elseif GameMode == "Lobby Training" then
+    local ball = workspace.TrainingBalls:FindFirstChildOfClass("Part")
+    if ball:GetAttribute("realBall") then
+      return ball
     end
   end
 end
@@ -60,10 +68,13 @@ function GetRoot()
   end
 end
 
-function ResetConnection()
-  if Connection then
+function ResetConnection(number)
+  if number == "1" and Connection then
     Connection:Disconnect()
     Connection = nil
+  elseif number == "2" and Connection2 then
+    Connection2:Disconnect()
+    Connection2 = nil
   end
 end
 
@@ -83,21 +94,20 @@ function createVisualizer()
     part.Color = Color3.fromHSV(50, 100, 150)
     part.Material = Enum.Material.ForceField
     part.Shape = "Ball"
-    part.Massless = true
-    while task.wait() do
-           if part and part.Material ~= Enum.Material.ForceField then
-                  part.Material = Enum.Material.ForceField
-           end
-    end
+    part.CastShadow = false
 end
 
 local Options = Fluent.Options
 do
+       local gamemode = Tabs.Combat:AddDropdown("Dropdown", {Title = "Game Mode",Values = {"Main Game","Lobby Training"},Multi = false,Default = 1,})
        local autoblock = Tabs.Combat:AddToggle("State1", {Title = "Auto Parry", Default = false })
        local manualspam = Tabs.Combat:AddToggle("State2", {Title = "Manual Spam", Default = false })
        local automove = Tabs.Combat:AddToggle("State3", {Title = "Auto Move", Default = false })
        local parrydistance = Tabs.Combat:AddSlider("Slider", {Title = "Parry Distance",Description = "",Default = 3,Min = 1,Max = 3,Rounding = 2})
        local Show = Tabs.Combat:AddToggle("State4", {Title = "Show Visualizer", Default = false })
+       gamemode:OnChanged(function(value)
+              GameMode = value
+       end)
        autoblock:OnChanged(function()
               AutoParry = Options.State1.Value
        end)
@@ -114,16 +124,22 @@ do
               showVisualizer = Options.State4.Value
        end)
 end
-workspace.Balls.ChildAdded:Connect(function(newBall)
-        ResetConnection()
-        Connection = newBall:GetAttributeChangedSignal("target"):Connect(function()
+workspace.Balls.ChildAdded:Connect(function()
+        ResetConnection("1")
+        Connection = GetBall():GetAttributeChangedSignal("target"):Connect(function()
+                 Parried = false
+        end)
+end)
+workspace.TrainingBalls.ChildAdded:Connect(function()
+        ResetConnection("2")
+        Connection2 = GetBall():GetAttributeChangedSignal("target"):Connect(function()
                  Parried = false
         end)
 end)
 spawn(function()
     function Parry()
         local Ball, HRP = GetBall(), GetRoot()
-        local block = ParryDistance / 0.875
+        local block = ParryDistance / 1.1
         if not HRP then return end
         if Ball:GetAttribute("target") == Player.Name and not Parried and Ball.zoomies.VectorVelocity.Magnitude / (HRP.Position - Ball.Position).Magnitude >= block and AutoParry then
                 VIM:SendMouseButtonEvent(0, 0, 0, true, game, false)
@@ -173,7 +189,7 @@ end)
 spawn(function()
      task2 = function()
          local Ball = GetBall()
-         local speed = Ball.zoomies.VectorVelocity.Magnitude / ParryDistance / 0.875
+         local speed = Ball.zoomies.VectorVelocity.Magnitude / ParryDistance / 1.1
          if speed and part then
                 part.Size = Vector3.new(speed, speed, speed)
                 part.CFrame = GetRoot().CFrame
