@@ -1,18 +1,14 @@
 local lib = loadstring(Game:HttpGet('https://raw.githubusercontent.com/NoobHubV1/NoobHubV1/main/Wizard%20Lib.lua'))()
 local killAura
 local escape
-local Window = lib:NewWindow("NoobHubV4 Hub")
+local spamsound
+local Window = lib:NewWindow("Facility Of Redemption")
 local Section = Window:NewSection("Main")
 Section:CreateButton("Kill Aura (1 Loop)", function()
 for i,v in next, game.Players:GetPlayers() do
 if v.Team ~= game.Players.LocalPlayer.Team and v ~= game.Players.LocalPlayer then
 if (v.Character.HumanoidRootPart.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= 20 and v.Character.Humanoid.Health ~= 0 then
-local args = {
-	v.Character:WaitForChild("Head"),
-	v.Character:WaitForChild("Humanoid"),
-	v.Character.Torso.Position
-}
-game:GetService("Players").LocalPlayer.Character:FindFirstChildOfClass("Tool"):WaitForChild("Remote"):WaitForChild("Hit"):FireServer(unpack(args))
+game.Players.LocalPlayer.Character:FindFirstChildOfClass("Tool").Remote.Hit:FireServer(v.Character.Torso,v.Character.Humanoid,v.Character.Torso.Position or Vector3.new())
 end
 end
 end
@@ -22,6 +18,9 @@ killAura = state
 end)
 Section:CreateToggle("Auto Escape Grab", function(state)
 escape = state
+end)
+Section:CreateToggle("Spam Tools Sound", function(state)
+spamsound = state
 end)
 game.RunService.Stepped:Connect(function()
 if killAura then
@@ -33,9 +32,12 @@ end
 end
 end
 end
-end)
-game.RunService.Heartbeat:Connect(function()
 if escape then
 game.Players.LocalPlayer.PlayerGui.EscapeGui.Remote.Hit:InvokeServer()
+end
+end)
+game.RunService.Heartbeat:Connect(function()
+if spamsound then
+game.Players.LocalPlayer.Character:FindFirstChildOfClass("Tool").Remote.PlaySound:FireServer("Swing")
 end
 end)
