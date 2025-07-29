@@ -18,6 +18,8 @@ local Connection
 local part
 local ParryDistance = 0
 local showVisualizer
+local Method
+local Division = 0.875
 
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 ScreenGui.ResetOnSpawn = true
@@ -84,8 +86,19 @@ function createVisualizer()
     part.CastShadow = false
 end
 
+function ParryAttempt()
+    if Method == "Keypress" then
+        VIM:SendKeyEvent(true,"F",false,game)
+    elseif Method == "Click" then
+        VIM:SendMouseButtonEvent(0, 0, 0, true, game, false)
+    elseif Method == "Remote" then
+        game.ReplicatedStorage.Framework.RemoteFunction:InvokeServer("SwordService","Block",{0})
+    end
+end
+
 local Options = Fluent.Options
 do
+       local parrymethod = Tabs.Combat:AddDropdown("Dropdown", {Title = "Parry Method",Values = {"Keypress","Click","Remote"},Multi = false,Default = 1,})
        local autoblock = Tabs.Combat:AddToggle("State1", {Title = "Auto Parry", Default = false })
        local manualspam = Tabs.Combat:AddToggle("State2", {Title = "Manual Spam", Default = false })
        local automove = Tabs.Combat:AddToggle("State3", {Title = "Auto Move", Default = false })
@@ -106,6 +119,18 @@ do
        Show:OnChanged(function()
               showVisualizer = Options.State4.Value
        end)
+       parrymethod:OnChanged(function(select)
+              if select == "Keypress" then
+                     Division = 0.9
+                     Method = select
+              elseif select == "Click" then
+                     Division = 0.9
+                     Method = select
+              elseif select == "Remote" then
+                     Division = 0.875
+                     Method = select
+              end
+       end)
 end
 workspace.Balls.ChildAdded:Connect(function()
         ResetConnection()
@@ -116,10 +141,10 @@ end)
 spawn(function()
     function Parry()
         local Ball, HRP = GetBall(), GetRoot()
-        local block = ParryDistance / 0.875
+        local block = ParryDistance / Division
         if not HRP then return end
         if Ball:GetAttribute("Target") == Player.Name and not Parried and Ball.LinearVelocity.VectorVelocity.Magnitude / (HRP.Position - Ball.Position).Magnitude >= block and AutoParry then
-                game.ReplicatedStorage.Framework.RemoteFunction:InvokeServer("SwordService","Block",{0})
+                ParryAttempt()
                 Parried = true
                 Cooldown = tick()
                 if (tick() - Cooldown) >= 1 then
@@ -134,7 +159,7 @@ end)
 spawn(function()
     function task0()
         if SpamParry then
-            game.ReplicatedStorage.Framework.RemoteFunction:InvokeServer("SwordService","Block",{0})
+            ParryAttempt()
         end
         if showVisualizer then
             if not part then
@@ -166,7 +191,7 @@ end)
 spawn(function()
      task2 = function()
          local Ball = GetBall()
-         local speed = Ball.LinearVelocity.VectorVelocity.Magnitude / ParryDistance / 0.875
+         local speed = Ball.LinearVelocity.VectorVelocity.Magnitude / ParryDistance / Division
          if speed and part then
                 part.Size = Vector3.new(speed, speed, speed)
                 part.CFrame = GetRoot().CFrame
