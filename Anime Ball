@@ -19,7 +19,7 @@ local part
 local ParryDistance = 0
 local showVisualizer
 local Method
-local Division = 0.875
+local number = 0
 
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 ScreenGui.ResetOnSpawn = true
@@ -121,13 +121,13 @@ do
        end)
        parrymethod:OnChanged(function(select)
               if select == "Keypress" then
-                     Division = 0.9
+                     number = 0.9
                      Method = select
               elseif select == "Click" then
-                     Division = 0.9
+                     number = 0.9
                      Method = select
               elseif select == "Remote" then
-                     Division = 0.875
+                     number = 0.875
                      Method = select
               end
        end)
@@ -141,6 +141,7 @@ end)
 spawn(function()
     function Parry()
         local Ball, HRP = GetBall(), GetRoot()
+        local Division = number
         local block = ParryDistance / Division
         if not HRP then return end
         if Ball:GetAttribute("Target") == Player.Name and not Parried and Ball.LinearVelocity.VectorVelocity.Magnitude / (HRP.Position - Ball.Position).Magnitude >= block and AutoParry then
@@ -191,6 +192,7 @@ end)
 spawn(function()
      task2 = function()
          local Ball = GetBall()
+         local Division = number
          local speed = Ball.LinearVelocity.VectorVelocity.Magnitude / ParryDistance / Division
          if speed and part then
                 part.Size = Vector3.new(speed, speed, speed)
