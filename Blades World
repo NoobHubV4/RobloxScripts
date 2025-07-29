@@ -31,22 +31,22 @@ end)
 spawn(function()
   task0 = function()
     if autoOrbs then
-      for _,Orbs in ipairs(workspace:FindFirstChild("activeOrbs"):GetChildren()) do
+      for _,Orbs in ipairs(workspace.activeOrbs:GetChildren()) do
         if Orbs:IsA("BasePart") then
           Orbs.CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
         end
       end
     end
     if autoStrength then
-      workspace:FindFirstChild("BladePowerGiver")["RemoteEvent"]:FireServer()
+      game.ReplicatedStorage.GivePower.RemoteEvent:FireServer()
     end
     if autoFarm then
-      if not autoOrbs == true then
-        autoOrbs = true
+      for _,Orbs in ipairs(workspace.activeOrbs:GetChildren()) do
+        if Orbs:IsA("BasePart") then
+          Orbs.CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
+        end
       end
-      if not autoStrength then
-        autoStrength = true
-      end
+      game.ReplicatedStorage.GivePower.RemoteEvent:FireServer()
       game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(0, 10000, 0)
     end
   end
@@ -54,3 +54,5 @@ spawn(function()
     pcall(task0)
   end
 end)
+workspace.BladePowerGiver.Parent = game.ReplicatedStorage
+game.ReplicatedStorage.BladePowerGiver.Name = "GivePower"
