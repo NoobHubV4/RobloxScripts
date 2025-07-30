@@ -6,9 +6,8 @@ local Main = Window:NewSection("Main")
 Main:CreateToggle("Auto Roll", function(state)
      auto = state
 end)
-while task.wait(.5) do
+while task.wait(.4) do
      if auto then
-          Rstorage.L5_z%Q1!Rx_:FireServer()
-          Rstorage.ConfirmAura:FireServer("keep")
+          Rstorage:FindFirstChild("L5_z%Q1!Rx_"):FireServer()
      end
 end
