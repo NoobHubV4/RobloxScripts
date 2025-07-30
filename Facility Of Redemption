@@ -14,7 +14,6 @@ function createHitbox()
     part = Instance.new("Part") 
     part.Name = "Hitbox" 
     part.Parent = game.Workspace
-    part.Size = Vector3.new(10, 10, 10) 
     part.Anchored = true
     part.CanCollide = false
     part.Transparency = 0
@@ -52,6 +51,19 @@ part:Destroy()
 part = nil
 end
 end)
+Main:CreateButton("Kill All", function()
+for i,v in next, game.Teams.Experiment:GetPlayers() do
+if v ~= game.Players.LocalPlayer and not v.Character:FindFirstChildWhichIsA("ForceField") and v.Character.Humanoid.Health ~= 0 then
+repeat task.wait()
+      if game.Players.LocalPlayer.Backpack:FindFirstChild("Fists") then
+            game.Players.LocalPlayer.Character.Humanoid:EquipTool(game.Players.LocalPlayer.Backpack:FindFirstChild("Fists"))
+      end
+      game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.Character.HumanoidRootPart.CFrame * CFrame.new(0, 5, 0)
+      game.Players.LocalPlayer.Character:FindFirstChildOfClass("Tool").Remote.Hit:FireServer(v.Character.Torso,v.Character.Humanoid,v.Character.Torso.Position or Vector3.new())
+until v.Character:FindFirstChildWhichIsA("ForceField") or v.Character.Humanoid.Health == 0
+end
+end
+end)
 Main:CreateToggle("Auto Escape Grab", function(state)
 escape = state
 end)
@@ -78,10 +90,14 @@ else
 game:FindService("StarterGui"):SetCore("SendNotification",{Title="Error",Text="Player not human",Icon="",Duration=3,})
 end
 end)
-game.RunService.Stepped:Connect(function()
+spawn(function()
+task0 = function()
 if killAura then
 if part then
 part.CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
+end
+if part then
+part.Color = Color3.fromHSV(tick() % (10/5) / (10/5), 1, 1)
 end
 for i,v in next, game.Players:GetPlayers() do
 if v.Team ~= game.Players.LocalPlayer.Team and v ~= game.Players.LocalPlayer then
@@ -93,15 +109,14 @@ end
 end
 end
 end
-if escape then
-game.Players.LocalPlayer.PlayerGui.EscapeGui.Remote.Hit:InvokeServer()
-end
-end)
-game.RunService.Heartbeat:Connect(function()
 if spamsound then
 game.Players.LocalPlayer.Character:FindFirstChildOfClass("Tool").Remote.PlaySound:FireServer("Swing")
 end
-if part then
-part.Color = Color3.fromHSV(tick() % (10/5) / (10/5), 1, 1)
+if escape then
+game.Players.LocalPlayer.PlayerGui.EscapeGui.Remote.Hit:InvokeServer()
+end
+end
+while task.wait() do
+pcall(task0)
 end
 end)
