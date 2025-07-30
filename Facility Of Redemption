@@ -51,11 +51,14 @@ repeat task.wait()
       end
       game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.Character.HumanoidRootPart.CFrame * CFrame.new(0, -6, 0)
       game.Players.LocalPlayer.Character:FindFirstChild("Attack").Remote.Hit:FireServer(v.Character.Torso,v.Character.Humanoid,v.Character.Torso.Position or Vector3.new())
-until v.Character:FindFirstChildWhichIsA("ForceField") or v.Character.Humanoid.Health == 0
+until v.Team == game.Teams:FindFirstChild("Experiment") or v.Character.Humanoid.Health == 0
 end
 end
 end
+wait(.05)
 game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = savedpos
+wait(.1)
+savedpos = nil
 end)
 Kills:CreateButton("Kill All Transfur", function()
 local savedpos = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
@@ -68,11 +71,14 @@ repeat task.wait()
       end
       game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.Character.HumanoidRootPart.CFrame * CFrame.new(0, 6, 0)
       game.Players.LocalPlayer.Character:FindFirstChild("Fists").Remote.Hit:FireServer(v.Character.Torso,v.Character.Humanoid,v.Character.Torso.Position or Vector3.new())
-until v.Character:FindFirstChildWhichIsA("ForceField") or v.Character.Humanoid.Health == 0
+until v.Team == game.Teams.Human or v.Character.Humanoid.Health == 0
 end
 end
 end
+wait(.05)
 game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = savedpos
+wait(.1)
+savedpos = nil
 end)
 Main:CreateToggle("Auto Escape Grab", function(state)
 escape = state
