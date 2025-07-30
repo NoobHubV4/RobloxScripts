@@ -70,8 +70,12 @@ Team:CreateButton("Become Transfur", function()
 if game.Players.LocalPlayer.Team ~= game.Teams:FindFirstChild("Experiment") then
 local saved = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
 repeat task.wait()
-game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = workspace:FindFirstChild("TransfurPart"):FindFirstChild("KoiFish & CatFish")["Koi 4"].CFrame
-until game.Players.LocalPlayer.Team ~= game.Teams:FindFirstChild("Human")
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = workspace:FindFirstChild("PickItem")["ProtoMask"].CFrame
+fireproximityprompt(workspace:FindFirstChild("PickItem")["ProtoMask"]:FindFirstChild("ProximityPrompt"))
+game.Players.LocalPlayer.Character.Humanoid:EquipTool(game.Players.LocalPlayer.Backpack:FindFirstChild("Green Visor"))
+until game.Players.LocalPlayer.Character:FindFirstChild("Green Visor")
+game.Players.LocalPlayer.Character["Green Visor"].Remotes.UseItem:FireServer()
+game.Players.LocalPlayer.Character.Humanoid:UnequipTools()
 game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = saved
 wait(.05)
 saved = nil
