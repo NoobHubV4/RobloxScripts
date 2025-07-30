@@ -3,7 +3,13 @@ local killAura
 local escape
 local spamsound
 local Window = lib:NewWindow("Facility Of Redemption")
-local Section = Window:NewSection("Main")
+local Main = Window:NewSection("Main")
+local Team = Window:NewSection("Team")
+function missing(t, f, fallback)
+  if type(f) == t then return f end
+  return fallback
+end
+replicatesignal = missing("function", replicatesignal)
 function createHitbox()
     part = Instance.new("Part") 
     part.Name = "Hitbox" 
@@ -17,7 +23,19 @@ function createHitbox()
     part.Shape = "Ball"
     part.CastShadow = false
 end
-Section:CreateButton("Kill Aura (1 Loop)", function()
+function refresh(plr)
+    local root = plr.Character:WaitForChild("HumanoidRootPart")
+    local pos = root.CFrame
+    local pos1 = workspace.CurrentCamera.CFrame
+    replicatesignal(plr.ConnectDiedSignalBackend)
+    task.wait(game.Players.RespawnTime-0.1)
+    plr.Character.Humanoid:ChangeState("Dead")
+    task.spawn(function()
+        plr.CharacterAdded:Wait():WaitForChild("HumanoidRootPart").CFrame, workspace.CurrentCamera.CFrame = pos, task.wait() and pos1
+        refreshCmd = false
+    end)
+end
+Main:CreateButton("Kill Aura (1 Loop)", function()
 for i,v in next, game.Players:GetPlayers() do
 if v.Team ~= game.Players.LocalPlayer.Team and v ~= game.Players.LocalPlayer then
 if (v.Character.HumanoidRootPart.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= 20 and v.Character.Humanoid.Health ~= 0 then
@@ -26,7 +44,7 @@ end
 end
 end
 end)
-Section:CreateToggle("Kill Aura", function(state)
+Main:CreateToggle("Kill Aura", function(state)
 killAura = state
 if killAura then
 createHitbox()
@@ -35,11 +53,36 @@ part:Destroy()
 part = nil
 end
 end)
-Section:CreateToggle("Auto Escape Grab", function(state)
+Main:CreateToggle("Auto Escape Grab", function(state)
 escape = state
 end)
-Section:CreateToggle("Spam Tools Sound", function(state)
+Main:CreateToggle("Spam Tools Sound", function(state)
 spamsound = state
+end)
+Team:CreateButton("Become Human", function()
+if game.Players.LocalPlayer.Team == game.Teams:FindFirstChild("Experiment") then
+game:FindService("StarterGui"):SetCore("SendNotification",{Title="Successfully",Text="Wait a become human",Icon="",Duration=3,})
+refresh(game.Players.LocalPlayer)
+else
+game:FindService("StarterGui"):SetCore("SendNotification",{Title="Error",Text="Player not Transfur",Icon="",Duration=3,})
+end
+end)
+Team:CreateButton("Become Transfur", function()
+if game.Players.LocalPlayer.Team ~= game.Teams:FindFirstChild("Experiment") then
+local saved = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
+game:FindService("StarterGui"):SetCore("SendNotification",{Title="Successfully",Text="Wait a become Transfur",Icon="",Duration=3,})
+repeat task.wait()
+       game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = workspace:FindFirstChild("PickItem")["AriSoda"].CFrame
+       fireproximityprompt(workspace:FindFirstChild("PickItem")["AriSoda"]:FindFirstChild("ProximityPrompt"))
+until game.Players.LocalPlayer.Backpack:FindFirstChild("Ari Soda") or game.Players.LocalPlayer.Character:FindFirstChild("Ari Soda")
+repeat task.wait()
+       game.Players.LocalPlayer.Character.Humanoid:EquipTool(game.Players.LocalPlayer.Backpack:FindFirstChild("Ari Soda"))
+until game.Players.LocalPlayer.Character:FindFirstChild("Ari Soda")
+game.Players.LocalPlayer.Character:FindFirstChild("Ari Soda").Remotes.UseItem:FireServer()
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = saved
+else
+game:FindService("StarterGui"):SetCore("SendNotification",{Title="Error",Text="Player not human",Icon="",Duration=3,})
+end
 end)
 game.RunService.Stepped:Connect(function()
 if killAura then
