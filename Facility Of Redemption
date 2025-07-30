@@ -5,23 +5,12 @@ local spamsound
 local Window = lib:NewWindow("Facility Of Redemption")
 local Main = Window:NewSection("Main")
 local Team = Window:NewSection("Team")
+local Kills = Window:NewSection("Kills")
 function missing(t, f, fallback)
   if type(f) == t then return f end
   return fallback
 end
 replicatesignal = missing("function", replicatesignal)
-function createHitbox()
-    part = Instance.new("Part") 
-    part.Name = "Hitbox" 
-    part.Parent = game.Workspace
-    part.Anchored = true
-    part.CanCollide = false
-    part.Transparency = 0
-    part.Color = Color3.fromHSV(50, 100, 150)
-    part.Material = Enum.Material.ForceField
-    part.Shape = "Ball"
-    part.CastShadow = false
-end
 function refresh(plr)
     local root = plr.Character:WaitForChild("HumanoidRootPart")
     replicatesignal(plr.ConnectDiedSignalBackend)
@@ -51,18 +40,39 @@ part:Destroy()
 part = nil
 end
 end)
-Main:CreateButton("Kill All", function()
+Kills:CreateButton("Kill All Human", function()
+local savedpos = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
+for i,v in next, game.Teams.Human:GetPlayers() do
+if v ~= game.Players.LocalPlayer and not v.Character:FindFirstChildWhichIsA("ForceField") and v.Character.Humanoid.Health ~= 0 then
+if not v:IsFriendsWith(game.Players.LocalPlayer.UserId) then
+repeat task.wait()
+      if game.Players.LocalPlayer.Backpack:FindFirstChild("Attack") then
+            game.Players.LocalPlayer.Character.Humanoid:EquipTool(game.Players.LocalPlayer.Backpack:FindFirstChild("Attack"))
+      end
+      game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.Character.HumanoidRootPart.CFrame * CFrame.new(0, -6, 0)
+      game.Players.LocalPlayer.Character:FindFirstChild("Attack").Remote.Hit:FireServer(v.Character.Torso,v.Character.Humanoid,v.Character.Torso.Position or Vector3.new())
+until v.Character:FindFirstChildWhichIsA("ForceField") or v.Character.Humanoid.Health == 0
+end
+end
+end
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = savedpos
+end)
+Kills:CreateButton("Kill All Transfur", function()
+local savedpos = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
 for i,v in next, game.Teams.Experiment:GetPlayers() do
 if v ~= game.Players.LocalPlayer and not v.Character:FindFirstChildWhichIsA("ForceField") and v.Character.Humanoid.Health ~= 0 then
+if not v:IsFriendsWith(game.Players.LocalPlayer.UserId) then
 repeat task.wait()
       if game.Players.LocalPlayer.Backpack:FindFirstChild("Fists") then
             game.Players.LocalPlayer.Character.Humanoid:EquipTool(game.Players.LocalPlayer.Backpack:FindFirstChild("Fists"))
       end
-      game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.Character.HumanoidRootPart.CFrame * CFrame.new(0, 5, 0)
-      game.Players.LocalPlayer.Character:FindFirstChildOfClass("Tool").Remote.Hit:FireServer(v.Character.Torso,v.Character.Humanoid,v.Character.Torso.Position or Vector3.new())
+      game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.Character.HumanoidRootPart.CFrame * CFrame.new(0, 6, 0)
+      game.Players.LocalPlayer.Character:FindFirstChild("Fists").Remote.Hit:FireServer(v.Character.Torso,v.Character.Humanoid,v.Character.Torso.Position or Vector3.new())
 until v.Character:FindFirstChildWhichIsA("ForceField") or v.Character.Humanoid.Health == 0
 end
 end
+end
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = savedpos
 end)
 Main:CreateToggle("Auto Escape Grab", function(state)
 escape = state
@@ -93,16 +103,10 @@ end)
 spawn(function()
 task0 = function()
 if killAura then
-if part then
-part.CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
-end
-if part then
-part.Color = Color3.fromHSV(tick() % (10/5) / (10/5), 1, 1)
-end
 for i,v in next, game.Players:GetPlayers() do
 if v.Team ~= game.Players.LocalPlayer.Team and v ~= game.Players.LocalPlayer then
 if (v.Character.HumanoidRootPart.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= 10 and v.Character.Humanoid.Health ~= 0 then
-if game.Players.LocalPlayer.Character:FindFirstChildOfClass("Tool") then
+if not v:IsFriendsWith(game.Players.LocalPlayer.UserId) and game.Players.LocalPlayer.Character:FindFirstChildOfClass("Tool") then
 game.Players.LocalPlayer.Character:FindFirstChildOfClass("Tool").Remote.Hit:FireServer(v.Character.Torso,v.Character.Humanoid,v.Character.Torso.Position or Vector3.new())
 end
 end
