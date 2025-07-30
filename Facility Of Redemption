@@ -5,7 +5,6 @@ local spamsound
 local Window = lib:NewWindow("Facility Of Redemption")
 local Main = Window:NewSection("Main")
 local Team = Window:NewSection("Team")
-local Furry = Window:NewSection("Transfur")
 function missing(t, f, fallback)
   if type(f) == t then return f end
   return fallback
@@ -34,19 +33,6 @@ function refresh(plr)
     task.spawn(function()
         plr.CharacterAdded:Wait():WaitForChild("HumanoidRootPart").CFrame, workspace.CurrentCamera.CFrame = pos, task.wait() and pos1
     end)
-end
-function Transfur(arg1, arg2)
-local saved = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
-game:FindService("StarterGui"):SetCore("SendNotification",{Title="Successfully",Text="Wait a become Transfur",Icon="",Duration=3,})
-repeat task.wait()
-       game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = workspace:FindFirstChild("PickItem"):FindFirstChild(arg2).CFrame
-       fireproximityprompt(workspace:FindFirstChild("PickItem"):FindFirstChild(arg2):FindFirstChild("ProximityPrompt"))
-until game.Players.LocalPlayer.Backpack:FindFirstChild(arg1) or game.Players.LocalPlayer.Character:FindFirstChild(arg1)
-repeat task.wait()
-       game.Players.LocalPlayer.Character.Humanoid:EquipTool(game.Players.LocalPlayer.Backpack:FindFirstChild(arg1))
-until game.Players.LocalPlayer.Character:FindFirstChild(arg1)
-game.Players.LocalPlayer.Character:FindFirstChild(arg1).Remotes.UseItem:FireServer()
-game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = saved
 end
 Main:CreateButton("Kill Aura (1 Loop)", function()
 for i,v in next, game.Players:GetPlayers() do
@@ -80,30 +66,15 @@ else
 game:FindService("StarterGui"):SetCore("SendNotification",{Title="Error",Text="Player not Transfur",Icon="",Duration=3,})
 end
 end)
-Furry:CreateButton("Become Transfur (Proto Mask)", function()
+Team:CreateButton("Become Transfur", function()
 if game.Players.LocalPlayer.Team ~= game.Teams:FindFirstChild("Experiment") then
-Transfur('Green Visor', 'ProtoMask')
-else
-game:FindService("StarterGui"):SetCore("SendNotification",{Title="Error",Text="Player not human",Icon="",Duration=3,})
-end
-end)
-Furry:CreateButton("Become Transfur (Morgan Mask)", function()
-if game.Players.LocalPlayer.Team ~= game.Teams:FindFirstChild("Experiment") then
-Transfur('Creepy Mask', 'Morgan Mask')
-else
-game:FindService("StarterGui"):SetCore("SendNotification",{Title="Error",Text="Player not human",Icon="",Duration=3,})
-end
-end)
-Furry:CreateButton("Become Transfur (Ari Soda)", function()
-if game.Players.LocalPlayer.Team ~= game.Teams:FindFirstChild("Experiment") then
-Transfur('Ari Soda', 'AriSoda')
-else
-game:FindService("StarterGui"):SetCore("SendNotification",{Title="Error",Text="Player not human",Icon="",Duration=3,})
-end
-end)
-Furry:CreateButton("Become Transfur (Blue Traffic Cone)", function()
-if game.Players.LocalPlayer.Team ~= game.Teams:FindFirstChild("Experiment") then
-Transfur('Blue Traffic Cone', 'Blue Traffic Cone')
+local saved = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
+repeat task.wait()
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = workspace:FindFirstChild("TransfurPart"):FindFirstChild("KoiFish & CatFish")["Koi 4"].CFrame
+until game.Players.LocalPlayer.Team ~= game.Teams:FindFirstChild("Human")
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = saved
+wait(.05)
+saved = nil
 else
 game:FindService("StarterGui"):SetCore("SendNotification",{Title="Error",Text="Player not human",Icon="",Duration=3,})
 end
