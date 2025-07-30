@@ -5,6 +5,7 @@ local spamsound
 local Window = lib:NewWindow("Facility Of Redemption")
 local Main = Window:NewSection("Main")
 local Team = Window:NewSection("Team")
+local Furry = Window:NewSection("Transfur")
 function missing(t, f, fallback)
   if type(f) == t then return f end
   return fallback
@@ -14,7 +15,7 @@ function createHitbox()
     part = Instance.new("Part") 
     part.Name = "Hitbox" 
     part.Parent = game.Workspace
-    part.Size = Vector3.new(20, 20, 20) 
+    part.Size = Vector3.new(10, 10, 10) 
     part.Anchored = true
     part.CanCollide = false
     part.Transparency = 0
@@ -29,16 +30,28 @@ function refresh(plr)
     local pos1 = workspace.CurrentCamera.CFrame
     replicatesignal(plr.ConnectDiedSignalBackend)
     task.wait(game.Players.RespawnTime-0.1)
-    plr.Character.Humanoid:ChangeState("Dead")
+    replicatesignal(plr.Kill)
     task.spawn(function()
         plr.CharacterAdded:Wait():WaitForChild("HumanoidRootPart").CFrame, workspace.CurrentCamera.CFrame = pos, task.wait() and pos1
-        refreshCmd = false
     end)
+end
+function Transfur(arg1, arg2)
+local saved = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
+game:FindService("StarterGui"):SetCore("SendNotification",{Title="Successfully",Text="Wait a become Transfur",Icon="",Duration=3,})
+repeat task.wait()
+       game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = workspace:FindFirstChild("PickItem"):FindFirstChild(arg2).CFrame
+       fireproximityprompt(workspace:FindFirstChild("PickItem"):FindFirstChild(arg2):FindFirstChild("ProximityPrompt"))
+until game.Players.LocalPlayer.Backpack:FindFirstChild(arg1) or game.Players.LocalPlayer.Character:FindFirstChild(arg1)
+repeat task.wait()
+       game.Players.LocalPlayer.Character.Humanoid:EquipTool(game.Players.LocalPlayer.Backpack:FindFirstChild(arg1))
+until game.Players.LocalPlayer.Character:FindFirstChild(arg1)
+game.Players.LocalPlayer.Character:FindFirstChild(arg1).Remotes.UseItem:FireServer()
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = saved
 end
 Main:CreateButton("Kill Aura (1 Loop)", function()
 for i,v in next, game.Players:GetPlayers() do
 if v.Team ~= game.Players.LocalPlayer.Team and v ~= game.Players.LocalPlayer then
-if (v.Character.HumanoidRootPart.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= 20 and v.Character.Humanoid.Health ~= 0 then
+if (v.Character.HumanoidRootPart.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= 10 and v.Character.Humanoid.Health ~= 0 then
 game.Players.LocalPlayer.Character:FindFirstChildOfClass("Tool").Remote.Hit:FireServer(v.Character.Torso,v.Character.Humanoid,v.Character.Torso.Position or Vector3.new())
 end
 end
@@ -67,19 +80,30 @@ else
 game:FindService("StarterGui"):SetCore("SendNotification",{Title="Error",Text="Player not Transfur",Icon="",Duration=3,})
 end
 end)
-Team:CreateButton("Become Transfur", function()
+Furry:CreateButton("Become Transfur (Proto Mask)", function()
 if game.Players.LocalPlayer.Team ~= game.Teams:FindFirstChild("Experiment") then
-local saved = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
-game:FindService("StarterGui"):SetCore("SendNotification",{Title="Successfully",Text="Wait a become Transfur",Icon="",Duration=3,})
-repeat task.wait()
-       game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = workspace:FindFirstChild("PickItem")["AriSoda"].CFrame
-       fireproximityprompt(workspace:FindFirstChild("PickItem")["AriSoda"]:FindFirstChild("ProximityPrompt"))
-until game.Players.LocalPlayer.Backpack:FindFirstChild("Ari Soda") or game.Players.LocalPlayer.Character:FindFirstChild("Ari Soda")
-repeat task.wait()
-       game.Players.LocalPlayer.Character.Humanoid:EquipTool(game.Players.LocalPlayer.Backpack:FindFirstChild("Ari Soda"))
-until game.Players.LocalPlayer.Character:FindFirstChild("Ari Soda")
-game.Players.LocalPlayer.Character:FindFirstChild("Ari Soda").Remotes.UseItem:FireServer()
-game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = saved
+Transfur('Green Visor', 'ProtoMask')
+else
+game:FindService("StarterGui"):SetCore("SendNotification",{Title="Error",Text="Player not human",Icon="",Duration=3,})
+end
+end)
+Furry:CreateButton("Become Transfur (Morgan Mask)", function()
+if game.Players.LocalPlayer.Team ~= game.Teams:FindFirstChild("Experiment") then
+Transfur('Creepy Mask', 'Morgan Mask')
+else
+game:FindService("StarterGui"):SetCore("SendNotification",{Title="Error",Text="Player not human",Icon="",Duration=3,})
+end
+end)
+Furry:CreateButton("Become Transfur (Ari Soda)", function()
+if game.Players.LocalPlayer.Team ~= game.Teams:FindFirstChild("Experiment") then
+Transfur('Ari Soda', 'AriSoda')
+else
+game:FindService("StarterGui"):SetCore("SendNotification",{Title="Error",Text="Player not human",Icon="",Duration=3,})
+end
+end)
+Furry:CreateButton("Become Transfur (Blue Traffic Cone)", function()
+if game.Players.LocalPlayer.Team ~= game.Teams:FindFirstChild("Experiment") then
+Transfur('Blue Traffic Cone', 'Blue Traffic Cone')
 else
 game:FindService("StarterGui"):SetCore("SendNotification",{Title="Error",Text="Player not human",Icon="",Duration=3,})
 end
@@ -91,8 +115,10 @@ part.CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
 end
 for i,v in next, game.Players:GetPlayers() do
 if v.Team ~= game.Players.LocalPlayer.Team and v ~= game.Players.LocalPlayer then
-if (v.Character.HumanoidRootPart.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= 20 and v.Character.Humanoid.Health ~= 0 then
+if (v.Character.HumanoidRootPart.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= 10 and v.Character.Humanoid.Health ~= 0 then
+if game.Players.LocalPlayer.Character:FindFirstChildOfClass("Tool") then
 game.Players.LocalPlayer.Character:FindFirstChildOfClass("Tool").Remote.Hit:FireServer(v.Character.Torso,v.Character.Humanoid,v.Character.Torso.Position or Vector3.new())
+end
 end
 end
 end
