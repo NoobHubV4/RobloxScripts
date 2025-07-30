@@ -4,6 +4,19 @@ local escape
 local spamsound
 local Window = lib:NewWindow("Facility Of Redemption")
 local Section = Window:NewSection("Main")
+function createHitbox()
+    part = Instance.new("Part") 
+    part.Name = "Hitbox" 
+    part.Parent = game.Workspace
+    part.Size = Vector3.new(20, 20, 20) 
+    part.Anchored = true
+    part.CanCollide = false
+    part.Transparency = 0
+    part.Color = Color3.fromHSV(50, 100, 150)
+    part.Material = Enum.Material.ForceField
+    part.Shape = "Ball"
+    part.CastShadow = false
+end
 Section:CreateButton("Kill Aura (1 Loop)", function()
 for i,v in next, game.Players:GetPlayers() do
 if v.Team ~= game.Players.LocalPlayer.Team and v ~= game.Players.LocalPlayer then
@@ -15,6 +28,12 @@ end
 end)
 Section:CreateToggle("Kill Aura", function(state)
 killAura = state
+if killAura then
+createHitbox()
+else
+part:Destroy()
+part = nil
+end
 end)
 Section:CreateToggle("Auto Escape Grab", function(state)
 escape = state
@@ -24,6 +43,9 @@ spamsound = state
 end)
 game.RunService.Stepped:Connect(function()
 if killAura then
+if part then
+part.CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
+end
 for i,v in next, game.Players:GetPlayers() do
 if v.Team ~= game.Players.LocalPlayer.Team and v ~= game.Players.LocalPlayer then
 if (v.Character.HumanoidRootPart.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= 20 and v.Character.Humanoid.Health ~= 0 then
@@ -39,5 +61,8 @@ end)
 game.RunService.Heartbeat:Connect(function()
 if spamsound then
 game.Players.LocalPlayer.Character:FindFirstChildOfClass("Tool").Remote.PlaySound:FireServer("Swing")
+end
+if part then
+part.Color = Color3.fromHSV(tick() % (10/5) / (10/5), 1, 1)
 end
 end)
