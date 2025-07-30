@@ -1,0 +1,14 @@
+local Library = loadstring(Game:HttpGet('https://raw.githubusercontent.com/NoobHubV1/NoobHubV1/main/Wizard%20Lib.lua'))()
+local Window = Library:NewWindow("Anime Girl RNG")
+local Rstorage = game.ReplicatedStorage
+local auto
+local Main = Window:NewSection("Main")
+Main:CreateToggle("Auto Roll", function(state)
+     auto = state
+end)
+while task.wait(.5) do
+     if auto then
+          Rstorage.L5_z%Q1!Rx_:FireServer()
+          Rstorage.ConfirmAura:FireServer("keep")
+     end
+end
