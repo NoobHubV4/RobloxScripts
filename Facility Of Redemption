@@ -63,7 +63,7 @@ repeat task.wait()
                     end
              end
       end
-      game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.Character.HumanoidRootPart.CFrame * CFrame.new(0, 5, 0)
+      game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.Character.HumanoidRootPart.CFrame
       game.Players.LocalPlayer.Character:FindFirstChild("Attack").Remote.Hit:FireServer(v.Character.Torso,v.Character.Humanoid,v.Character.Torso.Position or Vector3.new())
 until v.Team == game.Teams:FindFirstChild("Experiment") or v.Character.Humanoid.Health == 0
 end
@@ -83,7 +83,7 @@ repeat task.wait()
       if game.Players.LocalPlayer.Backpack:FindFirstChild("Fists") then
             game.Players.LocalPlayer.Character.Humanoid:EquipTool(game.Players.LocalPlayer.Backpack:FindFirstChild("Fists"))
       end
-      game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.Character.HumanoidRootPart.CFrame * CFrame.new(0, 5, 0)
+      game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.Character.HumanoidRootPart.CFrame
       game.Players.LocalPlayer.Character:FindFirstChild("Fists").Remote.Hit:FireServer(v.Character.Torso,v.Character.Humanoid,v.Character.Torso.Position or Vector3.new())
 until v.Team == game.Teams.Human or v.Character.Humanoid.Health == 0
 end
