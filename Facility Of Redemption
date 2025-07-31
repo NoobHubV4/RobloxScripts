@@ -22,6 +22,13 @@ function refresh(plr)
         plr.CharacterAdded:Wait():WaitForChild("HumanoidRootPart").CFrame, workspace.CurrentCamera.CFrame = pos, task.wait() and pos1
     end)
 end
+function FindGreenVisor()
+    for i,v in next, workspace.PickItem:GetChildren() do
+        if v.Name == "ProtoMask" then
+            return v
+        end
+    end
+end
 Main:CreateButton("Kill Aura (1 Loop)", function()
 for i,v in next, game.Players:GetPlayers() do
 if v.Team ~= game.Players.LocalPlayer.Team and v ~= game.Players.LocalPlayer then
@@ -100,6 +107,24 @@ local saved = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
 repeat task.wait()
 game.Players.LocalPlayer.Character.Head.CFrame = CFrame.new(workspace["TransfurPart"]["KoiFish & CatFish"]["Koi 4"].CFrame.p)
 until game.Players.LocalPlayer.Team ~= game.Teams:FindFirstChild("Human")
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = saved
+saved = nil
+game:FindService("StarterGui"):SetCore("SendNotification",{Title="Successfully",Text="Player is Transfur",Icon="",Duration=3,})
+else
+game:FindService("StarterGui"):SetCore("SendNotification",{Title="Error",Text="Player not human",Icon="",Duration=3,})
+end
+end)
+Team:CreateButton("Become Transfur (Green Visor)", function()
+if game.Players.LocalPlayer.Team ~= game.Teams:FindFirstChild("Experiment") then
+game:FindService("StarterGui"):SetCore("SendNotification",{Title="Successfully",Text="Wait a become Transfur",Icon="",Duration=3,})
+local saved = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
+repeat task.wait()
+game.Players.LocalPlayer.Character.Head.CFrame = CFrame.new(FindGreenVisor().CFrame.p)
+fireproximityprompt(FindGreenVisor():FindFirstChild("ProximityPrompt"))
+game.Players.LocalPlayer.Character.Humanoid:EquipTool(game.Players.LocalPlayer.Backpack:FindFirstChild("Green Visor"))
+until game.Players.LocalPlayer.Character:FindFirstChild("Green Visor")
+game.Players.LocalPlayer.Character:FindFirstChild("Green Visor").Remotes.UseItem:FireServer()
+game.Players.LocalPlayer.Character.Humanoid:UnequipTools()
 game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = saved
 saved = nil
 else
