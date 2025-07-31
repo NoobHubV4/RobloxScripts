@@ -1,0 +1,47 @@
+local lib = loadstring(Game:HttpGet("https://raw.githubusercontent.com/NoobHubV1/NoobHubV1/main/Wizard%20Lib.lua"))()
+local auto
+local rebirth
+local Window = lib:NewWindow("Find the Hats")
+local Section = Window:NewSection("Main")
+Section:CreateButton("Get All Hats", function()
+  for i,v in pairs(game.workspace.ToFind:GetChildren()) do
+if v:FindFirstChild("ProximityPrompt") and v.Transparency ~= 1 then
+repeat task.wait()
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.CFrame
+fireproximityprompt(v:FindFirstChild("ProximityPrompt"))
+until v.Transparency == 1
+end
+end
+end)
+Section:CreateToggle("Auto Get All Hats", function(state)
+auto = state
+end)
+Section:CreateToggle("Auto Rebirths", function(state)
+rebirth = state
+end)
+spawn(function()
+     task0 = function()
+          if auto then
+               if not game.Players.LocalPlayer.AreasUnlocked.Town.Value == true then
+                    game.ReplicatedStorage.FindTheEvents.SaveAreaData:FireServer("Town", true)
+               end
+               if not game.Players.LocalPlayer.AreasUnlocked.Snow.Value == true then
+                    game.ReplicatedStorage.FindTheEvents.SaveAreaData:FireServer("Snow", true)
+               end
+               for i,v in pairs(game.workspace.ToFind:GetChildren()) do
+               if v:FindFirstChild("ProximityPrompt") and v.Transparency ~= 1 then
+               repeat task.wait()
+               game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.CFrame
+               fireproximityprompt(v:FindFirstChild("ProximityPrompt"))
+               until v.Transparency == 1
+               end
+               end
+          end
+          if rebirth then
+               game.ReplicatedStorage.FindTheEvents.DataReset:FireServer()
+          end
+     end
+     while task.wait() do
+          pcall(task0)
+     end
+end)
