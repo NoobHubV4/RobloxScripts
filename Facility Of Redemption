@@ -56,15 +56,22 @@ repeat task.wait()
       if game.Players.LocalPlayer.Backpack:FindFirstChild("Attack") then
             game.Players.LocalPlayer.Character.Humanoid:EquipTool(game.Players.LocalPlayer.Backpack:FindFirstChild("Attack"))
       end
-      game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.Character.HumanoidRootPart.CFrame * CFrame.new(0, -6, 0)
+      for i,v in next, game.Players.LocalPlayer.Character:GetChildren() do
+             if v:IsA("Part") then
+                    if not v.CanTouch == false then
+                           v.CanTouch = false
+                    end
+             end
+      end
+      game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.Character.HumanoidRootPart.CFrame * CFrame.new(0, 5, 0)
       game.Players.LocalPlayer.Character:FindFirstChild("Attack").Remote.Hit:FireServer(v.Character.Torso,v.Character.Humanoid,v.Character.Torso.Position or Vector3.new())
 until v.Team == game.Teams:FindFirstChild("Experiment") or v.Character.Humanoid.Health == 0
 end
 end
 end
-wait(.05)
-game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = savedpos
 wait(.1)
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = savedpos
+wait(.05)
 savedpos = nil
 end)
 Kills:CreateButton("Kill All Transfur", function()
@@ -76,15 +83,15 @@ repeat task.wait()
       if game.Players.LocalPlayer.Backpack:FindFirstChild("Fists") then
             game.Players.LocalPlayer.Character.Humanoid:EquipTool(game.Players.LocalPlayer.Backpack:FindFirstChild("Fists"))
       end
-      game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.Character.HumanoidRootPart.CFrame * CFrame.new(0, 6, 0)
+      game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.Character.HumanoidRootPart.CFrame * CFrame.new(0, 5, 0)
       game.Players.LocalPlayer.Character:FindFirstChild("Fists").Remote.Hit:FireServer(v.Character.Torso,v.Character.Humanoid,v.Character.Torso.Position or Vector3.new())
 until v.Team == game.Teams.Human or v.Character.Humanoid.Health == 0
 end
 end
 end
-wait(.05)
-game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = savedpos
 wait(.1)
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = savedpos
+wait(.05)
 savedpos = nil
 end)
 Main:CreateToggle("Auto Escape Grab", function(state)
@@ -105,6 +112,13 @@ Team:CreateButton("Become Transfur", function()
 if game.Players.LocalPlayer.Team ~= game.Teams:FindFirstChild("Experiment") then
 local saved = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
 repeat task.wait()
+for i,v in next, game.Players.LocalPlayer.Character:GetChildren() do
+             if v:IsA("Part") then
+                    if not v.CanTouch == true then
+                           v.CanTouch = true
+                    end
+             end
+      end
 game.Players.LocalPlayer.Character.Head.CFrame = CFrame.new(workspace["TransfurPart"]["KoiFish & CatFish"]["Koi 4"].CFrame.p)
 until game.Players.LocalPlayer.Team ~= game.Teams:FindFirstChild("Human")
 game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = saved
