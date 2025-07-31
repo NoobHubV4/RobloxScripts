@@ -1,0 +1,13 @@
+local lib = loadstring(Game:HttpGet("https://raw.githubusercontent.com/NoobHubV1/NoobHubV1/main/Wizard%20Lib.lua"))()
+local Window = lib:NewWindow("Find the Labubu")
+local Section = Window:NewSection("Main")
+Section:CreateButton("Get All Labubu", function()
+  for i,v in next, game.workspace.Collectibles:GetChildren() do
+         if v.DetectionPart:FindFirstChild("ClickDetector") and v.Mesh.Transparency ~= 0.5 then
+                repeat task.wait()
+                       game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.DetectionPart.CFrame * CFrame.new(0, 2, 0)
+                       fireclickdetector(v.DetectionPart:FindFirstChild("ClickDetector"))
+                until v.Mesh.Transparency == 0.5
+         end
+  end
+end)
