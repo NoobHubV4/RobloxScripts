@@ -1,0 +1,39 @@
+local lib = loadstring(Game:HttpGet("https://raw.githubusercontent.com/NoobHubV1/NoobHubV1/main/Wizard%20Lib.lua"))()
+local Window = lib:NewWindow("Escape the Gubby")
+local Main = Window:NewSection("Main")
+local Esp = Window:NewSection("Esp")
+local Storage = Instance.new("Folder", game.CoreGui)
+Storage.Name = "Highlight_Storage"
+local function Highlight()
+    local Highlight = Instance.new("Highlight")
+    Highlight.Name = "Highlight"
+    Highlight.FillColor = Color3.fromRGB(175,25,255)
+    Highlight.DepthMode = "AlwaysOnTop"
+    Highlight.FillTransparency = 0.5
+    Highlight.OutlineColor = Color3.fromRGB(255,255,255)
+    Highlight.OutlineTransparency = 0
+    Highlight.Parent = Storage
+    Highlight.Adornee = workspace.Smlik
+end
+function FindExitRoom()
+    for i,v in next, game.workspace.Portals.OneWay:GetChildren() do
+           if v.Name == "TpRoomExit" then
+                  return v.From
+           end
+    end
+end
+Main:CreateButton("Get All Carrot", function()
+  for i,v in pairs(game.Workspace.Collectible:GetChildren()) do
+         if v.Part:FindFirstChild("ProximityPrompt") then
+                game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.Part.CFrame
+                wait(.2)
+                fireproximityprompt(v.Part:FindFirstChild("ProximityPrompt"))
+         end
+  end
+end)
+Main:CreateButton("Tp The Exit Room", function()
+  game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = FindExitRoom().CFrame
+end)
+Esp:CreateButton("Esp Gubby", function()
+  Highlight()
+end)
