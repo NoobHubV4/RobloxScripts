@@ -3,6 +3,10 @@ local autoFish
 local Rstorage = game.ReplicatedStorage
 local Window = lib:NewWindow("Untitled Fishing Game")
 local Section = Window:NewSection("Main")
+local cooldown = 1.25
+Section:CreateTextbox("Cooldown stop (Default 1.25) ", function(text)
+cooldown = tonumber(text)
+end)
 Section:CreateToggle("Auto Fish", function(state)
   autoFish = state
 end)
@@ -10,7 +14,7 @@ spawn(function()
   task0 = function()
     if autoFish then
       Rstorage.Packages.Knit.Services.TowerService.RE.remote:FireServer({kind = "drillRequest", clickedX = math.huge})
-      wait(1.25)
+      wait(cooldown)
       Rstorage.Packages.Knit.Services.TowerService.RE.remote:FireServer({kind = "drillStopped"})
     end
   end
