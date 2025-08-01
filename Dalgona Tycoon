@@ -1,16 +1,26 @@
 local lib = loadstring(Game:HttpGet("https://raw.githubusercontent.com/NoobHubV1/NoobHubV1/main/Wizard%20Lib.lua"))()
 local infMoney
+local autoUpgrade
 local Rstorage = game.ReplicatedStorage
 local Window = lib:NewWindow("Dalgona Tycoon")
 local Section = Window:NewSection("Main")
 Section:CreateToggle("Infinite Money", function(state)
   infMoney = state
 end)
+Section:CreateToggle("Auto Upgrade", function(state)
+  autoUpgrade = state
+end)
 spawn(function()
   task0 = function()
     if infMoney then
       Rstorage.Remotes.Player.Dalgona:FireServer("Finished")
       Rstorage.Remotes.Player.Dalgona:FireServer("StartedNew")
+    end
+    if autoUpgrade then
+      Rstorage.Remotes.Upgrades.DoUpgrade:FireServer("Money per Dalgona")
+      Rstorage.Remotes.Upgrades.DoUpgrade:FireServer("Worker Speed")
+      Rstorage.Remotes.Upgrades.DoUpgrade:FireServer("Cut Gabs")
+      Rstorage.Remotes.Upgrades.DoUpgrade:FireServer("Time Delay")
     end
   end
   while task.wait() do
