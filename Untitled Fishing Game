@@ -1,0 +1,20 @@
+local lib = loadstring(Game:HttpGet("https://raw.githubusercontent.com/NoobHubV1/NoobHubV1/main/Wizard%20Lib.lua"))()
+local autoFish
+local Rstorage = game.ReplicatedStorage
+local Window = lib:NewWindow("Untitled Fishing Game")
+local Section = Window:NewSection("Main")
+Section:CreateToggle("Auto Fish", function(state)
+  autoFish = state
+end)
+spawn(function()
+  task0 = function()
+    if autoFish then
+      Rstorage.Packages.Knit.Services.TowerService.RE.remote:FireServer({kind = "drillRequest", clickedX = math.huge})
+      wait(1.25)
+      Rstorage.Packages.Knit.Services.TowerService.RE.remote:FireServer({kind = "drillStopped"})
+    end
+  end
+  while task.wait() do
+    pcall(task0)
+  end
+end)
