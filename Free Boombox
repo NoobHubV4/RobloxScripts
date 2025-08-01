@@ -82,16 +82,13 @@ function Dupe(Amount)
              game:FindService("StarterGui"):SetCore("SendNotification",{Title="Error",Text="Script not work in Arceus X",Icon="",Duration=5,})
              break
         end
-        local char = localPlayer.Character
-        localPlayer.Character = nil
-        localPlayer.Character = char
-        char.Animate:Destroy()
-        if localPlayer.Character.Humanoid.RigType ~= Enum.HumanoidRigType.R6 then
-             localPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(0, 1e6, 0)
-        else
-             localPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(1e11, 1e11, 1e11)
-        end
-        wait(.1)
+        char=game.Players.LocalPlayer.Character
+	game.Players.LocalPlayer.Character=nil
+	game.Players.LocalPlayer.Character=char
+	char.Animate:Destroy()
+	char.HumanoidRootPart.CFrame=CFrame.new(0, 10000, 0)
+	wait(.1)
+	char.HumanoidRootPart.Anchored=true
         char.Humanoid:UnequipTools()
         replicatesignal(localPlayer.ConnectDiedSignalBackend)
         wait(Players.RespawnTime-0.3)
@@ -101,8 +98,9 @@ function Dupe(Amount)
 		tool.Parent = workspace
             end
         end
-        char:BreakJoints()
-
+        char:FindFirstChildWhichIsA"Humanoid":Destroy()
+        game.Players.LocalPlayer.Character=nil
+         replicatesignal(localPlayer.Kill)
          localPlayer.CharacterAdded:Wait()
          wait(.1)
          local newChar = localPlayer.Character or localPlayer.CharacterAdded:Wait()
