@@ -13,6 +13,8 @@ local AutoParry
 local Cooldown = tick()
 local ScreenGui = Instance.new("ScreenGui", game.CoreGui)
 local Toggle = Instance.new("TextButton", ScreenGui)
+local Toggle2 = Instance.new("TextButton", ScreenGui)
+local UICorner = Instance.new("UICorner", Toggle2)
 local SpamParry = false
 local Connection
 local part
@@ -21,6 +23,7 @@ local showVisualizer
 local Method
 local number = 0
 
+ScreenGui.Name = "gui"
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 ScreenGui.ResetOnSpawn = true
 
@@ -45,6 +48,28 @@ Toggle.MouseButton1Click:Connect(function()
            Toggle.Text = "SpamParry [OFF]"
      end
 end)
+
+Toggle2.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+Toggle2.BackgroundTransparency = 0
+Toggle2.Position = UDim2.new(0, 10, 0.5, 0)
+Toggle2.Size = UDim2.new(0, 70, 0, 30)
+Toggle2.Font = Enum.Font.SourceSans
+Toggle2.Text = "Toggle"
+Toggle2.TextColor3 = Color3.fromRGB(255, 255, 255)
+Toggle2.TextScaled = true
+Toggle2.TextSize = 15.000
+Toggle2.TextStrokeTransparency = 0.000
+Toggle2.TextWrapped = true
+Toggle2.Draggable = true
+Toggle2.MouseButton1Click:Connect(function()
+     for i,v in next, game.CoreGui.ScreenGui:GetChildren() do
+if v.Name == "Frame" and v.Size ~= UDim2.new(0, 79, 0, 112) then
+v.Visible = not v.Visible
+end
+end
+end)
+
+UICorner.CornerRadius = UDim.new(0, 5)
 
 function GetBall()
   for i,v in next, workspace.Balls:GetChildren() do
@@ -121,10 +146,10 @@ do
        end)
        parrymethod:OnChanged(function(select)
               if select == "Keypress" then
-                     number = 0.9
+                     number = 0.925
                      Method = select
               elseif select == "Click" then
-                     number = 0.9
+                     number = 0.925
                      Method = select
               elseif select == "Remote" then
                      number = 0.875
