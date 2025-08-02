@@ -48,7 +48,7 @@ end
 
 local function flickCameraSequence()
     flickCamera70Degrees()
-    wait(.075)
+    wait(.05)
     flickCameraBack70Degrees()
 end
 
