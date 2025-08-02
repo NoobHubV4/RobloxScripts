@@ -32,24 +32,24 @@ xButton.Position = UDim2.new(0.85, 0, 0, 0)
 xButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 xButton.Parent = container
 
-local function flickCamera90Degrees()
+local function flickCamera70Degrees()
     local currentCam = workspace.CurrentCamera
     local initialPos = currentCam.CFrame.Position
     local initialRot = currentCam.CFrame - initialPos
-    currentCam.CFrame = CFrame.new(initialPos) * CFrame.Angles(0, math.rad(100), 0) * initialRot
+    currentCam.CFrame = CFrame.new(initialPos) * CFrame.Angles(0, math.rad(70), 0) * initialRot
 end
 
-local function flickCameraBack90Degrees()
+local function flickCameraBack70Degrees()
     local currentCam = workspace.CurrentCamera
     local initialPos = currentCam.CFrame.Position
     local initialRot = currentCam.CFrame - initialPos
-    currentCam.CFrame = CFrame.new(initialPos) * CFrame.Angles(0, math.rad(-100), 0) * initialRot
+    currentCam.CFrame = CFrame.new(initialPos) * CFrame.Angles(0, math.rad(-70), 0) * initialRot
 end
 
 local function flickCameraSequence()
-    flickCamera90Degrees()
-    wait(0.02)
-    flickCameraBack90Degrees()
+    flickCamera70Degrees()
+    wait(.075)
+    flickCameraBack70Degrees()
 end
 
 flickButton.MouseButton1Click:Connect(function()
