@@ -230,7 +230,7 @@ spawn(function()
 end)
 spawn(function()
       task3 = function()
-           if not GetBall() and part then
+           if not GetBall() and part and AutoParry then
                   part.Size = Vector3.new(5, 5, 5)
                   part.CFrame = GetRoot().CFrame
            end
