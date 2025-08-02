@@ -161,7 +161,6 @@ workspace.Balls.ChildAdded:Connect(function()
         ResetConnection()
         Connection = GetBall():GetAttributeChangedSignal("Target"):Connect(function()
                  Parried = false
-                 Disabled = false
         end)
 end)
 spawn(function()
@@ -246,18 +245,8 @@ spawn(function()
 end)
 spawn(function()
       task4 = function()
-           local Division = number
-           local block = ParryDistance / Division
-           if part and not Disabled then
+           if part then
                   part.Color = Color3.fromHSV(tick() % (10/5) / (10/5), 1, 1)
-           end
-           if part and GetBall():GetAttribute("Target") == Player.Name then
-                  if GetBall().LinearVelocity.VectorVelocity.Magnitude / (GetRoot().Position - GetBall().Position).Magnitude >= block then
-                         if not Disabled == true then
-                                Disabled = true
-                         end
-                         part.Color = Color3.fromRGB(255, 0, 0)
-                  end
            end
       end
       while task.wait() do
