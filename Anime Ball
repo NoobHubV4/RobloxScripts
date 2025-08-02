@@ -22,6 +22,7 @@ local ParryDistance = 0
 local showVisualizer
 local Method
 local number = 0
+local Disabled = false
 
 ScreenGui.Name = "gui"
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
@@ -105,7 +106,6 @@ function createVisualizer()
     part.Anchored = true
     part.CanCollide = false
     part.Transparency = 0
-    part.Color = Color3.fromHSV(50, 100, 150)
     part.Material = Enum.Material.ForceField
     part.Shape = "Ball"
     part.CastShadow = false
@@ -146,10 +146,10 @@ do
        end)
        parrymethod:OnChanged(function(select)
               if select == "Keypress" then
-                     number = 0.925
+                     number = 0.95
                      Method = select
               elseif select == "Click" then
-                     number = 0.925
+                     number = 0.95
                      Method = select
               elseif select == "Remote" then
                      number = 0.875
@@ -161,6 +161,7 @@ workspace.Balls.ChildAdded:Connect(function()
         ResetConnection()
         Connection = GetBall():GetAttributeChangedSignal("Target"):Connect(function()
                  Parried = false
+                 Disabled = false
         end)
 end)
 spawn(function()
@@ -219,7 +220,7 @@ spawn(function()
          local Ball = GetBall()
          local Division = number
          local speed = Ball.LinearVelocity.VectorVelocity.Magnitude / ParryDistance / Division
-         if speed and part then
+         if speed and part and AutoParry then
                 part.Size = Vector3.new(speed, speed, speed)
                 part.CFrame = GetRoot().CFrame
          end
@@ -234,6 +235,10 @@ spawn(function()
                   part.Size = Vector3.new(5, 5, 5)
                   part.CFrame = GetRoot().CFrame
            end
+           if not AutoParry and part then
+                  part.Size = Vector3.new(5, 5, 5)
+                  part.CFrame = GetRoot().CFrame
+           end
       end
       while task.wait() do
            pcall(task3)
@@ -241,8 +246,18 @@ spawn(function()
 end)
 spawn(function()
       task4 = function()
-           if part then
+           local Division = number
+           local block = ParryDistance / Division
+           if part and not Disabled then
                   part.Color = Color3.fromHSV(tick() % (10/5) / (10/5), 1, 1)
+           end
+           if part and GetBall():GetAttribute("Target") == Player.Name then
+                  if GetBall().LinearVelocity.VectorVelocity.Magnitude / (GetRoot().Position - GetBall().Position).Magnitude >= block then
+                         if not Disabled == true then
+                                Disabled = true
+                         end
+                         part.Color = Color3.fromRGB(255, 0, 0)
+                  end
            end
       end
       while task.wait() do
