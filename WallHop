@@ -36,21 +36,19 @@ local function flickCamera90Degrees()
     local currentCam = workspace.CurrentCamera
     local initialPos = currentCam.CFrame.Position
     local initialRot = currentCam.CFrame - initialPos
-    currentCam.CFrame = CFrame.new(initialPos) * CFrame.Angles(0, math.rad(90), 0) * initialRot
-    print("Camera flicked 90 degrees!")
+    currentCam.CFrame = CFrame.new(initialPos) * CFrame.Angles(0, math.rad(100), 0) * initialRot
 end
 
 local function flickCameraBack90Degrees()
     local currentCam = workspace.CurrentCamera
     local initialPos = currentCam.CFrame.Position
     local initialRot = currentCam.CFrame - initialPos
-    currentCam.CFrame = CFrame.new(initialPos) * CFrame.Angles(0, math.rad(-90), 0) * initialRot
-    print("Camera flicked back 90 degrees!")
+    currentCam.CFrame = CFrame.new(initialPos) * CFrame.Angles(0, math.rad(-100), 0) * initialRot
 end
 
 local function flickCameraSequence()
     flickCamera90Degrees()
-    wait(0.03)
+    wait(0.02)
     flickCameraBack90Degrees()
 end
 
@@ -63,3 +61,4 @@ end)
 xButton.MouseButton1Click:Connect(function()
     gui:Destroy()
 end)
+workspace.CurrentCamera.CameraType = Enum.CameraType.Track
