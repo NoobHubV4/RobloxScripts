@@ -21,8 +21,6 @@ local part
 local ParryDistance = 0
 local showVisualizer
 local Method
-local number = 0
-local Disabled = false
 
 ScreenGui.Name = "gui"
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
@@ -147,34 +145,24 @@ do
        end)
        parrymethod:OnChanged(function(select)
               if select == "Keypress" then
-                     number = 1.05
                      Method = select
               elseif select == "Click" then
-                     number = 1.05
                      Method = select
               elseif select == "Remote" then
-                     number = 1.125
                      Method = select
               end
        end)
 end
-local died
-local event
-local function event()
-       died:Disconnect(); died = nil; Parried = false
-end
-died = Player.Character.Humanoid.Died:Connect(event)
 workspace.Balls.ChildAdded:Connect(function()
-       Parried = false
-end)
-Player.CharacterAdded:Connect(function(newChar)
-       died = newChar.Humanoid.Died:Connect(event)
+       ResetConnection()
+       Connection = GetBall():GetAttributeChangedSignal("Target"):Connect(function()
+              Parried = false
+       end)
 end)
 spawn(function()
     function Parry()
         local Ball, HRP = GetBall(), GetRoot()
-        local Multiplier = number
-        local block = ParryDistance / Multiplier
+        local block = ParryDistance
         if not HRP then return end
         if Ball:GetAttribute("Target") == Player.Name and not Parried and (HRP.Position - Ball.Position).Magnitude / Ball.LinearVelocity.VectorVelocity.Magnitude <= block and AutoParry then
                 ParryAttempt()
@@ -182,12 +170,6 @@ spawn(function()
                 Cooldown = tick()
                 if (tick() - Cooldown) >= 1 then
                        Parried = false
-                end
-                while Parried and task.wait() do
-                       if Ball:GetAttribute("Target") ~= Player.Name then
-                              Parried = false
-                              break
-                       end
                 end
         end
     end
@@ -230,8 +212,7 @@ end)
 spawn(function()
      task2 = function()
          local Ball = GetBall()
-         local Multiplier = number
-         local speed = Ball.LinearVelocity.VectorVelocity.Magnitude * ParryDistance / Multiplier
+         local speed = Ball.LinearVelocity.VectorVelocity.Magnitude * ParryDistance
          if speed and part and AutoParry then
                 part.Size = Vector3.new(speed, speed, speed)
                 part.CFrame = GetRoot().CFrame
