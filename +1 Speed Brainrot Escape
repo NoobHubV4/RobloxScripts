@@ -1,1 +1,7 @@
---Patched
+local Library = loadstring(Game:HttpGet('https://raw.githubusercontent.com/NoobHubV1/NoobHubV1/main/Wizard%20Lib.lua'))()
+local Window = Library:NewWindow("+1 Speed Brainrot Escape")
+local leaderstats = game.Players.LocalPlayer.leaderstats
+local Main = Window:NewSection("Main")
+Main:CreateTextbox("Give Speed", function(value)
+     game.ReplicatedStorage.SpeedBoost:FireServer("WalkingSpeedGain",tonumber(value))
+end)
