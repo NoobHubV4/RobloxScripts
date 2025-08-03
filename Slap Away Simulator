@@ -1,0 +1,33 @@
+local lib = loadstring(Game:HttpGet("https://raw.githubusercontent.com/NoobHubV1/NoobHubV1/main/Wizard%20Lib.lua"))()
+local autoStrength
+local autoAttack
+local autoRebirth
+local Window = lib:NewWindow("Slap Away Simulator")
+local Section = Window:NewSection("Main")
+Section:CreateToggle("Auto Strength", function(state)
+  autoStrength = state
+end)
+Section:CreateToggle("Auto Attack", function(state)
+  autoAttack = state
+end)
+Section:CreateToggle("Auto Rebirth", function(state)
+  autoRebirth = state
+end)
+spawn(function()
+  task0 = function()
+    if autoStrength then
+      game.ReplicatedStorage.Packages._Index:FindFirstChild("sleitnick_knit@1.5.1").knit.Services.TrainService.RE.Train:FireServer()
+      game.ReplicatedStorage.Packages._Index:FindFirstChild("sleitnick_knit@1.5.1").knit.Services.MainService.RE.ChangeActionMode:FireServer("Train")
+    end
+    if autoAttack then
+      game.ReplicatedStorage.Packages._Index:FindFirstChild("sleitnick_knit@1.5.1").knit.Services.FightService.RE.Attack:FireServer()
+      game.ReplicatedStorage.Packages._Index:FindFirstChild("sleitnick_knit@1.5.1").knit.Services.FightService.RE.SkillAttack:FireServer()
+    end
+    if autoRebirth then
+      game.ReplicatedStorage.Packages._Index:FindFirstChild("sleitnick_knit@1.5.1").knit.Services.RebirthService.RF.Rebirth:InvokeServer()
+    end
+  end
+  while task.wait() do
+    pcall(task0)
+  end
+end)
