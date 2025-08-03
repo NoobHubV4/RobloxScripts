@@ -157,11 +157,17 @@ do
               end
        end)
 end
+local died
+local event
+local function event()
+       died:Disconnect(); died = nil; Parried = false
+end
+died = Player.Character.Humanoid.Died:Connect(event)
 workspace.Balls.ChildAdded:Connect(function()
-        ResetConnection()
-        Connection = GetBall():GetAttributeChangedSignal("Target"):Connect(function()
-                 Parried = false
-        end)
+       Parried = false
+end)
+Player.CharacterAdded:Connect(function(newChar)
+       died = newChar.Humanoid.Died:Connect(event)
 end)
 spawn(function()
     function Parry()
@@ -175,6 +181,12 @@ spawn(function()
                 Cooldown = tick()
                 if (tick() - Cooldown) >= 1 then
                        Parried = false
+                end
+                while Parried and task.wait() do
+                       if Ball:GetAttribute("Target") ~= Player.Name then
+                              Parried = false
+                              break
+                       end
                 end
         end
     end
