@@ -4,7 +4,7 @@ for i,v in ipairs(game.CoreGui:GetChildren()) do
         end
 end
 local Fluent = loadstring(game:HttpGet("https://github.com/NoobHubV4/RobloxScripts/blob/main/Fluent/Lib?raw=true"))()
-local Window = Fluent:CreateWindow({Title = "NoobHubV4 Hub | Anime Ball",SubTitle = "v1",TabWidth = 0,Size = UDim2.fromOffset(340, 220),Acrylic = false,Theme = "Amethyst",MinimizeKey = Enum.KeyCode.LeftShift})
+local Window = Fluent:CreateWindow({Title = "NoobHubV4 Hub | Anime Ball",SubTitle = "v1",TabWidth = 0,Size = UDim2.fromOffset(380, 220),Acrylic = false,Theme = "Amethyst",MinimizeKey = Enum.KeyCode.LeftShift})
 local Tabs = {Combat = Window:AddTab({ Title = "Combat", Icon = "" }),}
 local Player = game.Players.LocalPlayer
 local VIM = game:GetService("VirtualInputManager") or game:FindFirstDescendant("VirtualInputManager")
@@ -127,7 +127,7 @@ do
        local autoblock = Tabs.Combat:AddToggle("State1", {Title = "Auto Parry", Default = false })
        local manualspam = Tabs.Combat:AddToggle("State2", {Title = "Manual Spam", Default = false })
        local automove = Tabs.Combat:AddToggle("State3", {Title = "Auto Move", Default = false })
-       local parrydistance = Tabs.Combat:AddSlider("Slider", {Title = "Parry Distance",Description = "",Default = 3,Min = 1,Max = 3,Rounding = 2})
+       local parrydistance = Tabs.Combat:AddSlider("Slider", {Title = "Parry Distance Multiplier",Description = "",Default = 0.5,Min = 0.1,Max = 3,Rounding = 2})
        local Show = Tabs.Combat:AddToggle("State4", {Title = "Show Visualizer", Default = false })
        autoblock:OnChanged(function()
               AutoParry = Options.State1.Value
@@ -146,13 +146,13 @@ do
        end)
        parrymethod:OnChanged(function(select)
               if select == "Keypress" then
-                     number = 0.95
+                     number = 1.05
                      Method = select
               elseif select == "Click" then
-                     number = 0.95
+                     number = 1.05
                      Method = select
               elseif select == "Remote" then
-                     number = 0.875
+                     number = 1.125
                      Method = select
               end
        end)
@@ -172,10 +172,10 @@ end)
 spawn(function()
     function Parry()
         local Ball, HRP = GetBall(), GetRoot()
-        local Division = number
-        local block = ParryDistance / Division
+        local Multiplier = number
+        local block = ParryDistance / Multiplier
         if not HRP then return end
-        if Ball:GetAttribute("Target") == Player.Name and not Parried and Ball.LinearVelocity.VectorVelocity.Magnitude / (HRP.Position - Ball.Position).Magnitude >= block and AutoParry then
+        if Ball:GetAttribute("Target") == Player.Name and not Parried and (HRP.Position - Ball.Position).Magnitude / Ball.LinearVelocity.VectorVelocity.Magnitude <= block and AutoParry then
                 ParryAttempt()
                 Parried = true
                 Cooldown = tick()
@@ -229,8 +229,8 @@ end)
 spawn(function()
      task2 = function()
          local Ball = GetBall()
-         local Division = number
-         local speed = Ball.LinearVelocity.VectorVelocity.Magnitude / ParryDistance / Division
+         local Multiplier = number
+         local speed = Ball.LinearVelocity.VectorVelocity.Magnitude * ParryDistance / Multiplier
          if speed and part and AutoParry then
                 part.Size = Vector3.new(speed, speed, speed)
                 part.CFrame = GetRoot().CFrame
