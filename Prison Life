@@ -1,0 +1,102 @@
+pcall(function()
+    game.CoreGui.Script:Destroy()
+end)
+
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local UserInputService = game:GetService("UserInputService")
+
+local Player = Players.LocalPlayer
+
+local gui = Instance.new("ScreenGui", game:GetService("CoreGui"))
+gui.Name = "Script"
+gui.ResetOnSpawn = false
+
+local dragFrame = Instance.new("Frame", gui)
+dragFrame.Size = UDim2.new(0, 460, 0, 60)
+dragFrame.Position = UDim2.new(0.5, -230, 0.1, 0)
+dragFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+dragFrame.BackgroundTransparency = 0.2
+dragFrame.Active = true
+
+local corner = Instance.new("UICorner", dragFrame)
+corner.CornerRadius = UDim.new(0, 12)
+
+local titleLabel = Instance.new("TextLabel", dragFrame)
+titleLabel.Size = UDim2.new(0.65, 0, 1, 0)
+titleLabel.Position = UDim2.new(0, 8, 0, 0)
+titleLabel.BackgroundTransparency = 1
+titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+titleLabel.TextStrokeTransparency = 0.5
+titleLabel.TextSize = 18
+titleLabel.Font = Enum.Font.GothamBold
+titleLabel.Text = "Auto Respawn:"
+titleLabel.TextWrapped = true
+titleLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+local toggleBtn = Instance.new("TextButton", dragFrame)
+toggleBtn.Size = UDim2.new(0.3, 0, 0.7, 0)
+toggleBtn.Position = UDim2.new(0.68, 0, 0.15, 0)
+toggleBtn.BackgroundColor3 = Color3.fromRGB(150, 0, 0)
+toggleBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+toggleBtn.TextSize = 16
+toggleBtn.Font = Enum.Font.GothamBold
+toggleBtn.Text = "OFF"
+
+local died
+local pos1, pos
+local connect
+
+function Respawn()
+        if Player.TeamColor.Name == "Bright orange" then
+               workspace.Remote.TeamEvent:FireServer("Bright orange")
+        elseif Player.TeamColor.Name == "Bright blue" then
+               workspace.Remote.TeamEvent:FireServer("Bright blue")
+        elseif Player.TeamColor.Name == "Really red" then
+               if #game.Teams.Guards:GetPlayers() ~= 8 then
+                      local savedpart = workspace:FindFirstChild("Criminals Spawn")["SpawnLocation"].CFrame
+                      workspace:FindFirstChild("Criminals Spawn")["SpawnLocation"].CanCollide = false
+                      workspace.Remote.TeamEvent:FireServer("Bright blue")
+                      Player.CharacterAdded:Wait()
+                      repeat task.wait()
+                             workspace:FindFirstChild("Criminals Spawn")["SpawnLocation"].CFrame = Player.Character.HumanoidRootPart.CFrame
+                      until Player.TeamColor.Name == "Really red"
+                      workspace:FindFirstChild("Criminals Spawn")["SpawnLocation"].CFrame = savedpart
+               elseif #game.Teams.Guards:GetPlayers() == 8 then
+                      local savedpart = workspace:FindFirstChild("Criminals Spawn")["SpawnLocation"].CFrame
+                      workspace:FindFirstChild("Criminals Spawn")["SpawnLocation"].CanCollide = false
+                      workspace.Remote.TeamEvent:FireServer("Bright orange")
+                      Player.CharacterAdded:Wait()
+                      repeat task.wait()
+                             workspace:FindFirstChild("Criminals Spawn")["SpawnLocation"].CFrame = Player.Character.HumanoidRootPart.CFrame
+                      until Player.TeamColor.Name == "Really red"
+                      workspace:FindFirstChild("Criminals Spawn")["SpawnLocation"].CFrame = savedpart
+               end
+        elseif Player.TeamColor.Name == "Medium stone grey" then
+               workspace.Remote.TeamEvent:FireServer("Medium stone grey")
+        end
+end
+function event()
+    local root = Player.Character:WaitForChild("HumanoidRootPart")
+    local pos = root.CFrame
+    local pos1 = workspace.CurrentCamera.CFrame
+    Respawn()
+    task.spawn(function()
+        Player.CharacterAdded:Wait():WaitForChild("HumanoidRootPart").CFrame, workspace.CurrentCamera.CFrame = pos, task.wait() and pos1
+    end)
+end
+died = Player.Character.Humanoid.Died:Connect(event)
+Player.CharacterAdded:Connect(function()
+        died = Player.Character.Humanoid.Died:Connect(event)
+        if connect then
+               connect:Disconnect()
+               connect = nil
+        end
+        connect = Player.Character.Head.ChildAdded:Connect(function(child)
+               if child.Name == "handcuffedGui" then
+                      SavedPositions.AutoRe = Player.Character.HumanoidRootPart.CFrame
+                      SavedPositions.OldCameraPos = workspace.CurrentCamera.CFrame
+                      Player.CharacterAdded:Wait().HumanoidRootPart.CFrame, workspace.CurrentCamera.CFrame = SavedPositions.AutoRe, task.wait() and SavedPositions.OldCameraPos
+               end
+        end)
+end)
