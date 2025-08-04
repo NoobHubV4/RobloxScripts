@@ -1,0 +1,24 @@
+local lib = loadstring(Game:HttpGet("https://raw.githubusercontent.com/NoobHubV1/NoobHubV1/main/Wizard%20Lib.lua"))()
+local autoDig
+local TruckName
+local Window = lib:NewWindow("Dig RNG")
+local Section = Window:NewSection("Main")
+Section:CreateToggle("Auto Dig", function(state)
+  autoDig = state
+end)
+Section:CreateTextbox("Truck Name", function(text)
+  TruckName = text
+end)
+Section:CreateButton("Give Truck", function()
+  game.ReplicatedStorage.Remotes.TruckGate:InvokeServer(TruckName, "Robux")
+end)
+spawn(function()
+  task0 = function()
+    if autoDig then
+      game.ReplicatedStorage.Remotes.DigGate:FireServer()
+    end
+  end
+  while task.wait() do
+    pcall(task0)
+  end
+end)
