@@ -138,6 +138,7 @@ function createBlock()
     Image.Position = UDim2.new(0, 0, 0, 0)
     Image.Size = UDim2.new(1, 0, 1, 0)
     Image.Image = "rbxassetid://14915326603"
+    Image.ImageColor3 = Color3.fromRGB(255, 255, 255)
 end
 function ParryAttempt()
     if Method == "Keypress" then
@@ -146,7 +147,6 @@ function ParryAttempt()
         VIM:SendMouseButtonEvent(0, 0, 0, true, game, false)
     elseif Method == "Remote" then
         game.ReplicatedStorage.Framework.RemoteFunction:InvokeServer("SwordService","Block",{0})
-        createBlock()
     end
 end
 
@@ -191,6 +191,9 @@ spawn(function()
         if not HRP then return end
         if Ball:GetAttribute("Target") == Player.Name and not Parried and (HRP.Position - Ball.Position).Magnitude / Ball.LinearVelocity.VectorVelocity.Magnitude <= block and AutoParry then
                 ParryAttempt()
+                if Method == "Remote" then
+                       createBlock()
+                end
                 Parried = true
                 Cooldown = tick()
                 if (tick() - Cooldown) >= 1 then
@@ -286,4 +289,18 @@ spawn(function()
            pcall(task4)
       end
 end)
+local died
+function event()
+        died:Disconnect()
+        died = nil
+        if shield then
+               shield:Destroy()
+               shield = nil
+        end
+end
+function newChar()
+        died = Player.Character.Humanoid.Died:Connect(event)
+end
+died = Player.Character.Humanoid.Died:Connect(event)
+Player.CharacterAdded:Connect(newChar)
 Window:SelectTab(1)
