@@ -22,6 +22,8 @@ local ParryDistance = 0
 local showVisualizer
 local Method
 local PartScript
+local shield
+local Image
 
 ScreenGui.Name = "gui"
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
@@ -112,6 +114,31 @@ function createVisualizer()
     PartScript.Parent.CastShadow = false
 end
 
+function createBlock()
+    shield = Instance.new("BillboardGui",game.Players.LocalPlayer.Character.HumanoidRootPart)
+    Image = Instance.new("ImageLabel", shield)
+    shield.Name = "Shield2"
+    shield.Active = true
+    shield.Enabled = true
+    shield.Adornee = game.Players.LocalPlayer.Character.HumanoidRootPart
+    shield.AlwaysOnTop = true
+    shield.DistanceLowerLimit = 0
+    shield.DistanceStep = 0
+    shield.DistanceUpperLimit = -1
+    shield.LightInfluence = 1
+    shield.MaxDistance = 100
+    shield.Size = UDim2.new(2, 0, 2, 0)
+    Image.Visible = true
+    Image.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    Image.BackgroundTransparency = 1
+    Image.BorderColor3 = Color3.fromRGB(0, 0, 0)
+    Image.BorderMode = "Outline"
+    Image.BorderSizePixel = 0
+    Image.LayoutOrder = 0
+    Image.Position = UDim2.new(0, 0, 0, 0)
+    Image.Size = UDim2.new(1, 0, 1, 0)
+    Image.Image = "rbxassetid://14915326603"
+end
 function ParryAttempt()
     if Method == "Keypress" then
         VIM:SendKeyEvent(true,"F",false,game)
@@ -119,6 +146,7 @@ function ParryAttempt()
         VIM:SendMouseButtonEvent(0, 0, 0, true, game, false)
     elseif Method == "Remote" then
         game.ReplicatedStorage.Framework.RemoteFunction:InvokeServer("SwordService","Block",{0})
+        createBlock()
     end
 end
 
@@ -147,13 +175,7 @@ do
               showVisualizer = Options.State4.Value
        end)
        parrymethod:OnChanged(function(select)
-              if select == "Keypress" then
-                     Method = select
-              elseif select == "Click" then
-                     Method = select
-              elseif select == "Remote" then
-                     Method = select
-              end
+              Method = select
        end)
 end
 workspace.Balls.ChildAdded:Connect(function()
@@ -250,13 +272,18 @@ spawn(function()
                      PartScript.Parent.Color = Color3.fromRGB(255, 0, 0)
                 end
            end
-           if GetBall():GetAttribute("Target") ~= Player.Name and PartScript.Parent.Color ~= Color3.fromRGB(255, 255, 255) then
-                PartScript.Parent.Color = Color3.fromRGB(255, 255, 255)
+           if GetBall():GetAttribute("Target") ~= Player.Name then
+                if shield then
+                     shield:Destroy()
+                     shield = nil
+                end
+                if PartScript.Parent.Color ~= Color3.fromRGB(255, 255, 255) then
+                     PartScript.Parent.Color = Color3.fromRGB(255, 255, 255)
+                end
            end
       end
       while task.wait() do
            pcall(task4)
       end
 end)
-
 Window:SelectTab(1)
