@@ -1,27 +1,35 @@
 local lib = loadstring(Game:HttpGet("https://raw.githubusercontent.com/NoobHubV1/NoobHubV1/main/Wizard%20Lib.lua"))()
 local killAura
+local autoEat
 local Window = lib:NewWindow("Burger Game")
 local Section = Window:NewSection("Main")
 Section:CreateToggle("Kill Aura", function(state)
   killAura = state
+end)
+Section:CreateToggle("Auto Eat", function(state)
+  autoEat = state
 end)
 spawn(function()
   task0 = function()
     if killAura then
       for i,v in pairs(game.Players:GetPlayers()) do
         if v and v.Character and v.Character.HumanoidRootPart then
-          if v ~= game.Players.LocalPlayer and (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - v.Character.HumanoidRootPart.Position).Magnitude <= 30 then
+          if v ~= game.Players.LocalPlayer and (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - v.Character.HumanoidRootPart.Position).Magnitude <= 20 then
             if v.Character.Humanoid.Health ~= 0 and not v.Character.IsRagdoll.Value then
               local pos = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
               repeat task.wait()
                 game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.Character.HumanoidRootPart.CFrame * CFrame.new(0, -4.5, 3)
                 game.ReplicatedStorage.Events.Client.BunEvent:FireServer()
               until v.Character.Humanoid.Health == 0 or v.Character.IsRagdoll.Value or not killAura
+              wait(.1)
               game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = pos
             end
           end
         end
       end
+    end
+    if autoEat then
+      game.ReplicatedStorage.Events.Client.EatEvent:FireServer(game:GetService("Players").LocalPlayer.Character:FindFirstChildOfClass("Tool"))
     end
   end
   while task.wait() do
