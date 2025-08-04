@@ -244,8 +244,14 @@ spawn(function()
 end)
 spawn(function()
       task4 = function()
-           if part then
-                  PartScript.Parent.Color = Color3.fromHSV(tick() % (10/5) / (10/5), 1, 1)
+           local block = ParryDistance
+           if GetBall():GetAttribute("Target") == Player.Name and (GetRoot().Position - GetBall().Position).Magnitude / GetBall().LinearVelocity.VectorVelocity.Magnitude <= block then
+                if PartScript.Parent.Color ~= Color3.fromRGB(255, 0, 0) then
+                     PartScript.Parent.Color = Color3.fromRGB(255, 0, 0)
+                end
+           end
+           if GetBall():GetAttribute("Target") ~= Player.Name and PartScript.Parent.Color ~= Color3.fromRGB(255, 255, 255) then
+                PartScript.Parent.Color = Color3.fromRGB(255, 255, 255)
            end
       end
       while task.wait() do
