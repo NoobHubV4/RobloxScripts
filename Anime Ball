@@ -21,6 +21,7 @@ local part
 local ParryDistance = 0
 local showVisualizer
 local Method
+local PartScript
 
 ScreenGui.Name = "gui"
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
@@ -39,12 +40,13 @@ Toggle.TextStrokeTransparency = 0.000
 Toggle.TextWrapped = true
 Toggle.Draggable = true
 Toggle.Visible = false
+local script = Instance.new("LocalScript", Toggle)
 Toggle.MouseButton1Click:Connect(function()
      SpamParry = not SpamParry
      if SpamParry then
-           Toggle.Text = "SpamParry [ON]"
+           script.Parent.Text = "SpamParry [ON]"
      elseif not SpamParry then
-           Toggle.Text = "SpamParry [OFF]"
+           script.Parent.Text = "SpamParry [OFF]"
      end
 end)
 
@@ -60,7 +62,8 @@ Toggle2.TextSize = 15.000
 Toggle2.TextStrokeTransparency = 0.000
 Toggle2.TextWrapped = true
 Toggle2.Draggable = true
-Toggle2.MouseButton1Click:Connect(function()
+local script2 = Instance.new("LocalScript", Toggle2)
+script2.Parent.MouseButton1Click:Connect(function()
      for i,v in next, game.CoreGui.ScreenGui:GetChildren() do
 if v.Name == "Frame" and v.Size ~= UDim2.new(0, 79, 0, 112) then
 v.Visible = not v.Visible
@@ -94,19 +97,19 @@ end
 function t(Title, Text, Time)
     game:FindService("StarterGui"):SetCore("SendNotification",{Title=Title,Text=Text,Icon="",Duration=Time,})
 end
-
 function createVisualizer()
-    part = Instance.new("Part") 
-    part.Name = "Visualizer" 
-    part.Parent = game.Workspace
-    part.CFrame = Player.Character.HumanoidRootPart.CFrame
-    part.Size = Vector3.new(5, 5, 5) 
-    part.Anchored = true
-    part.CanCollide = false
-    part.Transparency = 0
-    part.Material = Enum.Material.ForceField
-    part.Shape = "Ball"
-    part.CastShadow = false
+    part = Instance.new("Part")
+    PartScript = Instance.new("ModuleScript", part)
+    PartScript.Parent.Name = "Visualizer" 
+    PartScript.Parent.Parent = game.workspace
+    PartScript.Parent.CFrame = Player.Character.HumanoidRootPart.CFrame
+    PartScript.Parent.Size = Vector3.new(5, 5, 5) 
+    PartScript.Parent.Anchored = true
+    PartScript.Parent.CanCollide = false
+    PartScript.Parent.Transparency = 0
+    PartScript.Parent.Material = Enum.Material.ForceField
+    PartScript.Parent.Shape = "Ball"
+    PartScript.Parent.CastShadow = false
 end
 
 function ParryAttempt()
@@ -183,13 +186,15 @@ spawn(function()
             ParryAttempt()
         end
         if showVisualizer then
-            if not part then
+            if not part and not PartScript then
                 createVisualizer()
             end
         else
-            if part then
+            if part and PartScript then
                 part:Destroy()
                 part = nil
+                PartScript:Destroy()
+                PartScript = nil
             end
         end
     end
@@ -214,8 +219,8 @@ spawn(function()
          local Ball = GetBall()
          local speed = Ball.LinearVelocity.VectorVelocity.Magnitude * ParryDistance
          if speed and part and AutoParry then
-                part.Size = Vector3.new(speed, speed, speed)
-                part.CFrame = GetRoot().CFrame
+                PartScript.Parent.Size = Vector3.new(speed, speed, speed)
+                PartScript.Parent.CFrame = GetRoot().CFrame
          end
      end
      while task.wait() do
@@ -225,12 +230,12 @@ end)
 spawn(function()
       task3 = function()
            if not GetBall() and part and AutoParry then
-                  part.Size = Vector3.new(5, 5, 5)
-                  part.CFrame = GetRoot().CFrame
+                  PartScript.Parent.Size = Vector3.new(5, 5, 5)
+                  PartScript.Parent.CFrame = GetRoot().CFrame
            end
            if not AutoParry and part then
-                  part.Size = Vector3.new(5, 5, 5)
-                  part.CFrame = GetRoot().CFrame
+                  PartScript.Parent.Size = Vector3.new(5, 5, 5)
+                  PartScript.Parent.CFrame = GetRoot().CFrame
            end
       end
       while task.wait() do
@@ -240,7 +245,7 @@ end)
 spawn(function()
       task4 = function()
            if part then
-                  part.Color = Color3.fromHSV(tick() % (10/5) / (10/5), 1, 1)
+                  PartScript.Parent.Color = Color3.fromHSV(tick() % (10/5) / (10/5), 1, 1)
            end
       end
       while task.wait() do
