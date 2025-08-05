@@ -139,6 +139,7 @@ function createBlock()
     Image.Size = UDim2.new(1, 0, 1, 0)
     Image.Image = "rbxassetid://14915326603"
     Image.ImageColor3 = Color3.fromRGB(255, 255, 255)
+    Image.ImageTransparency = 0.4
 end
 function ParryAttempt()
     if Method == "Keypress" then
