@@ -1,1 +1,25 @@
---Patched
+local lib = loadstring(Game:HttpGet("https://raw.githubusercontent.com/NoobHubV1/NoobHubV1/main/Wizard%20Lib.lua"))()
+local infMoney
+local Window = lib:NewWindow("Brainrot Slingshot")
+local Section = Window:NewSection("Main")
+Section:CreateToggle("Infinite Money", function(state)
+  infMoney = state
+end)
+Section:CreateButton("Remove Coins Drop", function()
+  game.Workspace.Coins_Drop:Destroy()
+end)
+spawn(function()
+  task0 = function()
+    if infMoney then
+      game.ReplicatedStorage.Signal.Car:FireServer("Drive")
+      game.ReplicatedStorage.Signal.Car:FireServer("FirstBoost", 1)
+      game.ReplicatedStorage.Signal.Car:FireServer("VisibleCharacter")
+      game.ReplicatedStorage.Signal.Car:FireServer("Done", 1, 3777.7737155858395)
+      game.ReplicatedStorage.Signal.Car:FireServer("DoneTeleport", 1)
+      game.ReplicatedStorage.Signal.Car:FireServer("BackToEquip")
+    end
+  end
+  while task.wait() do
+    pcall(task0)
+  end
+end)
