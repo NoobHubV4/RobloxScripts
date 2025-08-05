@@ -1,0 +1,44 @@
+local lib = loadstring(Game:HttpGet("https://raw.githubusercontent.com/NoobHubV1/NoobHubV1/main/Wizard%20Lib.lua"))()
+local autoPower
+local Train = "1"
+local Window = lib:NewWindow("Kayak Racing")
+local Section = Window:NewSection("Main")
+function Power()
+  if Train == "1" then
+    game.ReplicatedStorage.Warp.Index.Event.Reliable:FireServer(buffer.fromstring("\027"), buffer.fromstring("\254\002\000\006\005Power\001\001"))
+  elseif Train == "2" then
+    game.ReplicatedStorage.Warp.Index.Event.Reliable:FireServer(buffer.fromstring("\027"), buffer.fromstring("\254\002\000\006\005Power\001\002"))
+  elseif Train == "3" then
+    game.ReplicatedStorage.Warp.Index.Event.Reliable:FireServer(buffer.fromstring("\027"), buffer.fromstring("\254\002\000\006\005Power\001\003"))
+  elseif Train == "4" then
+    game.ReplicatedStorage.Warp.Index.Event.Reliable:FireServer(buffer.fromstring("\027"), buffer.fromstring("\254\002\000\006\005Power\001\004"))
+  elseif Train == "5" then
+    game.ReplicatedStorage.Warp.Index.Event.Reliable:FireServer(buffer.fromstring("\027"), buffer.fromstring("\254\002\000\006\005Power\001\005"))
+  elseif Train == "6" then
+    game.ReplicatedStorage.Warp.Index.Event.Reliable:FireServer(buffer.fromstring("\027"), buffer.fromstring("\254\002\000\006\005Power\001\006"))
+  elseif Train == "7" then
+    game.ReplicatedStorage.Warp.Index.Event.Reliable:FireServer(buffer.fromstring("\027"), buffer.fromstring("\254\002\000\006\005Power\001\007"))
+  elseif Train == "8" then
+    game.ReplicatedStorage.Warp.Index.Event.Reliable:FireServer(buffer.fromstring("\027"), buffer.fromstring("\254\002\000\006\005Power\001\008"))
+  elseif Train == "9" then
+    game.ReplicatedStorage.Warp.Index.Event.Reliable:FireServer(buffer.fromstring("\027"), buffer.fromstring("\254\002\000\006\005Power\001\009"))
+  elseif Train == "10" then
+    game.ReplicatedStorage.Warp.Index.Event.Reliable:FireServer(buffer.fromstring("\027"), buffer.fromstring("\254\002\000\006\005Power\001\n"))
+  end
+end
+Section:CreateDropdown("Training Select", {"1","2","3","4","5","6","7","8","9","10"}, 1, function(select)
+  Train = select
+end)
+Section:CreateToggle("Auto Power", function(state)
+  autoPower = state
+end)
+spawn(function()
+  task0 = function()
+    if autoPower then
+      Power()
+    end
+  end
+  while task.wait() do
+    pcall(task0)
+  end
+end)
