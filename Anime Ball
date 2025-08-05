@@ -24,8 +24,6 @@ local Method
 local PartScript
 local shield
 local Image
-local Active = false
-local connect
 
 ScreenGui.Name = "gui"
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
@@ -76,6 +74,9 @@ end
 end)
 
 UICorner.CornerRadius = UDim.new(0, 5)
+
+local value = Instance.new("BoolValue",Player)
+value.Name = "IsBlocking"
 
 function GetBall()
   for i,v in next, workspace.Balls:GetChildren() do
@@ -162,7 +163,6 @@ do
        local automove = Tabs.Combat:AddToggle("State3", {Title = "Auto Move", Default = false })
        local parrydistance = Tabs.Combat:AddSlider("Slider", {Title = "Parry Distance Multiplier",Description = "",Default = 0.5,Min = 0.1,Max = 3,Rounding = 2})
        local Show = Tabs.Combat:AddToggle("State4", {Title = "Show Visualizer", Default = false })
-       local Create = Tabs.Combat:AddToggle("State5", {Title = "Clone Block", Default = false })
        autoblock:OnChanged(function()
               AutoParry = Options.State1.Value
        end)
@@ -181,27 +181,11 @@ do
        parrymethod:OnChanged(function(select)
               Method = select
        end)
-       Create:OnChanged(function()
-              Active = Options.State5.Value
-              if Active then
-                     createBlock()
-                     connect = Player.CharacterAdded:Connect(function()
-                            createBlock()
-                     end
-              else
-                     if connect and shield then
-                            shield:Destroy()
-                            shield = nil
-                            connect:Disconnect()
-                            connect = nil
-                     end
-              end
-       end)
 end
 workspace.Balls.ChildAdded:Connect(function()
        ResetConnection()
        Connection = GetBall():GetAttributeChangedSignal("Target"):Connect(function()
-              Parried = false
+              Player.IsBlocking.Value = false
        end)
 end)
 spawn(function()
@@ -209,15 +193,15 @@ spawn(function()
         local Ball, HRP = GetBall(), GetRoot()
         local block = ParryDistance
         if not HRP then return end
-        if Ball:GetAttribute("Target") == Player.Name and not Parried and (HRP.Position - Ball.Position).Magnitude / Ball.LinearVelocity.VectorVelocity.Magnitude <= block and AutoParry then
+        if Ball:GetAttribute("Target") == Player.Name and not Player.IsBlocking.Value and (HRP.Position - Ball.Position).Magnitude / Ball.LinearVelocity.VectorVelocity.Magnitude <= block and AutoParry then
                 ParryAttempt()
-                if not Active and Method == "Remote" then
+                if Method == "Remote" then
                        createBlock()
                 end
-                Parried = true
+                Player.IsBlocking.Value = true
                 Cooldown = tick()
                 if (tick() - Cooldown) >= 1 then
-                       Parried = false
+                       Player.IsBlocking.Value = false
                 end
         end
     end
@@ -296,7 +280,7 @@ spawn(function()
                 end
            end
            if GetBall():GetAttribute("Target") ~= Player.Name then
-                if not Active and shield then
+                if shield then
                      shield:Destroy()
                      shield = nil
                 end
@@ -317,6 +301,7 @@ function event()
                shield:Destroy()
                shield = nil
         end
+        Player.IsBlocking.Value = false
 end
 function newChar()
         died = Player.Character.Humanoid.Died:Connect(event)
