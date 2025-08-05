@@ -1,12 +1,16 @@
 local lib = loadstring(Game:HttpGet("https://raw.githubusercontent.com/NoobHubV1/NoobHubV1/main/Wizard%20Lib.lua"))()
 local infMoney
+local autoRebirth
 local Window = lib:NewWindow("Brainrot Slingshot")
 local Section = Window:NewSection("Main")
 Section:CreateToggle("Infinite Money", function(state)
   infMoney = state
 end)
+Section:CreateToggle("Auto Rebirth", function(state)
+  autoRebirth = state
+end)
 Section:CreateButton("Remove Coins Drop", function()
-  game.Workspace.Coins_Drop:Destroy()
+  game.workspace.Coins_Drop:Destroy()
 end)
 spawn(function()
   task0 = function()
@@ -17,6 +21,9 @@ spawn(function()
       game.ReplicatedStorage.Signal.Car:FireServer("Done", 1, 3777.7737155858395)
       game.ReplicatedStorage.Signal.Car:FireServer("DoneTeleport", 1)
       game.ReplicatedStorage.Signal.Car:FireServer("BackToEquip")
+    end
+    if autoRebirth then
+      game.ReplicatedStorage.Signal.Rebirth:FireServer("rebirth")
     end
   end
   while task.wait() do
