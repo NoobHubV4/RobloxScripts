@@ -1,1 +1,34 @@
---Patched
+local lib = loadstring(Game:HttpGet("https://raw.githubusercontent.com/NoobHubV1/NoobHubV1/main/Wizard%20Lib.lua"))()
+local autoClick
+local autoRebirth
+local autoWin
+local active
+local Window = lib:NewWindow("Race Clicker")
+local Section = Window:NewSection("Main")
+Section:CreateToggle("Auto Click", function(state)
+  autoClick = state
+end)
+Section:CreateToggle("Auto Rebirth", function(state)
+  autoRebirth = state
+end)
+Section:CreateToggle("Auto Win", function(state)
+  autoWin = state
+end)
+spawn(function()
+  task0 = function()
+    if autoClick then
+      game.ReplicatedStorage.Packages.Knit.Services.ClickService.RF.Click:InvokeServer()
+    end
+    if autoRebirth then
+      game.ReplicatedStorage.Packages.Knit.Services.RebirthService.RF.Rebirth:InvokeServer()
+    end
+  end
+  while task.wait() do
+    pcall(task0)
+  end
+end)
+game.RunService.PreSimulation:Connect(function()
+  if autoWin and game.Workspace.LoadedWorld.WorldMain.Door.SignTimer.Transparency ~= 0 then
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(0, 0, -1e5)
+  end
+end)
