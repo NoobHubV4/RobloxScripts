@@ -1,0 +1,5 @@
+for i,v in ipairs(game.Workspace.Beds:GetChildren()) do
+if v.Name == "Bed" and v.PromptButton:FindFirstChild("Sleep") then
+v.PromptButton:FindFirstChild("Sleep").HoldDuration = 0
+end
+end
