@@ -24,6 +24,8 @@ local Method
 local PartScript
 local shield
 local Image
+local Active = false
+local connect
 
 ScreenGui.Name = "gui"
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
@@ -160,6 +162,7 @@ do
        local automove = Tabs.Combat:AddToggle("State3", {Title = "Auto Move", Default = false })
        local parrydistance = Tabs.Combat:AddSlider("Slider", {Title = "Parry Distance Multiplier",Description = "",Default = 0.5,Min = 0.1,Max = 3,Rounding = 2})
        local Show = Tabs.Combat:AddToggle("State4", {Title = "Show Visualizer", Default = false })
+       local Create = Tabs.Combat:AddToggle("State5", {Title = "Clone Block", Default = false })
        autoblock:OnChanged(function()
               AutoParry = Options.State1.Value
        end)
@@ -178,6 +181,22 @@ do
        parrymethod:OnChanged(function(select)
               Method = select
        end)
+       Create:OnChanged(function()
+              Active = Options.State5.Value
+              if Active then
+                     createBlock()
+                     connect = Player.CharacterAdded:Connect(function()
+                            createBlock()
+                     end
+              else
+                     if connect and shield then
+                            shield:Destroy()
+                            shield = nil
+                            connect:Disconnect()
+                            connect = nil
+                     end
+              end
+       end)
 end
 workspace.Balls.ChildAdded:Connect(function()
        ResetConnection()
@@ -192,7 +211,7 @@ spawn(function()
         if not HRP then return end
         if Ball:GetAttribute("Target") == Player.Name and not Parried and (HRP.Position - Ball.Position).Magnitude / Ball.LinearVelocity.VectorVelocity.Magnitude <= block and AutoParry then
                 ParryAttempt()
-                if Method == "Remote" then
+                if not Active and Method == "Remote" then
                        createBlock()
                 end
                 Parried = true
@@ -277,7 +296,7 @@ spawn(function()
                 end
            end
            if GetBall():GetAttribute("Target") ~= Player.Name then
-                if shield then
+                if not Active and shield then
                      shield:Destroy()
                      shield = nil
                 end
