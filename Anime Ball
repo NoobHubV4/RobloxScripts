@@ -305,28 +305,23 @@ spawn(function()
            pcall(task4)
       end
 end)
-spawn(function()
-      task5 = function()
-           if GetBall() and AutoParry then
-                if Mode == "Tp the Ball" then
-                     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = GetBall().CFrame * CFrame.new(0, -7, 0)
-                     if GetBall():GetAttribute("Target") == Player.Name then
-                          ParryAttempt()
-                     end
+while task.wait() do
+   if GetBall() and AutoParry then
+        if Mode == "Tp the Ball" then
+                game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = GetBall().CFrame * CFrame.new(0, -7, 0)
+                if GetBall():GetAttribute("Target") == Player.Name then
+                        ParryAttempt()
                 end
-                if Mode == "Aimbot" then
-                     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(game.Players.LocalPlayer.Character.HumanoidRootPart.Position, GetBall().Position)
-                     if GetBall():GetAttribute("Target") == Player.Name then
-                          ParryAttempt()
-                          game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = GetBall().CFrame
-                     end
+        end
+        if Mode == "Aimbot" then
+                game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(game.Players.LocalPlayer.Character.HumanoidRootPart.Position, GetBall().Position)
+                if GetBall():GetAttribute("Target") == Player.Name then
+                     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = GetBall().CFrame
+                     ParryAttempt()
                 end
-           end
-      end
-      while task.wait() do
-           pcall(task5)
-      end
-end)
+        end
+     end
+end
 local died
 function event()
         died:Disconnect()
