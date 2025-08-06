@@ -67,7 +67,7 @@ Toggle2.Draggable = true
 local script2 = Instance.new("LocalScript", Toggle2)
 script2.Parent.MouseButton1Click:Connect(function()
      for i,v in next, game.CoreGui.ScreenGui:GetChildren() do
-if v.Name == "Frame" and v.Size ~= UDim2.new(0, 79, 0, 112) then
+if v.Name == "Frame" and v.Size ~= UDim2.new(0, 79, 0, 112) and v.Size ~= UDim2.new(0, 89, 0, 112) then
 v.Visible = not v.Visible
 end
 end
@@ -118,6 +118,10 @@ function createVisualizer()
 end
 
 function createBlock()
+    if shield then
+           shield:Destroy()
+           shield = nil
+    end
     shield = Instance.new("BillboardGui",game.Players.LocalPlayer.Character.HumanoidRootPart)
     Image = Instance.new("ImageLabel", shield)
     shield.Name = "Shield2"
@@ -157,6 +161,7 @@ end
 local Options = Fluent.Options
 do
        Tabs.Home:AddParagraph({Title = "Credits",Content = "Credits by NoobHubV4"})
+       local parrymode = Tabs.Combat:AddDropdown("Dropdown", {Title = "Parry Mode",Values = {"Normal","Tp the Ball","Aimbot"},Multi = false,Default = 1,})
        local parrymethod = Tabs.Combat:AddDropdown("Dropdown", {Title = "Parry Method",Values = {"Keypress","Click","Remote"},Multi = false,Default = 1,})
        local autoblock = Tabs.Combat:AddToggle("State1", {Title = "Auto Parry", Default = false })
        local manualspam = Tabs.Combat:AddToggle("State2", {Title = "Manual Spam", Default = false })
@@ -181,11 +186,16 @@ do
        parrymethod:OnChanged(function(select)
               Method = select
        end)
+       parrymode:OnChanged(function(select)
+              Mode = select
+       end)
 end
 workspace.Balls.ChildAdded:Connect(function()
        ResetConnection()
        Connection = GetBall():GetAttributeChangedSignal("Target"):Connect(function()
-              Player.IsBlocking.Value = false
+              if Mode == "Normal" then
+                     Player.IsBlocking.Value = false
+              end
        end)
 end)
 spawn(function()
@@ -193,15 +203,17 @@ spawn(function()
         local Ball, HRP = GetBall(), GetRoot()
         local block = ParryDistance
         if not HRP then return end
-        if Ball:GetAttribute("Target") == Player.Name and not Player.IsBlocking.Value and (HRP.Position - Ball.Position).Magnitude / Ball.LinearVelocity.VectorVelocity.Magnitude <= block and AutoParry then
-                ParryAttempt()
-                if Method == "Remote" then
-                       createBlock()
-                end
-                Player.IsBlocking.Value = true
-                Cooldown = tick()
-                if (tick() - Cooldown) >= 1 then
-                       Player.IsBlocking.Value = false
+        if Ball:GetAttribute("Target") == Player.Name and Mode == "Normal" then
+                if not Player.IsBlocking.Value and (HRP.Position - Ball.Position).Magnitude / Ball.LinearVelocity.VectorVelocity.Magnitude <= block and AutoParry then
+                        ParryAttempt()
+                        if Method == "Remote" then
+                               createBlock()
+                        end
+                        Player.IsBlocking.Value = true
+                        Cooldown = tick()
+                        if (tick() - Cooldown) >= 1 then
+                               Player.IsBlocking.Value = false
+                        end
                 end
         end
     end
@@ -251,9 +263,6 @@ spawn(function()
                 PartScript.Parent.Size = Vector3.new(speed, speed, speed)
                 PartScript.Parent.CFrame = GetRoot().CFrame
          end
-         if GetBall():GetAttribute("Target") == Player.Name and AutoParry then
-                game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(game.Players.LocalPlayer.Character.HumanoidRootPart.Position, GetBall().Position)
-         end
      end
      while task.wait() do
          pcall(task2)
@@ -287,13 +296,35 @@ spawn(function()
                      shield:Destroy()
                      shield = nil
                 end
-                if PartScript.Parent.Color ~= Color3.fromRGB(255, 255, 255) then
-                     PartScript.Parent.Color = Color3.fromRGB(255, 255, 255)
+                if PartScript.Parent.Color ~= Color3.fromRGB(162, 163, 165) then
+                     PartScript.Parent.Color = Color3.fromRGB(162, 163, 165)
                 end
            end
       end
       while task.wait() do
            pcall(task4)
+      end
+end)
+spawn(function()
+      task5 = function()
+           if GetBall() then
+                if Mode == "Tp the Ball" then
+                     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = GetBall().CFrame * CFrame.new(0, -7, 0)
+                     if GetBall():GetAttribute("Target") == Player.Name then
+                          ParryAttempt()
+                     end
+                end
+                if Mode == "Aimbot" then
+                     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(game.Players.LocalPlayer.Character.HumanoidRootPart.Position, GetBall().Position)
+                     if GetBall():GetAttribute("Target") == Player.Name then
+                          ParryAttempt()
+                          game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = GetBall().CFrame
+                     end
+                end
+           end
+      end
+      while task.wait() do
+           pcall(task5)
       end
 end)
 local died
