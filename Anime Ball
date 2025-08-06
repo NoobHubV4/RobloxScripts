@@ -307,7 +307,7 @@ spawn(function()
 end)
 spawn(function()
       task5 = function()
-           if GetBall() then
+           if GetBall() and AutoParry then
                 if Mode == "Tp the Ball" then
                      game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = GetBall().CFrame * CFrame.new(0, -7, 0)
                      if GetBall():GetAttribute("Target") == Player.Name then
