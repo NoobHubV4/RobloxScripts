@@ -160,7 +160,7 @@ do
        local parrymethod = Tabs.Combat:AddDropdown("Dropdown", {Title = "Parry Method",Values = {"Keypress","Click","Remote"},Multi = false,Default = 1,})
        local autoblock = Tabs.Combat:AddToggle("State1", {Title = "Auto Parry", Default = false })
        local manualspam = Tabs.Combat:AddToggle("State2", {Title = "Manual Spam", Default = false })
-       local automove = Tabs.Combat:AddToggle("State3", {Title = "Auto Move", Default = false })
+       local automove = Tabs.Combat:AddToggle("State3", {Title = "Follow Ball", Default = false })
        local parrydistance = Tabs.Combat:AddSlider("Slider", {Title = "Parry Distance Multiplier",Description = "",Default = 0.5,Min = 0.1,Max = 3,Rounding = 2})
        local Show = Tabs.Combat:AddToggle("State4", {Title = "Show Visualizer", Default = false })
        autoblock:OnChanged(function()
@@ -250,6 +250,9 @@ spawn(function()
          if speed and part and AutoParry then
                 PartScript.Parent.Size = Vector3.new(speed, speed, speed)
                 PartScript.Parent.CFrame = GetRoot().CFrame
+         end
+         if GetBall():GetAttribute("Target") == Player.Name and AutoParry then
+                game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(game.Players.LocalPlayer.Character.HumanoidRootPart.Position, GetBall().Position)
          end
      end
      while task.wait() do
