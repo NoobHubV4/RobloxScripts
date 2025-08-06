@@ -234,7 +234,7 @@ end)
 spawn(function()
      function task1()
          local Ball, humanoid = GetBall(), Player.Character.Humanoid
-         if not humanoid then return end
+         if not Ball or not humanoid then return end
          if Ball and humanoid and AutoMove then
                 humanoid:MoveTo(Ball.Position)
          end
