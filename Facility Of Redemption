@@ -5,6 +5,7 @@ local spamsound
 local Window = lib:NewWindow("Facility Of Redemption")
 local Main = Window:NewSection("Main")
 local Team = Window:NewSection("Team")
+local Money = Window:NewSection("Get Money and Levels")
 local Kills = Window:NewSection("Kills")
 function missing(t, f, fallback)
   if type(f) == t then return f end
@@ -40,12 +41,6 @@ end
 end)
 Main:CreateToggle("Kill Aura", function(state)
 killAura = state
-if killAura then
-createHitbox()
-else
-part:Destroy()
-part = nil
-end
 end)
 Kills:CreateButton("Kill All Human", function()
 local savedpos = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
@@ -127,6 +122,9 @@ game:FindService("StarterGui"):SetCore("SendNotification",{Title="Successfully",
 else
 game:FindService("StarterGui"):SetCore("SendNotification",{Title="Error",Text="Player not human",Icon="",Duration=3,})
 end
+end)
+Money:CreateTextbox("Money and Levels", function(text)
+game.Players.LocalPlayer.PlayerGui.MainGUIALL.Main.LevelCheck.Change:FireServer(tonumber(text), 0, tonumber(text))
 end)
 Team:CreateButton("Become Transfur (Green Visor)", function()
 if game.Players.LocalPlayer.Team ~= game.Teams:FindFirstChild("Experiment") then
