@@ -24,9 +24,13 @@ function Power()
     game.ReplicatedStorage.Warp.Index.Event.Reliable:FireServer(buffer.fromstring("\027"), buffer.fromstring("\254\002\000\006\005Power\001\009"))
   elseif Train == "10" then
     game.ReplicatedStorage.Warp.Index.Event.Reliable:FireServer(buffer.fromstring("\027"), buffer.fromstring("\254\002\000\006\005Power\001\n"))
+  elseif Train == "11" then
+    game.ReplicatedStorage.Warp.Index.Event.Reliable:FireServer(buffer.fromstring("\027"), buffer.fromstring("\254\002\000\006\005Power\001\v"))
+  elseif Train == "12" then
+    game.ReplicatedStorage.Warp.Index.Event.Reliable:FireServer(buffer.fromstring("\027"), buffer.fromstring("\254\002\000\006\005Power\001\f"))
   end
 end
-Section:CreateDropdown("Training Select", {"1","2","3","4","5","6","7","8","9","10"}, 1, function(select)
+Section:CreateDropdown("Training Select", {"1","2","3","4","5","6","7","8","9","10","11","12"}, 1, function(select)
   Train = select
 end)
 Section:CreateToggle("Auto Power", function(state)
