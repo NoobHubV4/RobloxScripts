@@ -305,23 +305,28 @@ spawn(function()
            pcall(task4)
       end
 end)
-while task.wait() do
-   if GetBall() and AutoParry then
+spawn(function()
+    task5 = function()
+      if GetBall() and AutoParry then
         if Mode == "Tp the Ball" then
-                game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = GetBall().CFrame * CFrame.new(0, -7, 0)
+                game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = GetBall().CFrame * CFrame.new(0, -8, 0)
                 if GetBall():GetAttribute("Target") == Player.Name then
                         ParryAttempt()
                 end
         end
         if Mode == "Aimbot" then
                 game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(game.Players.LocalPlayer.Character.HumanoidRootPart.Position, GetBall().Position)
-                if GetBall():GetAttribute("Target") == Player.Name then
-                     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = GetBall().CFrame
+                if GetBall().BallHighlight2.Enabled then
+                     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = GetBall().CFrame * CFrame.new(0, 0, (GetBall().Velocity).Magnitude * -0.1)
                      ParryAttempt()
                 end
         end
      end
-end
+   end
+   while task.wait() do
+     pcall(task5)
+   end
+end)
 local died
 function event()
         died:Disconnect()
