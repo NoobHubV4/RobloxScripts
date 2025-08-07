@@ -1,0 +1,28 @@
+local lib = loadstring(Game:HttpGet("https://raw.githubusercontent.com/NoobHubV1/NoobHubV1/main/Wizard%20Lib.lua"))()
+local autoRoll
+local remove
+local Window = lib:NewWindow("Jule's RNG")
+local Section = Window:NewSection("Main")
+Section:CreateToggle("Auto Roll", function(state)
+  autoRoll = state
+end)
+Section:CreateToggle("Remove Notify Rolling", function(state)
+  game.Players.LocalPlayer.PlayerGui:FindFirstChild("Fullscreen_RollingUI").Roll.Visible = not state
+  remove = state
+end)
+spawn(function()
+  task0 = function()
+    if autoRoll then
+      game.ReplicatedStorage.Remotes.Roll:FireServer(buffer.fromstring("\128\000\000\000u\196;\253\001\000\000\000\000\000\000 \220\191\025@"))   
+    end
+    if remove then
+      game.Lighting.Blur.Size = 0
+      if not game.Players.LocalPlayer.PlayerGui:FindFirstChild("Core_RollingButtons").Frame.Roll.Button.Visible then
+        game.Players.LocalPlayer.PlayerGui:FindFirstChild("Core_RollingButtons").Frame.Roll.Button.Visible = true
+      end
+    end
+  end
+  while task.wait() do
+    pcall(task0)
+  end
+end)
