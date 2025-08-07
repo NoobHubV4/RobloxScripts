@@ -9,7 +9,7 @@ local gui = Instance.new("ScreenGui")
 gui.Parent = game.CoreGui
 
 local container = Instance.new("Frame")
-container.Size = UDim2.new(0.35, 0, 0.25, 0)  -- Adjust size for a slightly smaller container
+container.Size = UDim2.new(0.25, 0, 0.25, 0)  -- Adjust size for a slightly smaller container
 container.Position = UDim2.new(0.7, 0, 0.1, 0)  -- Move GUI to top right corner
 container.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 container.BorderSizePixel = 0
@@ -19,7 +19,7 @@ container.Draggable = true
 flickButton = Instance.new("TextButton")
 flickButton.Text = "FLICK"
 flickButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-flickButton.Size = UDim2.new(0.7, 0, 0.7, 0)  -- Adjust size for a slightly bigger flick button
+flickButton.Size = UDim2.new(0.6, 0, 0.6, 0)  -- Adjust size for a slightly bigger flick button
 flickButton.Position = UDim2.new(0.2, 0, 0.2, 0)  -- Adjust position within the container
 flickButton.BackgroundColor3 = Color3.fromRGB(255, 165, 0)  -- Orange color
 flickButton.Parent = container
@@ -48,7 +48,7 @@ end
 
 local function flickCameraSequence()
     flickCamera70Degrees()
-    wait(.05)
+    task.wait(.0125)
     flickCameraBack70Degrees()
 end
 
