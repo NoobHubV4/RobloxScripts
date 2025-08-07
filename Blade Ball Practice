@@ -78,8 +78,10 @@ value.Name = "IsBlocking"
 
 function GetBall()
   for i,v in next, workspace.Effects:GetChildren() do
-    if v:IsA("Part") and not v.Name:lower():find("visualball_") and v:GetAttribute("IsBall") then
-      return v
+    if v.Name ~= "Shockwave" then
+      if v:GetAttribute("IsBall") and v:GetAttribute("Target_First") == "BallSpawn" and v:GetAttribute("IsPermanentEffect") then
+        return v
+      end
     end
   end
 end
@@ -96,6 +98,12 @@ function ResetConnection()
   if Connection then
     Connection:Disconnect()
     Connection = nil
+  end
+end
+
+function event()
+  if SpamParry then
+    ParryAttempt()
   end
 end
 
@@ -154,11 +162,14 @@ do
               Method = select
        end)
 end
-workspace.Effects.ChildAdded:Connect(function()
-       ResetConnection()
-       Connection = GetBall():GetAttributeChangedSignal("Target"):Connect(function()
-              Player.IsBlocking.Value = false
-       end)
+workspace.Effects.ChildAdded:Connect(function(child)
+       if child.Name == "Shockwave" then return end
+       if child:GetAttribute("Ball_Speed") ~= 0 then
+              ResetConnection()
+              Connection = GetBall():GetAttributeChangedSignal("Target"):Connect(function()
+                     Player.IsBlocking.Value = false
+              end)
+       end
 end)
 spawn(function()
     function Parry()
@@ -166,7 +177,7 @@ spawn(function()
         local block = ParryDistance
         if not HRP then return end
         if Ball:GetAttribute("Target") == Player.Name and AutoParry then
-                if not Player.IsBlocking.Value and (HRP.Position - Ball.Position).Magnitude / Ball.Positional.MaxVelocity <= block then
+                if not Player.IsBlocking.Value and (HRP.Position - Ball.Position).Magnitude / Ball:GetAttribute("Ball_Speed") <= block then
                         ParryAttempt()
                         Player.IsBlocking.Value = true
                         Cooldown = tick()
@@ -182,9 +193,6 @@ spawn(function()
 end)
 spawn(function()
     function task0()
-        if SpamParry then
-            ParryAttempt()
-        end
         if showVisualizer then
             if not part and not PartScript then
                 createVisualizer()
@@ -217,7 +225,7 @@ end)
 spawn(function()
      task2 = function()
          local Ball = GetBall()
-         local speed = Ball.Positional.MaxVelocity * ParryDistance
+         local speed = Ball:GetAttribute("Ball_Speed") * ParryDistance
          if speed and part and AutoParry then
                 PartScript.Parent.Size = Vector3.new(speed, speed, speed)
                 PartScript.Parent.CFrame = GetRoot().CFrame
@@ -255,5 +263,5 @@ spawn(function()
            pcall(task4)
       end
 end)
-Player.CharacterAdded:Connect(newChar)
+game.RunService.PreSimulation:Connect(event)
 Window:SelectTab(1)
