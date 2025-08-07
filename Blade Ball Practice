@@ -65,7 +65,7 @@ Toggle2.Draggable = true
 local script2 = Instance.new("LocalScript", Toggle2)
 script2.Parent.MouseButton1Click:Connect(function()
      for i,v in next, game.CoreGui.ScreenGui:GetChildren() do
-if v.Name == "Frame" and v.Size ~= UDim2.new(0, 79, 0, 112) and v.Size ~= UDim2.new(0, 89, 0, 112) then
+if v.Name == "Frame" and v.Size ~= UDim2.new(0, 69, 0, 112) then
 v.Visible = not v.Visible
 end
 end
@@ -78,7 +78,7 @@ value.Name = "IsBlocking"
 
 function GetBall()
   for i,v in next, workspace.Effects:GetChildren() do
-    if not v.Name:lower():find("visualball_") and v:GetAttribute("IsBall") then
+    if v:IsA("Part") and not v.Name:lower():find("visualball_") and v:GetAttribute("IsBall") then
       return v
     end
   end
@@ -122,7 +122,7 @@ function ParryAttempt()
     elseif Method == "Click" then
         VIM:SendMouseButtonEvent(0, 0, 0, true, game, false)
     elseif Method == "Remote" then
-        game.ReplicatedStorage.Events.Block:InvokeServer(CFrame.new(3.232388496398926, 116.74889373779297, -276.3053283691406, 0.0950884073972702, 0.3980996906757355, -0.9124006628990173, 0, 0.9165536761283875, 0.3999117612838745, 0.99546879529953, -0.038026973605155945, 0.08715363591909409), Vector3.new(10.077529907226562, 107.25, -279.07415771484375))
+        game.ReplicatedStorage.Events.Block:InvokeServer(GetRoot().CFrame, GetRoot().Position)
     end
 end
 
@@ -165,8 +165,8 @@ spawn(function()
         local Ball, HRP = GetBall(), GetRoot()
         local block = ParryDistance
         if not HRP then return end
-        if Ball:GetAttribute("Target") == Player.Name then
-                if not Player.IsBlocking.Value and (HRP.Position - Ball.Position).Magnitude / Ball.Positional.MaxVelocity <= block and AutoParry then
+        if Ball:GetAttribute("Target") == Player.Name and AutoParry then
+                if not Player.IsBlocking.Value and (HRP.Position - Ball.Position).Magnitude / Ball.Positional.MaxVelocity <= block then
                         ParryAttempt()
                         Player.IsBlocking.Value = true
                         Cooldown = tick()
@@ -244,16 +244,11 @@ spawn(function()
 end)
 spawn(function()
       task4 = function()
-           local block = ParryDistance
-           if GetBall():GetAttribute("Target") == Player.Name and (GetRoot().Position - GetBall().Position).Magnitude / GetBall().Positional.MaxVelocity <= block then
-                if PartScript.Parent.Color ~= Color3.fromRGB(255, 0, 0) then
-                     PartScript.Parent.Color = Color3.fromRGB(255, 0, 0)
-                end
-           end
-           if GetBall():GetAttribute("Target") ~= Player.Name then
-                if PartScript.Parent.Color ~= Color3.fromRGB(162, 163, 165) then
-                     PartScript.Parent.Color = Color3.fromRGB(162, 163, 165)
-                end
+           if AutoParry then
+                  if part then
+                         PartScript.Parent.Color = Color3.fromHSV(tick() % (10/2.5) / (10/2.5), 1, 1)
+                  end
+                  game.ReplicatedStorage.Events.Play:FireServer()
            end
       end
       while task.wait() do
