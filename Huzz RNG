@@ -6,7 +6,7 @@ local Main = Window:NewSection("Main")
 Main:CreateToggle("Auto Roll", function(state)
      auto = state
 end)
-while task.wait(.3) do
+while task.wait(.1) do
      if auto then
           Rstorage:FindFirstChild("L5_z%Q1!Rx_"):FireServer()
      end
