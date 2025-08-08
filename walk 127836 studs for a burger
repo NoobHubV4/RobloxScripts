@@ -1,1 +1,17 @@
---Patched
+local lib = loadstring(Game:HttpGet("https://raw.githubusercontent.com/NoobHubV1/NoobHubV1/main/Wizard%20Lib.lua"))()
+local autoSpeed
+local Window = lib:NewWindow("Walk 127,836 studs for a burger")
+local Section = Window:NewSection("Main")
+Section:CreateToggle("Auto Speed", function(state)
+  autoSpeed = state
+end)
+spawn(function()
+  task0 = function()
+    if autoSpeed then
+      game.ReplicatedStorage.RemotesGears.ApplySpeedBoost:FireServer()
+    end
+  end
+  while task.wait() do
+    pcall(task0)
+  end
+end)
