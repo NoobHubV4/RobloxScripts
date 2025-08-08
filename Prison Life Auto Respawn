@@ -1,0 +1,248 @@
+pcall(function()
+  for i,v in ipairs(game.CoreGui:GetChildren()) do
+    if v.Name == "ScriptLoaded" then
+      v:Destroy()
+    end
+  end
+end)
+
+local UIS = game:GetService("UserInputService")
+
+local gui = Instance.new("ScreenGui", game:GetService("CoreGui"))
+gui.Name = "ScriptLoaded"
+gui.ResetOnSpawn = false
+
+local dragFrame = Instance.new("Frame", gui)
+dragFrame.Size = UDim2.new(0, 460, 0, 60)
+dragFrame.Position = UDim2.new(0.5, -230, 0.1, 0)
+dragFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+dragFrame.BackgroundTransparency = 0.2
+dragFrame.Active = true
+
+local corner = Instance.new("UICorner", dragFrame)
+corner.CornerRadius = UDim.new(0, 12)
+
+local titleLabel = Instance.new("TextLabel", dragFrame)
+titleLabel.Size = UDim2.new(0.65, 0, 1, 0)
+titleLabel.Position = UDim2.new(0, 8, 0, 0)
+titleLabel.BackgroundTransparency = 1
+titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+titleLabel.TextStrokeTransparency = 0.5
+titleLabel.TextSize = 18
+titleLabel.Font = Enum.Font.GothamBold
+titleLabel.Text = "Auto Respawn: "
+titleLabel.TextWrapped = true
+titleLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+local toggleBtn = Instance.new("TextButton", dragFrame)
+toggleBtn.Size = UDim2.new(0.3, 0, 0.7, 0)
+toggleBtn.Position = UDim2.new(0.68, 0, 0.15, 0)
+toggleBtn.BackgroundColor3 = Color3.fromRGB(150, 0, 0)
+toggleBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+toggleBtn.TextSize = 16
+toggleBtn.Font = Enum.Font.GothamBold
+toggleBtn.Text = "OFF"
+
+local toggleCorner = Instance.new("UICorner", toggleBtn)
+toggleCorner.CornerRadius = UDim.new(0, 10)
+
+local SavedPositions = {AutoRe = nil; Crimpad = nil;}
+local Connections = {Died = nil;}
+local Camera = game:FindService("Workspace").CurrentCamera
+local Rservice = game:GetService("RunService")
+local Hbeat = Rservice.Heartbeat
+local Rstep = Rservice.RenderStepped
+local Stepped = Rservice.Stepped
+local LocalPlayer = game.Players.localPlayer
+local Teams = game.Teams
+SavedPositions.Crimpad = workspace["Criminals Spawn"].SpawnLocation.CFrame
+
+function SaveCamPos()
+	SavedPositions.OldCameraPos = Camera.CFrame
+end
+function LoadCamPos()
+	Rstep:Wait()
+	Camera.CFrame = SavedPositions.OldCameraPos or Camera.CFrame
+end
+
+function TeamEve(args)
+  workspace.Remote.TeamEvent:FireServer(args)
+end
+
+local TeamTo = function(args)
+	local tempos = LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame; SavedPositions.AutoRe = tempos; SaveCamPos()
+	if args == "criminal" then
+		if LocalPlayer.TeamColor.Name == "Medium stone grey" then
+			TeamEve("Bright orange")
+		end
+		workspace["Criminals Spawn"].SpawnLocation.CanCollide = false
+		repeat
+			pcall(function()
+				workspace["Criminals Spawn"].SpawnLocation.CFrame = LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame
+			end)
+			Stepped:Wait()
+		until LocalPlayer.TeamColor == BrickColor.new("Really red")
+		workspace['Criminals Spawn'].SpawnLocation.CFrame = SavedPositions.Crimpad
+		return
+	elseif args == "inmate" then
+		TeamEve("Bright orange")
+	elseif args == "guard" then
+		TeamEve("Bright blue")
+		if #Teams.Guards:GetPlayers() > 7 then
+			return
+		end
+	end
+	LocalPlayer.CharacterAdded:Wait(); waitfor(LocalPlayer.Character, "HumanoidRootPart", 5).CFrame = tempos; LoadCamPos()
+end
+
+local waitfor = function(source, args, interval)
+	local int = interval or 5
+	local timeout = tick() + int
+	repeat Stepped:Wait() until source:FindFirstChild(args) or tick() - timeout >=0
+	timeout = nil
+	if source:FindFirstChild(args) then
+		return source:FindFirstChild(args)
+	else
+		return nil
+	end
+end
+
+SavedPositions.AutoRe = nil
+Connections.Died = nil
+local lochar = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+local function ondiedevent()
+	coroutine.wrap(function()
+		Connections.Died:Disconnect(); SaveCamPos()
+		SavedPositions.AutoRe = lochar:WaitForChild("HumanoidRootPart", 1) and LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame
+    if autoRespawn then
+        local locteam = LocalPlayer.TeamColor
+		if locteam == BrickColor.new("Really red") then
+			if #Teams.Guards:GetPlayers() < 8 then
+				TeamEve("Bright blue")
+			else
+				TeamEve("Bright orange")
+			end
+			workspace["Criminals Spawn"].SpawnLocation.CanCollide = false
+			workspace["Criminals Spawn"].SpawnLocation.CFrame = LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame
+			LocalPlayer.CharacterAdded:Wait()
+			repeat task.wait()
+				pcall(function()
+					workspace["Criminals Spawn"].SpawnLocation.CFrame = LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame
+				end)
+			until LocalPlayer.TeamColor == BrickColor.new("Really red"); workspace['Criminals Spawn'].SpawnLocation.CFrame = SavedPositions.Crimpad
+		elseif locteam == BrickColor.new("Bright blue") then
+			if #Teams.Guards:GetPlayers() == 8 then
+				TeamEve("Bright orange")
+			end; TeamEve("Bright blue")
+		elseif locteam == BrickColor.new("Bright orange") then
+			TeamEve("Bright orange")
+		else
+			TeamEve("Medium stone grey")
+		end
+    end
+	end)()
+end
+getfenv()["\112\114\105\110\116"]("\70\73\88\69\68\32\66\89\32\72\49\55\83\51") 
+local function charaddtask()
+	Connections.Died:Disconnect()
+	local LHuman = lochar:WaitForChild("Humanoid", 1)
+	if LHuman then
+		Connections.Died = LHuman.Died:Connect(ondiedevent)
+    if Connections.Humanation then
+			Connections.Humanation:Disconnect(); Connections.Humanation = nil
+		end
+		Connections.Humanation = LHuman.AnimationPlayed:Connect(function(des)
+			if des.Animation.AnimationId == "rbxassetid://287112271" then
+				task.delay(4.95, function()
+					local tempos, wascriminal = LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame, LocalPlayer.TeamColor.Name == "Really red" or nil; SavedPositions.AutoRe = tempos; SaveCamPos()
+					LocalPlayer.CharacterAdded:Wait(); waitfor(LocalPlayer.Character, "HumanoidRootPart", 1).CFrame = tempos; LoadCamPos()
+					if wascriminal then
+						TeamTo("criminal")
+					end
+				end)
+			end
+		end)
+		if Connections.CharacterChildAdded then
+			Connections.CharacterChildAdded:Disconnect(); Connections.CharacterChildAdded = nil
+		end
+		Connections.CharacterChildAdded = lochar.ChildAdded:Connect(function(tool)
+			--
+		end)
+	end
+end
+local function oncharadded()
+	lochar = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+	if SavedPositions.AutoRe and autoRespawn then
+		local LRoot = lochar:WaitForChild("HumanoidRootPart", 1)
+		if LRoot then
+			LRoot.CFrame = SavedPositions.AutoRe; LoadCamPos(); LRoot.CFrame = SavedPositions.AutoRe
+			task.spawn(function()
+				for i = 1, 4 do
+					task.wait(); LRoot.CFrame = SavedPositions.AutoRe
+				end
+			end)
+      if game.Players.LocalPlayer.PlayerGui.Home.hud.Topbar.titleBar.Title.Text == "Lights out" then
+				for i = 1, 5 do
+					LRoot.CFrame = SavedPositions.AutoRe; waitfor(LocalPlayer.Character, "HumanoidRootPart", 1).CFrame = SavedPositions.AutoRe
+				end; lochar:WaitForChild("HumanoidRootPart", 1).CFrame = SavedPositions.AutoRe
+      end
+		end
+	end
+	lochar:WaitForChild("Humanoid", 1):SetStateEnabled(Enum.HumanoidStateType.FallingDown, false)
+	lochar:WaitForChild("Humanoid", 1):SetStateEnabled(Enum.HumanoidStateType.Ragdoll, false)
+  coroutine.wrap(charaddtask)()
+end
+Connections.Died = lochar:WaitForChild("Humanoid").Died:Connect(ondiedevent)
+Connections.CharacterAdded = LocalPlayer.CharacterAdded:Connect(oncharadded)
+
+toggleBtn.MouseButton1Click:Connect(function()
+    autoRespawn = not autoRespawn
+    if autoRespawn then
+        toggleBtn.Text = "ON"
+        toggleBtn.BackgroundColor3 = Color3.fromRGB(0, 150, 0)
+    else
+        toggleBtn.Text = "OFF"
+        toggleBtn.BackgroundColor3 = Color3.fromRGB(150, 0, 0)
+    end
+end)
+
+local dragging
+local dragInput
+local dragStart
+local startPos
+
+local function update(input)
+    local delta = input.Position - dragStart
+    dragFrame.Position = UDim2.new(
+        startPos.X.Scale,
+        startPos.X.Offset + delta.X,
+        startPos.Y.Scale,
+        startPos.Y.Offset + delta.Y
+    )
+end
+
+dragFrame.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+        dragStart = input.Position
+        startPos = dragFrame.Position
+
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false
+            end
+        end)
+    end
+end)
+
+dragFrame.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseMovement then
+        dragInput = input
+    end
+end)
+
+UIS.InputChanged:Connect(function(input)
+    if input == dragInput and dragging then
+        update(input)
+    end
+end)
