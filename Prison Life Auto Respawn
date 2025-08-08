@@ -113,7 +113,7 @@ local lochar = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
 local function ondiedevent()
 	coroutine.wrap(function()
 		Connections.Died:Disconnect(); SaveCamPos()
-		SavedPositions.AutoRe = lochar:WaitForChild("HumanoidRootPart", 1) and LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame
+		SavedPositions.AutoRe = lochar:WaitForChild("HumanoidRootPart", 1) and LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame; Camera.CameraType = Enum.CameraType.Track
     if autoRespawn then
         local locteam = LocalPlayer.TeamColor
 		if locteam == BrickColor.new("Really red") then
@@ -152,7 +152,7 @@ local function charaddtask()
 			Connections.Humanation:Disconnect(); Connections.Humanation = nil
 		end
 		Connections.Humanation = LHuman.AnimationPlayed:Connect(function(des)
-			if des.Animation.AnimationId == "rbxassetid://287112271" then
+			if autoRespawn and des.Animation.AnimationId == "rbxassetid://287112271" then
 				task.delay(4.95, function()
 					local tempos, wascriminal = LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame, LocalPlayer.TeamColor.Name == "Really red" or nil; SavedPositions.AutoRe = tempos; SaveCamPos()
 					LocalPlayer.CharacterAdded:Wait(); waitfor(LocalPlayer.Character, "HumanoidRootPart", 1).CFrame = tempos; LoadCamPos()
@@ -166,7 +166,9 @@ local function charaddtask()
 			Connections.CharacterChildAdded:Disconnect(); Connections.CharacterChildAdded = nil
 		end
 		Connections.CharacterChildAdded = lochar.ChildAdded:Connect(function(tool)
-			--
+		       if autoRespawn then
+                      lochar:FindFirstChildWhichIsA("ForceField"):Destroy()
+               end
 		end)
 	end
 end
