@@ -22,8 +22,9 @@ local ParryDistance = 0
 local showVisualizer
 local Method
 local PartScript
-local shield
-local Image
+local bill
+local frame
+local TextLabel
 
 ScreenGui.Name = "gui"
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
@@ -117,36 +118,46 @@ function createVisualizer()
     PartScript.Parent.CastShadow = false
 end
 
-function createBlock()
-    if shield then
-           shield:Destroy()
-           shield = nil
-    end
-    shield = Instance.new("BillboardGui",game.Players.LocalPlayer.Character.HumanoidRootPart)
-    Image = Instance.new("ImageLabel", shield)
-    shield.Name = "Shield2"
-    shield.Active = true
-    shield.Enabled = true
-    shield.Adornee = game.Players.LocalPlayer.Character.HumanoidRootPart
-    shield.AlwaysOnTop = true
-    shield.DistanceLowerLimit = 0
-    shield.DistanceStep = 0
-    shield.DistanceUpperLimit = -1
-    shield.LightInfluence = 1
-    shield.MaxDistance = 100
-    shield.Size = UDim2.new(2, 0, 2, 0)
-    Image.Visible = true
-    Image.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    Image.BackgroundTransparency = 1
-    Image.BorderColor3 = Color3.fromRGB(0, 0, 0)
-    Image.BorderMode = "Outline"
-    Image.BorderSizePixel = 0
-    Image.LayoutOrder = 0
-    Image.Position = UDim2.new(0, 0, 0, 0)
-    Image.Size = UDim2.new(1, 0, 1, 0)
-    Image.Image = "rbxassetid://14915326603"
-    Image.ImageColor3 = Color3.fromRGB(255, 255, 255)
-    Image.ImageTransparency = 0.4
+function createBallSpeed()
+    bill = Instance.new("BillboardGui",game.Players.LocalPlayer.Character.Head)
+    frame = Instance.new("Frame",bill)
+    TextLabel = Instance.new("TextLabel",frame)
+    bill.Name = "speed"
+    bill.Active = true
+    bill.Enabled = true
+    bill.ResetOnSpawn = true
+    bill.AlwaysOnTop = false
+    bill.DistanceLowerLimit = 0
+    bill.DistanceStep = 0
+    bill.DistanceUpperLimit = -1
+    bill.LightInfluence = 1
+    bill.MaxDistance = 100
+    bill.Size = UDim2.new(6, 0, 2.25, 0)
+    bill.StudsOffset = Vector3.new(0, 2, 0)
+    bill.Brightness = 10
+    bill.StudsOffsetWorldSpace = Vector3.new(0, 1.1, 0)
+    bill.ZIndexBehavior = "Sibling"
+    bill.ClipsDescendants = true
+    frame.Active = false
+    frame.AnchorPoint = Vector2.new(0.5, 0.5)
+    frame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    frame.BackgroundTransparency = 1
+    frame.Position = UDim2.new(0.5, 0, 0.5, 0)
+    frame.BorderColor3 = Color3.fromRGB(0, 0, 0)
+    frame.BorderSizePixel = 0
+    frame.Size = UDim2.new(1, 0, 0.5, 0)
+    TextLabel.Active = false
+    TextLabel.AnchorPoint = Vector2.new(0.5, 0.5)
+    TextLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    TextLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
+    TextLabel.BorderSizePixel = 0
+    TextLabel.BackgroundTransparency = 1
+    TextLabel.Position = UDim2.new(0.5, 0, 0.5, 0)
+    TextLabel.Size = UDim2.new(0.9, 0, 1, 0)
+    TextLabel.TextScaled = true
+    TextLabel.TextSize = 55
+    TextLabel.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+    TextLabel.TextStrokeTransparency = 1
 end
 function ParryAttempt()
     if Method == "Keypress" then
@@ -206,9 +217,6 @@ spawn(function()
         if Ball:GetAttribute("Target") == Player.Name and Mode == "Normal" then
                 if not Player.IsBlocking.Value and (HRP.Position - Ball.Position).Magnitude / Ball.LinearVelocity.VectorVelocity.Magnitude <= block and AutoParry then
                         ParryAttempt()
-                        if Method == "Remote" then
-                               createBlock()
-                        end
                         Player.IsBlocking.Value = true
                         Cooldown = tick()
                         if (tick() - Cooldown) >= 1 then
@@ -259,9 +267,13 @@ spawn(function()
      task2 = function()
          local Ball = GetBall()
          local speed = Ball.LinearVelocity.VectorVelocity.Magnitude * ParryDistance
-         if speed and part and AutoParry then
+         if speed and part and AutoParry and Mode == "Normal" then
                 PartScript.Parent.Size = Vector3.new(speed, speed, speed)
                 PartScript.Parent.CFrame = GetRoot().CFrame
+         end
+         if bill and frame and TextLabel then
+                TextLabel.Text = ""..speed
+                TextLabel.TextColor3 = Color3.fromHSV(tick() % (10/2.5) / (10/2.5), 1, 1)
          end
      end
      while task.wait() do
@@ -270,7 +282,7 @@ spawn(function()
 end)
 spawn(function()
       task3 = function()
-           if not GetBall() and part and AutoParry then
+           if not GetBall() and part and AutoParry and Mode ~= "Normal" then
                   PartScript.Parent.Size = Vector3.new(5, 5, 5)
                   PartScript.Parent.CFrame = GetRoot().CFrame
            end
@@ -292,10 +304,6 @@ spawn(function()
                 end
            end
            if GetBall():GetAttribute("Target") ~= Player.Name then
-                if shield then
-                     shield:Destroy()
-                     shield = nil
-                end
                 if PartScript.Parent.Color ~= Color3.fromRGB(162, 163, 165) then
                      PartScript.Parent.Color = Color3.fromRGB(162, 163, 165)
                 end
@@ -331,15 +339,13 @@ local died
 function event()
         died:Disconnect()
         died = nil
-        if shield then
-               shield:Destroy()
-               shield = nil
-        end
         Player.IsBlocking.Value = false
 end
 function newChar()
         died = Player.Character.Humanoid.Died:Connect(event)
+        createBallSpeed()
 end
 died = Player.Character.Humanoid.Died:Connect(event)
 Player.CharacterAdded:Connect(newChar)
 Window:SelectTab(1)
+createBallSpeed()
