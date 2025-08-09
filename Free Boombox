@@ -12,7 +12,6 @@ ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 ScreenGui.ResetOnSpawn = true
 
 Frame.Parent = ScreenGui
-Frame.BackgroundColor3 = Color3.fromRGB(0, 85, 255)
 Frame.Position = UDim2.new(0.0799492374, 0, 0.483815432, 0)
 Frame.Size = UDim2.new(0, 252, 0, 116)
 Frame.Active = true
@@ -29,8 +28,8 @@ TextLabel.Text = "Free Boombox Dupe"
 TextLabel.TextColor3 = Color3.fromRGB(0, 0, 0)
 TextLabel.TextScaled = true
 TextLabel.TextSize = 14.000
-TextLabel.TextStrokeTransparency = 0.000
 TextLabel.TextWrapped = true
+TextLabel.TextStrokeTransparency = 0
 
 TextBox.Parent = Frame
 TextBox.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
@@ -123,5 +122,13 @@ TextButton2.MouseButton1Click:Connect(function()
     if tool then
         tool.Parent = workspace
         Notif("Successfully", "Drop "..tool.Name)
+    end
+end)
+spawn(function()
+    function task0()
+        Frame.BackgroundColor3 = Color3.fromHSV(tick() % (10/1) / (10/1), 1, 1)
+    end
+    while task.wait() do
+        pcall(task0)
     end
 end)
