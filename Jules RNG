@@ -13,7 +13,7 @@ end
 Section:CreateToggle("Auto Roll", function(state)
   autoRoll = state
   if autoRoll then
-    game.Players.LocalPlayer.PlayerGui:FindFirstChild("Fullscreen_RollingUI").Roll.Visible = falde
+    game.Players.LocalPlayer.PlayerGui:FindFirstChild("Fullscreen_RollingUI").Roll.Visible = false
     if blur then
       blur:Destroy()
       blur = nil
