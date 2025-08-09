@@ -25,6 +25,7 @@ local PartScript
 local bill
 local frame
 local TextLabel
+local Stroke
 
 ScreenGui.Name = "gui"
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
@@ -122,6 +123,7 @@ function createBallSpeed()
     bill = Instance.new("BillboardGui",game.Players.LocalPlayer.Character.Head)
     frame = Instance.new("Frame",bill)
     TextLabel = Instance.new("TextLabel",frame)
+    Stroke = Instance.new("UIStroke",TextLabel)
     bill.Name = "speed"
     bill.Active = true
     bill.Enabled = true
@@ -155,15 +157,18 @@ function createBallSpeed()
     TextLabel.Position = UDim2.new(0.5, 0, 0.5, 0)
     TextLabel.Size = UDim2.new(0.9, 0, 1, 0)
     TextLabel.TextScaled = true
-    TextLabel.TextSize = 55
+    TextLabel.TextSize = 100
     TextLabel.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
     TextLabel.TextStrokeTransparency = 1
+    TextLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Stroke.Thickness = 2
+    Stroke.Color = Color3.fromRGB(0, 0, 0)
 end
 function ParryAttempt()
     if Method == "Keypress" then
         VIM:SendKeyEvent(true,"F",false,game)
     elseif Method == "Click" then
-        VIM:SendMouseButtonEvent(0, 0, 0, true, game, false)
+        VIM:SendMouseButtonEvent(0, 0, 0, true, game, 0)
     elseif Method == "Remote" then
         game.ReplicatedStorage.Framework.RemoteFunction:InvokeServer("SwordService","Block",{0})
     end
@@ -271,9 +276,8 @@ spawn(function()
                 PartScript.Parent.Size = Vector3.new(speed, speed, speed)
                 PartScript.Parent.CFrame = GetRoot().CFrame
          end
-         if bill and frame and TextLabel then
-                TextLabel.Text = ""..speed
-                TextLabel.TextColor3 = Color3.fromHSV(tick() % (10/2.5) / (10/2.5), 1, 1)
+         if bill and frame and TextLabel and Stroke then
+                TextLabel.Text = ""..GetBall().LinearVelocity.VectorVelocity.Magnitude * ParryDistance
          end
      end
      while task.wait() do
