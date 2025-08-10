@@ -263,7 +263,7 @@ spawn(function()
                 humanoid:MoveTo(Ball.Position)
          end
          if bill and frame and TextLabel and Stroke then
-                Stroke.Color = Color3.fromRGB(tick() % (10/2) / (10/2), 1, 1)
+                Stroke.Color = Color3.fromHSV(tick() % (10/2) / (10/2), 1, 1)
          end
      end
      while task.wait() do
