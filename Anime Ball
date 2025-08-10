@@ -217,14 +217,6 @@ do
               Mode = select
        end)
 end
-workspace.Balls.ChildAdded:Connect(function()
-       ResetConnection()
-       Connection = GetBall():GetAttributeChangedSignal("Target"):Connect(function()
-              if Mode == "Normal" then
-                     Player.IsBlocking.Value = false
-              end
-       end)
-end)
 spawn(function()
     function Parry()
         local Ball, HRP = GetBall(), GetRoot()
@@ -237,6 +229,12 @@ spawn(function()
                         Cooldown = tick()
                         if (tick() - Cooldown) >= 1 then
                                Player.IsBlocking.Value = false
+                        end
+                        while Player.IsBlocking.Value and task.wait() do
+                               if Ball:GetAttribute("Target") ~= Player.Name then
+                                      Player.IsBlocking.Value = false
+                                      break
+                               end
                         end
                 end
         end
@@ -297,7 +295,7 @@ spawn(function()
          end
          if not Ball and visual1 and visual2 and AutoParry and Mode == "Normal" then
                 visual1.CFrame = GetRoot().CFrame
-                visual2.CFrame = CFrame.new(GetRoot().Position, Ball.Position)
+                visual2.CFrame = GetRoot().CFrame
          end
      end
      while task.wait() do
@@ -306,7 +304,7 @@ spawn(function()
 end)
 spawn(function()
       task3 = function()
-           if not GetBall() and part and AutoParry and Mode ~= "Normal" then
+           if not GetBall() and visual1 and visual2 and AutoParry and Mode ~= "Normal" then
                   visual1.CFrame = GetRoot().CFrame
                   visual2.CFrame = GetRoot().CFrame
                   mesh1.Scale = Vector3.new(0.042, 0.042, 0.042)
