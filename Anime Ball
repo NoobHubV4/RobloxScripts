@@ -291,7 +291,7 @@ spawn(function()
                 mesh2.Scale = Vector3.new(speed, 0.042, speed)
          end
          if bill and frame and TextLabel and Stroke then
-                TextLabel.Text = ""..tonumber(GetBall().LinearVelocity.VectorVelocity.Magnitude * 2.5 * ParryDistance)
+                TextLabel.Text = ""..tonumber(GetBall().LinearVelocity.VectorVelocity.Magnitude * ParryDistance)
          end
          if not Ball and visual1 and visual2 and AutoParry and Mode == "Normal" then
                 visual1.CFrame = GetRoot().CFrame
