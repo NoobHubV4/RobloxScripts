@@ -162,7 +162,6 @@ function createBallSpeed()
     TextLabel.TextStrokeTransparency = 1
     TextLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
     Stroke.Thickness = 2
-    Stroke.Color = Color3.fromRGB(0, 0, 0)
 end
 function ParryAttempt()
     if Method == "Keypress" then
@@ -262,6 +261,9 @@ spawn(function()
          if not Ball or not humanoid then return end
          if Ball and humanoid and AutoMove then
                 humanoid:MoveTo(Ball.Position)
+         end
+         if bill and frame and TextLabel and Stroke then
+                Stroke.Color = Color3.fromRGB(tick() % (10/2) / (10/2), 1, 1)
          end
      end
      while task.wait() do
