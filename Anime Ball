@@ -231,7 +231,7 @@ spawn(function()
         local block = ParryDistance
         if not HRP then return end
         if Ball:GetAttribute("Target") == Player.Name and Mode == "Normal" then
-                if not Player.IsBlocking.Value and (HRP.Position - Ball.Position).Magnitude / Ball.LinearVelocity.VectorVelocity.Magnitude <= 2 * block and AutoParry then
+                if not Player.IsBlocking.Value and (HRP.Position - Ball.Position).Magnitude / Ball.LinearVelocity.VectorVelocity.Magnitude <= block and AutoParry then
                         ParryAttempt()
                         Player.IsBlocking.Value = true
                         Cooldown = tick()
