@@ -231,7 +231,7 @@ spawn(function()
         local block = ParryDistance
         if not HRP then return end
         if Ball:GetAttribute("Target") == Player.Name and Mode == "Normal" then
-                if not Player.IsBlocking.Value and (HRP.Position - Ball.Position).Magnitude / Ball.LinearVelocity.VectorVelocity.Magnitude <= block and AutoParry then
+                if not Player.IsBlocking.Value and (HRP.Position - Ball.Position).Magnitude / Ball.LinearVelocity.VectorVelocity.Magnitude <= 2 * block and AutoParry then
                         ParryAttempt()
                         Player.IsBlocking.Value = true
                         Cooldown = tick()
@@ -285,7 +285,7 @@ end)
 spawn(function()
      task2 = function()
          local Ball = GetBall()
-         local speed = Ball.LinearVelocity.VectorVelocity.Magnitude / Ball.Position.Magnitude * ParryDistance
+         local speed = Ball.LinearVelocity.VectorVelocity.Magnitude / GetRoot().Position.Magnitude * 2 * ParryDistance
          if speed and visual1 and visual2 and AutoParry and Mode == "Normal" then
                 visual1.CFrame = GetRoot().CFrame
                 visual2.CFrame = CFrame.new(GetRoot().Position, Ball.Position)
@@ -293,7 +293,7 @@ spawn(function()
                 mesh2.Scale = Vector3.new(speed, 0.042, speed)
          end
          if bill and frame and TextLabel and Stroke then
-                TextLabel.Text = ""..GetBall().LinearVelocity.VectorVelocity.Magnitude * ParryDistance
+                TextLabel.Text = ""..GetBall().LinearVelocity.VectorVelocity.Magnitude * 2 * ParryDistance
          end
      end
      while task.wait() do
