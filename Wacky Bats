@@ -180,7 +180,7 @@ end
 
 function TeleportToKill(Target)
 	targetcframe = Target.Character.HumanoidRootPart.CFrame
-	TweenTP(targetcframe * CFrame.new(0, 0, -2))
+	TweenTP(targetcframe * CFrame.new(0, 0, -3))
 	local CharPos = game.Players.LocalPlayer.Character.HumanoidRootPart.Position
 	local tpos = Target.Character:FindFirstChild("HumanoidRootPart").Position
 	local TPos = Vector3.new(tpos.X,CharPos.Y,tpos.Z)
@@ -250,8 +250,7 @@ spawn(function()
 	      HealPlayer()
 	 end
 	 if States.AutoSwing then
-	      local tool = FindTool()
-              BatRemote(tool.Name):FireServer(tool)
+          BatRemote("God Bat"):FireServer(FindTool())
 	 end
 	 if States.TripmineThrow then
 	      AbilityNoCooldown("Tripmine Throw")
@@ -416,10 +415,13 @@ Main:CreateToggle("Spam Ability", function(v)
 	end
 end)
 Main:CreateButton("God Mode", function()
+        if not FindTool("The Patron") then
+               BuyItem("The Patron")
+        end
         repeat task.wait()
-                BuyItem("Basic Bat")
-	until LocalPlayer.Backpack:FindFirstChild("Basic Bat")
-	AbilityNoCooldown("Burrow")
+               game.Players.localPlayer.Character.Humanoid:EquipTool(game.Players.LocalPlayer.Backpack:FindFirstChild("The Patron"))
+        until game.Players.LocalPlayer.Character:FindFirstChild("The Patron")
+        game.Players.LocalPlayer.Character:FindFirstChild("The Patron"):Destroy()
 end)
 Kills:CreateButton("Kill All", function()
 	KillAll()
