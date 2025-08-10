@@ -285,7 +285,7 @@ end)
 spawn(function()
      task2 = function()
          local Ball = GetBall()
-         local speed = Ball.LinearVelocity.VectorVelocity.Magnitude / GetRoot().Position.Magnitude * 2 * ParryDistance
+         local speed = Ball.LinearVelocity.VectorVelocity.Magnitude / GetRoot().Position.Magnitude * 3 * ParryDistance
          if speed and visual1 and visual2 and AutoParry and Mode == "Normal" then
                 visual1.CFrame = GetRoot().CFrame
                 visual2.CFrame = CFrame.new(GetRoot().Position, Ball.Position)
@@ -293,7 +293,7 @@ spawn(function()
                 mesh2.Scale = Vector3.new(speed, 0.042, speed)
          end
          if bill and frame and TextLabel and Stroke then
-                TextLabel.Text = ""..GetBall().LinearVelocity.VectorVelocity.Magnitude * 2 * ParryDistance
+                TextLabel.Text = ""..GetBall().LinearVelocity.VectorVelocity.Magnitude * 3 * ParryDistance
          end
      end
      while task.wait() do
