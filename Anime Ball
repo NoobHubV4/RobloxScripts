@@ -17,11 +17,13 @@ local Toggle2 = Instance.new("TextButton", ScreenGui)
 local UICorner = Instance.new("UICorner", Toggle2)
 local SpamParry = false
 local Connection
-local part
+local visual1
+local visual2
+local mesh1
+local mesh2
 local ParryDistance = 0
-local showVisualizer
+local showCircle
 local Method
-local PartScript
 local bill
 local frame
 local TextLabel
@@ -104,19 +106,29 @@ end
 function t(Title, Text, Time)
     game:FindService("StarterGui"):SetCore("SendNotification",{Title=Title,Text=Text,Icon="",Duration=Time,})
 end
-function createVisualizer()
-    part = Instance.new("Part")
-    PartScript = Instance.new("ModuleScript", part)
-    PartScript.Parent.Name = "Visualizer" 
-    PartScript.Parent.Parent = game.workspace
-    PartScript.Parent.CFrame = Player.Character.HumanoidRootPart.CFrame
-    PartScript.Parent.Size = Vector3.new(5, 5, 5) 
-    PartScript.Parent.Anchored = true
-    PartScript.Parent.CanCollide = false
-    PartScript.Parent.Transparency = 0
-    PartScript.Parent.Material = Enum.Material.ForceField
-    PartScript.Parent.Shape = "Ball"
-    PartScript.Parent.CastShadow = false
+function createCircle()
+    visual1 = Instance.new("Part",workspace)
+    visual2 = Instance.new("Part",workspace)
+    mesh1 = Instance.new("SpecialMesh",visual1)
+    mesh2 = Instance.new("SpecialMesh",visual2)
+    visual1.Name = "Circle"
+    visual1.Color = Color3.fromRGB(0, 0, 255)
+    visual1.Material = "Plastic"
+    visual1.Transparency = 0.75
+    visual1.Size = Vector3.new(10, 0.4, 10)
+    visual1.CanCollide = false
+    visual1.Anchored = true
+    mesh1.MeshId = "rbxassetid://471124075"
+    mesh1.MeshType = "FileMesh"
+    visual2.Name = "CircleFollowBall"
+    visual2.Color = Color3.fromRGB(0, 0, 255)
+    visual2.Material = "Plastic"
+    visual2.Transparency = 0
+    visual2.Size = Vector3.new(10, 0.4, 10)
+    visual2.CanCollide = false
+    visual2.Anchored = true
+    mesh2.MeshId = "rbxassetid://471124075"
+    mesh2.MeshType = "FileMesh"
 end
 
 function createBallSpeed()
@@ -196,7 +208,7 @@ do
               ParryDistance = value
        end)
        Show:OnChanged(function()
-              showVisualizer = Options.State4.Value
+              showCircle = Options.State4.Value
        end)
        parrymethod:OnChanged(function(select)
               Method = select
@@ -238,16 +250,16 @@ spawn(function()
         if SpamParry then
             ParryAttempt()
         end
-        if showVisualizer then
-            if not part and not PartScript then
-                createVisualizer()
+        if showCircle then
+            if not visual1 and not visual2 then
+                createCircle()
             end
         else
-            if part and PartScript then
-                part:Destroy()
-                part = nil
-                PartScript:Destroy()
-                PartScript = nil
+            if visual1 and visual2 then
+                visual1:Destroy()
+                visual2:Destroy()
+                visual1 = nil
+                visual2 = nil
             end
         end
     end
@@ -273,10 +285,12 @@ end)
 spawn(function()
      task2 = function()
          local Ball = GetBall()
-         local speed = Ball.LinearVelocity.VectorVelocity.Magnitude * ParryDistance
-         if speed and part and AutoParry and Mode == "Normal" then
-                PartScript.Parent.Size = Vector3.new(speed, speed, speed)
-                PartScript.Parent.CFrame = GetRoot().CFrame
+         local speed = Ball.LinearVelocity.VectorVelocity.Magnitude / (GetRoot().Position - GetBall().Position).Magnitude * ParryDistance
+         if speed and visual1 and visual2 and AutoParry and Mode == "Normal" then
+                visual1.CFrame = GetRoot().CFrame
+                visual2.CFrame = CFrame.new(GetRoot().Position, Ball.Position)
+                mesh1.Scale = Vector3.new(speed, 0.042, speed)
+                mesh2.Scale = Vector3.new(speed, 0.042, speed)
          end
          if bill and frame and TextLabel and Stroke then
                 TextLabel.Text = ""..GetBall().LinearVelocity.VectorVelocity.Magnitude * ParryDistance
@@ -289,34 +303,20 @@ end)
 spawn(function()
       task3 = function()
            if not GetBall() and part and AutoParry and Mode ~= "Normal" then
-                  PartScript.Parent.Size = Vector3.new(5, 5, 5)
-                  PartScript.Parent.CFrame = GetRoot().CFrame
+                  visual1.CFrame = GetRoot().CFrame
+                  visual2.CFrame = GetRoot().CFrame
+                  mesh1.Scale = Vector3.new(0.042, 0.042, 0.042)
+                  mesh2.Scale = Vector3.new(0.042, 0.042, 0.042)
            end
-           if not AutoParry and part then
-                  PartScript.Parent.Size = Vector3.new(5, 5, 5)
-                  PartScript.Parent.CFrame = GetRoot().CFrame
+           if not AutoParry and visual1 and visual2 then
+                  visual1.CFrame = GetRoot().CFrame
+                  visual2.CFrame = GetRoot().CFrame
+                  mesh1.Scale = Vector3.new(0.042, 0.042, 0.042)
+                  mesh2.Scale = Vector3.new(0.042, 0.042, 0.042)
            end
       end
       while task.wait() do
            pcall(task3)
-      end
-end)
-spawn(function()
-      task4 = function()
-           local block = ParryDistance
-           if GetBall():GetAttribute("Target") == Player.Name and (GetRoot().Position - GetBall().Position).Magnitude / GetBall().LinearVelocity.VectorVelocity.Magnitude <= block then
-                if PartScript.Parent.Color ~= Color3.fromRGB(255, 0, 0) then
-                     PartScript.Parent.Color = Color3.fromRGB(255, 0, 0)
-                end
-           end
-           if GetBall():GetAttribute("Target") ~= Player.Name then
-                if PartScript.Parent.Color ~= Color3.fromRGB(162, 163, 165) then
-                     PartScript.Parent.Color = Color3.fromRGB(162, 163, 165)
-                end
-           end
-      end
-      while task.wait() do
-           pcall(task4)
       end
 end)
 spawn(function()
