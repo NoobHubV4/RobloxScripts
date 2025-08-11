@@ -188,7 +188,6 @@ end
 local Options = Fluent.Options
 do
        Tabs.Home:AddParagraph({Title = "Credits",Content = "Credits by NoobHubV4"})
-       local parrymode = Tabs.Combat:AddDropdown("Dropdown", {Title = "Parry Mode",Values = {"Normal","Tp the Ball","Aimbot"},Multi = false,Default = 1,})
        local parrymethod = Tabs.Combat:AddDropdown("Dropdown", {Title = "Parry Method",Values = {"Keypress","Click","Remote"},Multi = false,Default = 1,})
        local autoblock = Tabs.Combat:AddToggle("State1", {Title = "Auto Parry", Default = false })
        local manualspam = Tabs.Combat:AddToggle("State2", {Title = "Manual Spam", Default = false })
@@ -213,16 +212,13 @@ do
        parrymethod:OnChanged(function(select)
               Method = select
        end)
-       parrymode:OnChanged(function(select)
-              Mode = select
-       end)
 end
 spawn(function()
     function Parry()
         local Ball, HRP = GetBall(), GetRoot()
         local block = ParryDistance
         if not HRP then return end
-        if Ball:GetAttribute("Target") == Player.Name and Mode == "Normal" then
+        if Ball:GetAttribute("Target") == Player.Name then
                 if not Player.IsBlocking.Value and (HRP.Position - Ball.Position).Magnitude / Ball.LinearVelocity.VectorVelocity.Magnitude <= block and AutoParry then
                         ParryAttempt()
                         Player.IsBlocking.Value = true
@@ -248,18 +244,6 @@ spawn(function()
         if SpamParry then
             ParryAttempt()
         end
-        if showCircle then
-            if not visual1 and not visual2 then
-                createCircle()
-            end
-        else
-            if visual1 and visual2 then
-                visual1:Destroy()
-                visual2:Destroy()
-                visual1 = nil
-                visual2 = nil
-            end
-        end
     end
     while task.wait() do
         pcall(task0)
@@ -275,6 +259,18 @@ spawn(function()
          if bill and frame and TextLabel and Stroke then
                 Stroke.Color = Color3.fromHSV(tick() % (10/2) / (10/2), 1, 1)
          end
+         if showCircle then
+                if not visual1 and not visual2 then
+                       createCircle()
+                end
+         else
+                if visual1 and visual2 then
+                       visual1:Destroy()
+                       visual2:Destroy()
+                       visual1 = nil
+                       visual2 = nil
+                end
+         end
      end
      while task.wait() do
          pcall(task1)
@@ -284,7 +280,7 @@ spawn(function()
      task2 = function()
          local Ball = GetBall()
          local speed = Ball.LinearVelocity.VectorVelocity.Magnitude / Ball.Position.Magnitude * 2 * ParryDistance
-         if speed and visual1 and visual2 and AutoParry and Mode == "Normal" then
+         if speed and visual1 and visual2 and AutoParry then
                 visual1.CFrame = GetRoot().CFrame
                 visual2.CFrame = CFrame.new(GetRoot().Position, Ball.Position)
                 mesh1.Scale = Vector3.new(speed, 0.05, speed)
@@ -293,7 +289,7 @@ spawn(function()
          if bill and frame and TextLabel and Stroke then
                 TextLabel.Text = Ball.LinearVelocity.VectorVelocity.Magnitude * ParryDistance
          end
-         if not GetBall() and visual1 and visual2 and AutoParry and Mode == "Normal" then
+         if not GetBall() and visual1 and visual2 and AutoParry then
                 visual1.CFrame = GetRoot().CFrame
                 visual2.CFrame = GetRoot().CFrame
          end
@@ -304,7 +300,7 @@ spawn(function()
 end)
 spawn(function()
       task3 = function()
-           if not GetBall() and visual1 and visual2 and AutoParry and Mode ~= "Normal" then
+           if not GetBall() and visual1 and visual2 and AutoParry then
                   visual1.CFrame = GetRoot().CFrame
                   visual2.CFrame = GetRoot().CFrame
                   mesh1.Scale = Vector3.new(0.05, 0.05, 0.05)
@@ -320,28 +316,6 @@ spawn(function()
       while task.wait() do
            pcall(task3)
       end
-end)
-spawn(function()
-    task5 = function()
-      if GetBall() and AutoParry then
-        if Mode == "Tp the Ball" then
-                game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = GetBall().CFrame * CFrame.new(0, -8, 0)
-                if GetBall():GetAttribute("Target") == Player.Name then
-                        ParryAttempt()
-                end
-        end
-        if Mode == "Aimbot" then
-                game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(game.Players.LocalPlayer.Character.HumanoidRootPart.Position, GetBall().Position)
-                if GetBall().BallHighlight2.Enabled then
-                     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = GetBall().CFrame * CFrame.new(0, 0, (GetBall().Velocity).Magnitude * -0.1)
-                     ParryAttempt()
-                end
-        end
-     end
-   end
-   while task.wait() do
-     pcall(task5)
-   end
 end)
 local died
 function event()
