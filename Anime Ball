@@ -1,5 +1,5 @@
 for i,v in ipairs(game.CoreGui:GetChildren()) do
-        if v.Name == "ScreenGui" then
+        if v.Name == "gui" then
                 v:Destroy()
         end
 end
@@ -78,9 +78,6 @@ end
 end)
 
 UICorner.CornerRadius = UDim.new(0, 5)
-
-local value = Instance.new("BoolValue",Player)
-value.Name = "IsBlocking"
 
 function GetBall()
   for i,v in ipairs(game.workspace.Balls:GetChildren()) do
@@ -213,24 +210,28 @@ do
               Method = select
        end)
 end
+workspace.Balls.ChildAdded:Connect(function(child)
+       ResetConnection()
+       Connection = child:GetAttributeChangedSignal("Target"):Connect(function()
+              if Parried then
+                     while Parried and task.wait() do
+                            Parried = false
+                     end
+              end
+       end)
+end)
 spawn(function()
     function Parry()
         local Ball, HRP = GetBall(), GetRoot()
         local block = ParryDistance
         if not HRP then return end
         if Ball:GetAttribute("Target") == Player.Name then
-                if not Player.IsBlocking.Value and (HRP.Position - Ball.Position).Magnitude / Ball.LinearVelocity.VectorVelocity.Magnitude <= block and AutoParry then
+                if not Parried and (HRP.Position - Ball.Position).Magnitude / Ball.LinearVelocity.VectorVelocity.Magnitude <= block and AutoParry then
                         ParryAttempt()
-                        Player.IsBlocking.Value = true
+                        Parried = true
                         Cooldown = tick()
                         if (tick() - Cooldown) >= 1 then
-                               Player.IsBlocking.Value = false
-                        end
-                        while Player.IsBlocking.Value and task.wait() do
-                               if Ball:GetAttribute("Target") ~= Player.Name then
-                                      Player.IsBlocking.Value = false
-                                      break
-                               end
+                               Parried = false
                         end
                 end
         end
@@ -279,7 +280,7 @@ end)
 spawn(function()
      task2 = function()
          local Ball = GetBall()
-         local speed = Ball.LinearVelocity.VectorVelocity.Magnitude / Ball.Position.Magnitude * 2 * ParryDistance
+         local speed = Ball.LinearVelocity.VectorVelocity.Magnitude / Ball.Position.Magnitude * 3 * ParryDistance
          if speed and visual1 and visual2 and AutoParry then
                 visual1.CFrame = GetRoot().CFrame
                 visual2.CFrame = CFrame.new(GetRoot().Position, Ball.Position)
@@ -317,17 +318,10 @@ spawn(function()
            pcall(task3)
       end
 end)
-local died
-function event()
-        died:Disconnect()
-        died = nil
-        Player.IsBlocking.Value = false
-end
 function newChar()
-        died = Player.Character.Humanoid.Died:Connect(event)
+        Parried = false
         createBallSpeed()
 end
-died = Player.Character.Humanoid.Died:Connect(event)
 Player.CharacterAdded:Connect(newChar)
 Window:SelectTab(1)
 createBallSpeed()
