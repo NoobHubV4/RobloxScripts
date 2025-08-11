@@ -72,18 +72,24 @@ end
 local TeamTo = function(args)
 	local tempos = LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame; SavedPositions.AutoRe = tempos; SaveCamPos()
 	if args == "criminal" then
-		if LocalPlayer.TeamColor.Name == "Medium stone grey" then
-			TeamEve("Bright orange")
-		end
-		workspace["Criminals Spawn"].SpawnLocation.CanCollide = false
-		repeat
-			pcall(function()
-				workspace["Criminals Spawn"].SpawnLocation.CFrame = LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame
-			end)
-			Stepped:Wait()
-		until LocalPlayer.TeamColor == BrickColor.new("Really red")
-		workspace['Criminals Spawn'].SpawnLocation.CFrame = SavedPositions.Crimpad
-		return
+        if LocalPlayer.TeamColor.Name == "Medium stone grey" then
+               TeamEve("Bright orange")
+               LocalPlayer.CharacterAdded:Wait()
+        end
+		if #Teams.Guards:GetPlayers() < 8 then
+				TeamEve("Bright blue")
+			else
+				TeamEve("Bright orange")
+			end
+			workspace["Criminals Spawn"].SpawnLocation.CanCollide = false
+			workspace["Criminals Spawn"].SpawnLocation.CFrame = LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame
+			LocalPlayer.CharacterAdded:Wait()
+			repeat task.wait()
+				pcall(function()
+					workspace["Criminals Spawn"].SpawnLocation.CFrame = LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame
+				end)
+			until LocalPlayer.TeamColor == BrickColor.new("Really red"); workspace['Criminals Spawn'].SpawnLocation.CFrame = SavedPositions.Crimpad
+            return
 	elseif args == "inmate" then
 		TeamEve("Bright orange")
 	elseif args == "guard" then
@@ -156,7 +162,7 @@ local function charaddtask()
 		end
 		Connections.CharacterChildAdded = lochar.ChildAdded:Connect(function(tool)
 		       if autoRespawn then
-                      lochar:FindFirstChildWhichIsA("ForceField"):Destroy()
+                      lochar.ForceField.Visible = false
                end
 		end)
 	end
