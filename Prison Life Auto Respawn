@@ -151,17 +151,6 @@ local function charaddtask()
     if Connections.Humanation then
 			Connections.Humanation:Disconnect(); Connections.Humanation = nil
 		end
-		Connections.Humanation = LHuman.AnimationPlayed:Connect(function(des)
-			if autoRespawn and des.Animation.AnimationId == "rbxassetid://287112271" then
-				task.delay(4.95, function()
-					local tempos, wascriminal = LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame, LocalPlayer.TeamColor.Name == "Really red" or nil; SavedPositions.AutoRe = tempos; SaveCamPos()
-					LocalPlayer.CharacterAdded:Wait(); waitfor(LocalPlayer.Character, "HumanoidRootPart", 1).CFrame = tempos; LoadCamPos()
-					if wascriminal then
-						TeamTo("criminal")
-					end
-				end)
-			end
-		end)
 		if Connections.CharacterChildAdded then
 			Connections.CharacterChildAdded:Disconnect(); Connections.CharacterChildAdded = nil
 		end
@@ -195,7 +184,21 @@ local function oncharadded()
   coroutine.wrap(charaddtask)()
 end
 Connections.Died = lochar:WaitForChild("Humanoid").Died:Connect(ondiedevent)
-Connections.CharacterAdded = LocalPlayer.CharacterAdded:Connect(oncharadded)
+Connections.CharacterAdded = LocalPlayer.CharacterAdded:Connect(function(newChar)
+       oncharadded()
+       newChar.Head.ChildAdded:Connect(function(child)
+              if child.Name == "handcuffedGui" then
+                     local wascriminal = LocalPlayer.TeamColor.Name == "Really red" or nil
+                     task.delay(4.95, function()
+                            local tempos = LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame; SavedPositions.AutoRe = tempos; SaveCamPos()
+					        LocalPlayer.CharacterAdded:Wait(); waitfor(LocalPlayer.Character, "HumanoidRootPart", 1).CFrame = tempos; LoadCamPos()
+					        if wascriminal then
+						        TeamTo("criminal")
+					        end
+                     end)
+              end
+       end)
+end)
 
 toggleBtn.MouseButton1Click:Connect(function()
     autoRespawn = not autoRespawn
