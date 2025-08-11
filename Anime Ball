@@ -83,7 +83,7 @@ local value = Instance.new("BoolValue",Player)
 value.Name = "IsBlocking"
 
 function GetBall()
-  for i,v in next, workspace.Balls:GetChildren() do
+  for i,v in ipairs(game.workspace.Balls:GetChildren()) do
     return v
   end
 end
@@ -283,17 +283,17 @@ end)
 spawn(function()
      task2 = function()
          local Ball = GetBall()
-         local speed = Ball.LinearVelocity.VectorVelocity.Magnitude / Ball.Position.Magnitude * 2.5 * ParryDistance
+         local speed = Ball.LinearVelocity.VectorVelocity.Magnitude / Ball.Position.Magnitude * 2.25 * ParryDistance
          if speed and visual1 and visual2 and AutoParry and Mode == "Normal" then
                 visual1.CFrame = GetRoot().CFrame
                 visual2.CFrame = CFrame.new(GetRoot().Position, Ball.Position)
-                mesh1.Scale = Vector3.new(speed, 0.042, speed)
-                mesh2.Scale = Vector3.new(speed, 0.042, speed)
+                mesh1.Scale = Vector3.new(speed, 0.05, speed)
+                mesh2.Scale = Vector3.new(speed, 0.05, speed)
          end
          if bill and frame and TextLabel and Stroke then
-                TextLabel.Text = ""..tonumber(GetBall().LinearVelocity.VectorVelocity.Magnitude * ParryDistance)
+                TextLabel.Text = Ball.LinearVelocity.VectorVelocity.Magnitude * ParryDistance
          end
-         if not Ball and visual1 and visual2 and AutoParry and Mode == "Normal" then
+         if not GetBall() and visual1 and visual2 and AutoParry and Mode == "Normal" then
                 visual1.CFrame = GetRoot().CFrame
                 visual2.CFrame = GetRoot().CFrame
          end
@@ -307,14 +307,14 @@ spawn(function()
            if not GetBall() and visual1 and visual2 and AutoParry and Mode ~= "Normal" then
                   visual1.CFrame = GetRoot().CFrame
                   visual2.CFrame = GetRoot().CFrame
-                  mesh1.Scale = Vector3.new(0.042, 0.042, 0.042)
-                  mesh2.Scale = Vector3.new(0.042, 0.042, 0.042)
+                  mesh1.Scale = Vector3.new(0.05, 0.05, 0.05)
+                  mesh2.Scale = Vector3.new(0.05, 0.05, 0.05)
            end
            if not AutoParry and visual1 and visual2 then
                   visual1.CFrame = GetRoot().CFrame
                   visual2.CFrame = GetRoot().CFrame
-                  mesh1.Scale = Vector3.new(0.042, 0.042, 0.042)
-                  mesh2.Scale = Vector3.new(0.042, 0.042, 0.042)
+                  mesh1.Scale = Vector3.new(0.05, 0.05, 0.05)
+                  mesh2.Scale = Vector3.new(0.05, 0.05, 0.05)
            end
       end
       while task.wait() do
