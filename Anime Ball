@@ -27,6 +27,9 @@ local bill
 local frame
 local TextLabel
 local Stroke
+local bill2
+local frame2
+local TextLabel2
 
 ScreenGui.Name = "gui"
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
@@ -142,7 +145,7 @@ function createBallSpeed()
     bill.DistanceUpperLimit = -1
     bill.LightInfluence = 1
     bill.MaxDistance = 100
-    bill.Size = UDim2.new(6.25, 0, 2.5, 0)
+    bill.Size = UDim2.new(6.25, 0, 2.875, 0)
     bill.StudsOffset = Vector3.new(0, 2, 0)
     bill.Brightness = 10
     bill.StudsOffsetWorldSpace = Vector3.new(0, 1.1, 0)
@@ -152,7 +155,7 @@ function createBallSpeed()
     frame.AnchorPoint = Vector2.new(0.5, 0.5)
     frame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
     frame.BackgroundTransparency = 1
-    frame.Position = UDim2.new(0.5, 0, 0.5, 0)
+    frame.Position = UDim2.new(0.5, 0, 0.375, 0)
     frame.BorderColor3 = Color3.fromRGB(0, 0, 0)
     frame.BorderSizePixel = 0
     frame.Size = UDim2.new(1.25, 0, 0.75, 0)
@@ -165,11 +168,55 @@ function createBallSpeed()
     TextLabel.Position = UDim2.new(0.5, 0, 0.5, 0)
     TextLabel.Size = UDim2.new(1.15, 0, 1.25, 0)
     TextLabel.TextScaled = true
-    TextLabel.TextSize = 100
+    TextLabel.TextSize = 25
     TextLabel.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
     TextLabel.TextStrokeTransparency = 1
     TextLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    TextLabel.Text = "0"
     Stroke.Thickness = 2
+end
+function createDistanceBall(part)
+    bill2 = Instance.new("BillboardGui",part)
+    frame2 = Instance.new("Frame",bill2)
+    TextLabel2 = Instance.new("TextLabel",frame2)
+    bill2.Name = "distance"
+    bill2.Active = true
+    bill2.Enabled = true
+    bill2.ResetOnSpawn = true
+    bill2.AlwaysOnTop = false
+    bill2.DistanceLowerLimit = 0
+    bill2.DistanceStep = 0
+    bill2.DistanceUpperLimit = -1
+    bill2.LightInfluence = 1
+    bill2.MaxDistance = 100
+    bill2.Size = UDim2.new(6.25, 0, 2.5, 0)
+    bill2.StudsOffset = Vector3.new(0, 2, 0)
+    bill2.Brightness = 10
+    bill2.StudsOffsetWorldSpace = Vector3.new(0, 1.1, 0)
+    bill2.ZIndexBehavior = "Sibling"
+    bill2.ClipsDescendants = true
+    frame2.Active = false
+    frame2.AnchorPoint = Vector2.new(0.5, 0.5)
+    frame2.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    frame2.BackgroundTransparency = 1
+    frame2.Position = UDim2.new(0.5, 0, 0.5, 0)
+    frame2.BorderColor3 = Color3.fromRGB(0, 0, 0)
+    frame2.BorderSizePixel = 0
+    frame2.Size = UDim2.new(1.25, 0, 0.75, 0)
+    TextLabel2.Active = false
+    TextLabel2.AnchorPoint = Vector2.new(0.5, 0.5)
+    TextLabel2.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    TextLabel2.BorderColor3 = Color3.fromRGB(0, 0, 0)
+    TextLabel2.BorderSizePixel = 0
+    TextLabel2.BackgroundTransparency = 1
+    TextLabel2.Position = UDim2.new(0.5, 0, 0.5, 0)
+    TextLabel2.Size = UDim2.new(1.15, 0, 1.25, 0)
+    TextLabel2.TextScaled = true
+    TextLabel2.TextSize = 25
+    TextLabel2.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+    TextLabel2.TextStrokeTransparency = 1
+    TextLabel2.TextColor3 = Color3.fromRGB(255, 255, 255)
+    TextLabel2.Text = "0"
 end
 
 local Options = Fluent.Options
@@ -197,6 +244,7 @@ do
        end)
 end
 workspace.Balls.ChildAdded:Connect(function(child)
+       createDistanceBall(child)
        ResetConnection()
        Connection = child:GetAttributeChangedSignal("Target"):Connect(function()
               if Parried then
@@ -243,9 +291,6 @@ spawn(function()
          if Ball and humanoid and AutoMove then
                 humanoid:MoveTo(Ball.Position)
          end
-         if bill and frame and TextLabel and Stroke then
-                Stroke.Color = Color3.fromHSV(tick() % (10/2) / (10/2), 1, 1)
-         end
          if showCircle then
                 if not visual1 and not visual2 then
                        createCircle()
@@ -275,6 +320,7 @@ spawn(function()
          end
          if bill and frame and TextLabel and Stroke then
                 TextLabel.Text = math.round(Ball.LinearVelocity.VectorVelocity.Magnitude * ParryDistance)
+                Stroke.Color = Color3.fromHSV(tick() % (10/2) / (10/2), 1, 1)
          end
      end
      while task.wait() do
@@ -291,6 +337,14 @@ spawn(function()
                   visual1.CFrame = GetRoot().CFrame
                   visual2.CFrame = GetRoot().CFrame
            end
+           if bill2 and frame2 and TextLabel2 then
+                  TextLabel2.Text = math.round((GetRoot().Position - GetBall().Position).Magnitude)
+                  if (GetRoot().Position - GetBall().Position).Magnitude <= 20 then
+                         TextLabel2.TextColor3 = Color3.fromRGB(255, 0, 0)
+                  else
+                         TextLabel2.TextColor3 = Color3.fromRGB(255, 255, 255)
+                  end
+           end
       end
       while task.wait() do
            pcall(task3)
@@ -303,3 +357,7 @@ end
 Player.CharacterAdded:Connect(newChar)
 Window:SelectTab(1)
 createBallSpeed()
+local ball = GetBall()
+if ball then
+createDistanceBall(ball)
+end
