@@ -4,7 +4,7 @@ for i,v in ipairs(game.CoreGui:GetChildren()) do
         end
 end
 local Fluent = loadstring(game:HttpGet("https://github.com/NoobHubV4/RobloxScripts/blob/main/Fluent/Lib?raw=true"))()
-local Window = Fluent:CreateWindow({Title = "Anime Ball",SubTitle = "v1.2",TabWidth = 100,Size = UDim2.fromOffset(480, 300),Acrylic = false,Theme = "Amethyst",MinimizeKey = Enum.KeyCode.RightShift})
+local Window = Fluent:CreateWindow({Title = "Anime Ball",SubTitle = "v1.3",TabWidth = 100,Size = UDim2.fromOffset(480, 300),Acrylic = false,Theme = "Amethyst",MinimizeKey = Enum.KeyCode.RightShift})
 local Tabs = {Home = Window:AddTab({ Title = "Home", Icon = "" }),Combat = Window:AddTab({ Title = "Combat", Icon = "" }),}
 local Player = game.Players.LocalPlayer
 local VIM = game:GetService("VirtualInputManager") or game:FindFirstDescendant("VirtualInputManager")
@@ -338,10 +338,11 @@ spawn(function()
                   visual2.CFrame = GetRoot().CFrame
            end
            if bill2 and frame2 and TextLabel2 then
-                  TextLabel2.Text = math.round((GetRoot().Position - GetBall().Position).Magnitude)
-                  if (GetRoot().Position - GetBall().Position).Magnitude <= 20 then
+                  local Ball, HRP = GetBall(), GetRoot()
+                  TextLabel2.Text = math.round((HRP.Position - Ball.Position).Magnitude)
+                  if Ball:GetAttribute("Target") == Player.Name and (HRP.Position - Ball.Position).Magnitude <= 40 then
                          TextLabel2.TextColor3 = Color3.fromRGB(255, 0, 0)
-                  else
+                  elseif Ball:GetAttribute("Target") ~= Player.Name and (HRP.Position - Ball.Position).Magnitude >= 40 then
                          TextLabel2.TextColor3 = Color3.fromRGB(255, 255, 255)
                   end
            end
