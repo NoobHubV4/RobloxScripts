@@ -244,6 +244,12 @@ do
        end)
 end
 workspace.Balls.ChildAdded:Connect(function(child)
+       if bill2 and frame2 then
+              bill2:Destroy()
+              frame2:Destroy()
+              bill2 = nil
+              frame2 = nil
+       end
        createDistanceBall(child)
        ResetConnection()
        Connection = child:GetAttributeChangedSignal("Target"):Connect(function()
@@ -341,9 +347,13 @@ spawn(function()
                   local Ball, HRP = GetBall(), GetRoot()
                   TextLabel2.Text = math.round((HRP.Position - Ball.Position).Magnitude)
                   if Ball:GetAttribute("Target") == Player.Name and (HRP.Position - Ball.Position).Magnitude <= 40 then
-                         TextLabel2.TextColor3 = Color3.fromRGB(255, 0, 0)
+                         if TextLabel2.TextColor3 == Color3.fromRGB(255, 255, 255) then
+                                TextLabel2.TextColor3 = Color3.fromRGB(255, 0, 0)
+                         end
                   elseif Ball:GetAttribute("Target") ~= Player.Name and (HRP.Position - Ball.Position).Magnitude >= 40 then
-                         TextLabel2.TextColor3 = Color3.fromRGB(255, 255, 255)
+                         if TextLabel2.TextColor3 == Color3.fromRGB(255, 0, 0) then
+                                TextLabel2.TextColor3 = Color3.fromRGB(255, 255, 255)
+                         end
                   end
            end
       end
