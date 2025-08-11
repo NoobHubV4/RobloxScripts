@@ -41,9 +41,9 @@ local function ondiedevent()
 	coroutine.wrap(function()
 		Connections.Died:Disconnect(); SaveCamPos()
 		SavedPositions.AutoRe = lochar:WaitForChild("HumanoidRootPart", 1) and LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame
-    if autoRespawn then
-           game.ReplicatedStorage.RequestReset:FireServer()
-    end
+        if autoRespawn then
+               game.ReplicatedStorage.RequestCompletionRebirth:FireServer()
+        end
 	end)()
 end
 getfenv()["\112\114\105\110\116"]("\70\73\88\69\68\32\66\89\32\72\49\55\83\51") 
