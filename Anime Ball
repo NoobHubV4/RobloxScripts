@@ -283,7 +283,7 @@ end)
 spawn(function()
      task2 = function()
          local Ball = GetBall()
-         local speed = Ball.LinearVelocity.VectorVelocity.Magnitude / Ball.Position.Magnitude * 2.25 * ParryDistance
+         local speed = Ball.LinearVelocity.VectorVelocity.Magnitude / Ball.Position.Magnitude * 2 * ParryDistance
          if speed and visual1 and visual2 and AutoParry and Mode == "Normal" then
                 visual1.CFrame = GetRoot().CFrame
                 visual2.CFrame = CFrame.new(GetRoot().Position, Ball.Position)
