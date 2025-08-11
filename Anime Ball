@@ -143,7 +143,7 @@ function createBallSpeed()
     bill.DistanceUpperLimit = -1
     bill.LightInfluence = 1
     bill.MaxDistance = 100
-    bill.Size = UDim2.new(6, 0, 2.25, 0)
+    bill.Size = UDim2.new(6.25, 0, 2.5, 0)
     bill.StudsOffset = Vector3.new(0, 2, 0)
     bill.Brightness = 10
     bill.StudsOffsetWorldSpace = Vector3.new(0, 1.1, 0)
@@ -156,7 +156,7 @@ function createBallSpeed()
     frame.Position = UDim2.new(0.5, 0, 0.5, 0)
     frame.BorderColor3 = Color3.fromRGB(0, 0, 0)
     frame.BorderSizePixel = 0
-    frame.Size = UDim2.new(1, 0, 0.5, 0)
+    frame.Size = UDim2.new(1.25, 0, 0.75, 0)
     TextLabel.Active = false
     TextLabel.AnchorPoint = Vector2.new(0.5, 0.5)
     TextLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
@@ -164,7 +164,7 @@ function createBallSpeed()
     TextLabel.BorderSizePixel = 0
     TextLabel.BackgroundTransparency = 1
     TextLabel.Position = UDim2.new(0.5, 0, 0.5, 0)
-    TextLabel.Size = UDim2.new(0.9, 0, 1, 0)
+    TextLabel.Size = UDim2.new(1.15, 0, 1.25, 0)
     TextLabel.TextScaled = true
     TextLabel.TextSize = 100
     TextLabel.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
@@ -288,11 +288,7 @@ spawn(function()
                 mesh2.Scale = Vector3.new(speed, 0.05, speed)
          end
          if bill and frame and TextLabel and Stroke then
-                TextLabel.Text = Ball.LinearVelocity.VectorVelocity.Magnitude * ParryDistance
-         end
-         if not GetBall() and visual1 and visual2 and AutoParry then
-                visual1.CFrame = GetRoot().CFrame
-                visual2.CFrame = GetRoot().CFrame
+                TextLabel.Text = math.round(Ball.LinearVelocity.VectorVelocity.Magnitude * ParryDistance)
          end
      end
      while task.wait() do
@@ -304,14 +300,10 @@ spawn(function()
            if not GetBall() and visual1 and visual2 and AutoParry then
                   visual1.CFrame = GetRoot().CFrame
                   visual2.CFrame = GetRoot().CFrame
-                  mesh1.Scale = Vector3.new(0.05, 0.05, 0.05)
-                  mesh2.Scale = Vector3.new(0.05, 0.05, 0.05)
            end
            if not AutoParry and visual1 and visual2 then
                   visual1.CFrame = GetRoot().CFrame
                   visual2.CFrame = GetRoot().CFrame
-                  mesh1.Scale = Vector3.new(0.05, 0.05, 0.05)
-                  mesh2.Scale = Vector3.new(0.05, 0.05, 0.05)
            end
       end
       while task.wait() do
