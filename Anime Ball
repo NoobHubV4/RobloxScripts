@@ -71,7 +71,7 @@ Toggle2.Draggable = true
 local script2 = Instance.new("LocalScript", Toggle2)
 script2.Parent.MouseButton1Click:Connect(function()
      for i,v in next, game.CoreGui.ScreenGui:GetChildren() do
-if v.Name == "Frame" and v.Size ~= UDim2.new(0, 79, 0, 112) and v.Size ~= UDim2.new(0, 89, 0, 112) then
+if v.Name == "Frame" and v.Size ~= UDim2.new(0, 79, 0, 112) then
 v.Visible = not v.Visible
 end
 end
