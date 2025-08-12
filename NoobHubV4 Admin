@@ -350,6 +350,10 @@ Cmd[#Cmd + 1] = {Text = "re / ref / refresh",Title = "Refreshes Character"}
 Cmd[#Cmd + 1] = {Text = "res / respawn",Title = "Respawn Character"}
 Cmd[#Cmd + 1] = {Text = "inmate / in",Title = "Change Team Inmate"}
 Cmd[#Cmd + 1] = {Text = "guard / gu",Title = "Change Team Guard"}
+Cmd[#Cmd + 1] = {Text = "remington / shotgun",Title = "Get Remington 870"}
+Cmd[#Cmd + 1] = {Text = "ak-47 / ak",Title = "Get AK-47"}
+Cmd[#Cmd + 1] = {Text = "m9",Title = "Get M9"}
+Cmd[#Cmd + 1] = {Text = "guns / gun",Title = "Get All Guns"}
 
 local Material = {}
 local Toggles = {AutoRespawn = false}
@@ -366,6 +370,7 @@ local Teams = game.Teams
 local Rstorage = game.ReplicatedStorage
 local Whitelisted = {}
 local States = {}
+local SavedArgs = {}
 SavedPositions.Crimpad = workspace["Criminals Spawn"].SpawnLocation.CFrame
 
 local Mouse = game.Players.LocalPlayer:GetMouse()
@@ -441,6 +446,12 @@ end
 
 local Gun = function(args) 
 	workspace.Remote.ItemHandler:InvokeServer({Position = LocalPlayer.Character.Head.Position, Parent = workspace.Prison_ITEMS.giver:FindFirstChild(args) or workspace.Prison_ITEMS.single:FindFirstChild(args)})
+end
+
+function AllGuns()
+    spawn(Gun, "AK-47")
+    spawn(Gun, "Remington 870")
+    spawn(Gun, "M9")
 end
 
 function CheckWhitelist(arg)
@@ -603,6 +614,34 @@ function Respawn(bcolor)
 		end
 end
 
+local ArrestEve = function(args, repeated, interval)
+	if repeated then
+		for i = 1, repeated do
+			if interval then task.wait(interval) end
+			task.spawn(function()
+				if args.Character:FindFirstChild("Humanoid") and args.Character:FindFirstChildOfClass("Humanoid").Health ~= 0 then
+					workspace.Remote.arrest:InvokeServer(args.Character:FindFirstChildWhichIsA("Part"))
+				end
+			end)
+		end
+	else
+		workspace.Remote.arrest:InvokeServer(args.Character:FindFirstChildWhichIsA("Part"))
+	end
+end
+
+local RTPing = function(value)
+	if value then
+		task.wait(value)
+	end
+	local RT1 = tick()
+	pcall(function()
+		workspace.Remote.ItemHandler:InvokeServer(workspace.Prison_ITEMS.buttons["Car Spawner"]["Car Spawner"])
+	end)
+	local RT2 = tick()
+	local RoundTrip = (RT2-RT1) * 1000
+	return RoundTrip
+end
+
 local KillPL = function(plr, events, guntouse, WaitToDie) 
 	local AK = LocalPlayer.Backpack:FindFirstChild("AK-47") or LocalPlayer.Character:FindFirstChild("AK-47")
 	if not AK and not guntouse then
@@ -655,7 +694,7 @@ local KillPL = function(plr, events, guntouse, WaitToDie)
 	end
 end
 
-local MultiKill = function(plrs, exclude)
+local MultiKill = function(plrs, bullet, exclude)
 	local AK = LocalPlayer.Backpack:FindFirstChild("AK-47") or LocalPlayer.Character:FindFirstChild("AK-47")
 	if not AK and not (LocalPlayer.TeamColor == BrickColor.new("Bright blue")) then
 		Gun("AK-47")
@@ -665,6 +704,7 @@ local MultiKill = function(plrs, exclude)
 		AK = LocalPlayer.Backpack:FindFirstChild("M9") or LocalPlayer.Character:FindFirstChild("M9")
 	end
 	local neutralkill, hasplayers = nil, nil
+    local Eve = bullet or 10
 	local ShootEvents = {}
 	for i,v in pairs(plrs:GetPlayers()) do
 		if not (v == LocalPlayer or v == exclude) and CheckWhitelist(v) then
@@ -677,7 +717,7 @@ local MultiKill = function(plrs, exclude)
 						neutralkill = true
 					end
 				end
-				for i = 1, 10 do
+				for i = 1, Eve do
 					ShootEvents[#ShootEvents + 1] = {
 						Hit = v.Character:FindFirstChildOfClass("Part");
 						Cframe = CFrame.new();
@@ -694,7 +734,7 @@ local MultiKill = function(plrs, exclude)
 	task.spawn(function()
 		for i = 1, 20 do
 			Rstorage.ReloadEvent:FireServer(AK)
-			task.wait(.1)
+			task.wait(.05)
 		end
 	end)
 	if neutralkill then
@@ -702,10 +742,156 @@ local MultiKill = function(plrs, exclude)
 		SaveCamPos()
 		TeamEve("Medium stone grey")
 		Rstorage.ShootEvent:FireServer(ShootEvents, AK)
-		task.wait(0.06)
+		task.wait(0.05)
 		TeamEve("Bright orange")
 	else
 		Rstorage.ShootEvent:FireServer(ShootEvents, AK)
+	end
+end
+local BringPL = function(BringFrom, Destination, isCFrame, donotusecar, dontbreakyet)
+	if BringFrom.TeamColor == BrickColor.new("Medium stone grey") or not (BringFrom.Character and BringFrom.Character:FindFirstChildOfClass("Humanoid") and BringFrom.Character:FindFirstChildOfClass("Humanoid").Health ~= 0) then
+		Notify("Cannot bring this player. Either dead or is in neutrals team.", Color3.fromRGB(255, 0, 0), "Error")
+		return
+	end; if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid").Sit then LAction("unsit", true); end
+	local Car = nil; local CarButton = workspace.Prison_ITEMS.buttons["Car Spawner"]["Car Spawner"]; local ButtonPivot = CarButton:GetPivot()
+	if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+		local LastPos = LocalPlayer.Character:FindFirstChild("HumanoidRootPart") and LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame
+		if not (BringFrom == LocalPlayer) then
+			repeat task.wait()
+				for i,v in pairs(workspace.CarContainer:GetChildren()) do
+					if v:IsA("Model") and v:FindFirstChild("Body") and v.Body:FindFirstChild("VehicleSeat") and v.Name ~= "DONOTUSECAR" and not v.Body.VehicleSeat.Occupant then
+						for ii,vv in pairs(v.Body:GetChildren()) do
+							if vv:IsA("Seat") and not vv.Occupant then
+								Car = v
+								break
+							end
+						end
+						if Car then
+							break
+						end
+					end
+				end
+				if not Car then
+					coroutine.wrap(function()
+						LocTP(ButtonPivot)
+						workspace.Remote.ItemHandler:InvokeServer(CarButton)
+					end)()
+				end
+			until Car
+			if donotusecar then Car.Name = "DONOTUSECAR"; end
+			if Car and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") and BringFrom.Character and BringFrom.Character:FindFirstChild("Torso") and BringFrom.Character:FindFirstChildOfClass("Humanoid") then
+				repeat task.wait() until Car:FindFirstChild("RWD") and Car:FindFirstChild("Body") and Car:FindFirstChild("Body"):FindFirstChild("VehicleSeat"); States.IsBringing = true
+				local seattimeout = tick() + 8
+				local LHuman, LRoot = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid"), LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+				repeat task.wait()
+					LHuman = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid"); LRoot = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+					if LHuman and LRoot then
+						LRoot.CFrame = CFrame.new(Car.Body.VehicleSeat.Position); Car.Body.VehicleSeat:Sit(LHuman)
+					end
+				until LHuman.Sit or tick() - seattimeout >=0; seattimeout = nil
+				if not LHuman or not LHuman.Sit then
+					Notify("This seat is either bugged or ping lag!", Color3.fromRGB(255, 0, 0), "Error"); LAction("unsit", true)
+					States.IsBringing = false; LocTP(LastPos); Car.Name = "DONOTUSECAR"
+					return
+				end; if BringFrom.TeamColor == BrickColor.new("Medium stone grey") then
+					Notify("Player is in neutrals, bring cancelled.", Color3.fromRGB(255, 0, 0), "Error"); LAction("unsit", true)
+					States.IsBringing = false; LocTP(LastPos)
+					return
+				end
+				local TargetSeat = nil
+				for i,v in pairs(Car.Body:GetChildren()) do
+					if v:IsA("Seat") and not v.Occupant then
+						TargetSeat = v
+						break
+					end
+				end; if not TargetSeat then
+					Notify("The car seats are too full!", Color3.fromRGB(255, 0, 0), "Error"); LocTP(LastPos)
+					return
+				end
+				local VChar = BringFrom.Character
+				local VHuman = VChar and VChar:FindFirstChildOfClass("Humanoid")
+				local VRoot = VChar and VChar:FindFirstChild("HumanoidRootPart")
+				local Timeout = tick() + 17
+				local CarSpin, SpinRad = false, 0
+				task.spawn(function()
+					Car.PrimaryPart = TargetSeat; Car:SetPrimaryPartCFrame(VRoot.CFrame * CFrame.new(0, -0.3, 0))
+					task.wait(4); CarSpin = true
+				end)
+				repeat 
+					task.wait()
+					local step1 = CPing() / 2 / 2 / 2
+					if TargetSeat.Occupant and not VHuman.Sit then
+						for i,v in pairs(Car.Body:GetChildren()) do
+							if v:IsA("Seat") and not v.Occupant then
+								TargetSeat = v
+								break
+							end
+						end
+					end
+					Car.PrimaryPart = TargetSeat
+					local Movement = Vector3.new(VRoot.Velocity.X, 0, VRoot.Velocity.Z)
+					local Predict = (VRoot.CFrame - (Vector3.new(0, 0, -0.1) * step1)) + (Movement * (step1 * 28))
+					if Predict.Position.Y > 1 then
+						if CarSpin then
+							SpinRad += 30
+							Car:SetPrimaryPartCFrame(Predict * CFrame.Angles(0, math.rad(SpinRad), 0))
+						else
+							Car:SetPrimaryPartCFrame(Predict)
+						end
+					else
+						Car:SetPrimaryPartCFrame(LastPos)
+					end
+					if BringFrom.TeamColor == BrickColor.new("Medium stone grey") then
+						break
+					end
+				until not LocalPlayer.Character or not LocalPlayer.Character:FindFirstChildOfClass("Humanoid") or not BringFrom.Character or not LHuman.Sit or VChar ~= BringFrom.Character or VHuman.Sit or VHuman.Health == 0 or tick() - Timeout >=0
+				Timeout = nil
+				if VHuman and not VHuman.Sit then
+					Notify("Failed to bring!", Color3.fromRGB(255, 0, 0), "Error"); LAction("unsit", true); LocTP(LastPos); States.IsBringing = false
+					return
+				end
+				if isCFrame then
+					Car.PrimaryPart = Car:FindFirstChild("RWD"); Car:SetPrimaryPartCFrame(Destination)
+				else
+					Car.PrimaryPart = Car:FindFirstChild("RWD")
+					local Destiny = Destination ~= LocalPlayer and Destination.Character:FindFirstChild("HumanoidRootPart").CFrame or LastPos
+					Car:SetPrimaryPartCFrame(Destiny)
+					if Destination ~= LocalPlayer and (donotusecar) then
+						wait(.2); LAction("unsit", true); LocTP(LastPos)
+					end
+				end; SavedArgs.BringSuccess = true
+			end
+		else
+			if isCFrame then
+				LocTP(Destination)
+			else
+				LocTP(Destination.Character:FindFirstChild("HumanoidRootPart").CFrame)
+			end
+		end
+	end
+end
+local MakeCrim = function(args, savepos, tpback, ArrestLater)
+	if args.TeamColor == BrickColor.new("Really red") then
+		Notify("Player is already criminal!", Color3.fromRGB(0, 255, 0), "Error")
+	else
+		if args == LocalPlayer then 
+			TeamTo("criminal") 
+			return 
+		end; SavedPositions.MakeCrimPos = savepos and LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame or nil; SavedPositions.MakeCrimPlr = args.Character:FindFirstChild("HumanoidRootPart").CFrame
+		local timeout = tick() + 10
+		repeat
+			BringPL(args, CFrame.new(-920.947937, 92.3143158, 2138.05615, 0.997869313, 4.71007233e-08, 0.0652444065, -4.59519711e-08, 1, -1.91075955e-08, -0.0652444065, 1.6068773e-08, 0.997869313), true, nil, true)
+			RTPing(0);RTPing(0)
+		until args.TeamColor == BrickColor.new("Really red") or tick() - timeout >= 0; timeout = nil
+		if ArrestLater then
+			ArrestPL(args)
+		end;if tpback then
+			BringPL(args, SavedPositions.MakeCrimPlr, true); wait(.2)
+		end;if savepos then
+			if LocalPlayer.Character:FindFirstChildOfClass("Humanoid").Sit then
+				LAction("unsit", true)
+			end;LocTP(SavedPositions.MakeCrimPos)
+		end
 	end
 end
 local chatdebounce = false
@@ -763,6 +949,26 @@ function PlayerChatted(Message)
     elseif Command("guard") or Command("gu") then
                TeamTo("guard")
                Notify("Change Team Guard", Color3.fromRGB(0, 255, 0), "Success")
+    elseif Command("criminal") or Command("crim") or Command("makecrim") then
+               local DaPlayer = PlrFromArgs(args[2], LocalPlayer)
+               if DaPlayer then
+                      MakeCrim(DaPlayer, true, true, false)
+                      Notify("Make "..DaPlayer.DisplayName.." Crim", Color3.fromRGB(0, 255, 0), "Success")
+               elseif not DaPlayer then
+                      Notify("Not Player in server or player left", Color3.fromRGB(255, 0, 0), "Error")
+               end
+    elseif Command("ak-47") or Command("ak") then
+               Gun("AK-47")
+               Notify("Get Ak-47", Color3.fromRGB(0, 255, 0), "Success")
+    elseif Command("remington") or Command("shotgun") then
+               Gun("Remington 870")
+               Notify("Get Remington 870", Color3.fromRGB(0, 255, 0), "Success")
+    elseif Command("m9") then
+               Gun("M9")
+               Notify("Get M9", Color3.fromRGB(0, 255, 0), "Success")
+    elseif Command("guns") or Command("gun") then
+               AllGuns()
+               Notify("Get All Guns", Color3.fromRGB(0, 255, 0), "Success")
     else
         Notify("Not a command list", Color3.fromRGB(255, 0, 0), "Error")
     end
@@ -826,9 +1032,7 @@ local function charaddtask()
 			Connections.HeadChildAdded:Disconnect(); Connections.HeadChildAdded = nil
 		end
 		Connections.CharacterChildAdded = lochar.ChildAdded:Connect(function()
-		       if Toggles.AutoRespawn then
-                      lochar.ForceField:Destroy()
-               end
+		       --
 		end)
         Connections.HeadChildAdded = lochar.Head.ChildAdded:Connect(function(child)
                if child.Name == "handcuffedGui" and Toggles.AutoRespawn then
