@@ -1,4 +1,4 @@
--- Instances:
+ -- Instances:
 local ScreenGui = Instance.new("ScreenGui")
 local Main = Instance.new("Frame")
 local re2 = Instance.new("TextButton")
@@ -57,6 +57,10 @@ local LocalPlayer = game.Players.localPlayer
 local Teams = game.Teams
 SavedPositions.Crimpad = workspace["Criminals Spawn"].SpawnLocation.CFrame
 
+local LocTP = function(cframe)
+	LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame = cframe
+end
+
 function SaveCamPos()
 	SavedPositions.OldCameraPos = Camera.CFrame
 end
@@ -113,6 +117,35 @@ local waitfor = function(source, args, interval)
 	end
 end
 
+function Refresh(RefreshAs, Position)
+    if RefreshAs then
+			LocalPlayer.TeamColor = BrickColor.new(RefreshAs)
+		end
+		local tmp = Position or LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame; SavedPositions.AutoRe = tmp; SaveCamPos()
+		if LocalPlayer.TeamColor == BrickColor.new("Bright blue") then
+			if #Teams.Guards:GetPlayers() > 7 then
+				TeamEve("Bright orange")
+			end; TeamEve("Bright blue")
+		elseif LocalPlayer.TeamColor == BrickColor.new("Bright orange") then
+			TeamEve("Bright orange")
+		elseif LocalPlayer.TeamColor == BrickColor.new("Really red") then
+			TeamEve("Bright orange")
+			task.spawn(function()
+				workspace['Criminals Spawn'].SpawnLocation.CFrame = LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame; LocalPlayer.CharacterAdded:Wait()
+				repeat Stepped:Wait()
+					pcall(function()
+						workspace["Criminals Spawn"].SpawnLocation.CFrame = LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame
+					end)
+				until LocalPlayer.TeamColor == BrickColor.new("Really red"); workspace['Criminals Spawn'].SpawnLocation.CFrame = SavedPositions.Crimpad
+			end)
+		else
+			TeamEve("Medium stone grey")
+		end; LocalPlayer.CharacterAdded:Wait()
+		if waitfor(LocalPlayer.Character, "HumanoidRootPart", 5) then
+			LocTP(tmp)
+		end; LoadCamPos()
+end
+
 SavedPositions.AutoRe = nil
 Connections.Died = nil
 local lochar = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
@@ -154,17 +187,22 @@ local function charaddtask()
 	local LHuman = lochar:WaitForChild("Humanoid", 1)
 	if LHuman then
 		Connections.Died = LHuman.Died:Connect(ondiedevent)
-    if Connections.Humanation then
-			Connections.Humanation:Disconnect(); Connections.Humanation = nil
-		end
 		if Connections.CharacterChildAdded then
 			Connections.CharacterChildAdded:Disconnect(); Connections.CharacterChildAdded = nil
 		end
-		Connections.CharacterChildAdded = lochar.ChildAdded:Connect(function(tool)
+        if Connections.HeadChildAdded then
+			Connections.HeadChildAdded:Disconnect(); Connections.HeadChildAdded = nil
+		end
+		Connections.CharacterChildAdded = lochar.ChildAdded:Connect(function()
 		       if autoRespawn then
-                      lochar.ForceField.Visible = false
+                      lochar.ForceField:Destroy()
                end
 		end)
+        Connections.HeadChildAdded = lochar.Head.ChildAdded:Connect(function(child)
+               if child.Name == "handcuffedGui" and autoRespawn then
+                      Refresh()
+               end
+        end)
 	end
 end
 local function oncharadded()
@@ -194,7 +232,7 @@ Connections.CharacterAdded = LocalPlayer.CharacterAdded:Connect(function(newChar
        oncharadded()
        newChar.Head.ChildAdded:Connect(function(child)
               if child.Name == "handcuffedGui" then
-                     local wascriminal = LocalPlayer.TeamColor.Name == "Really red" or nil
+                     local wascriminal = LocalPlayer.TeamColor.Name == "Really red"
                      task.delay(4.95, function()
                             local tempos = LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame; SavedPositions.AutoRe = tempos; SaveCamPos()
 					        LocalPlayer.CharacterAdded:Wait(); waitfor(LocalPlayer.Character, "HumanoidRootPart", 1).CFrame = tempos; LoadCamPos()
