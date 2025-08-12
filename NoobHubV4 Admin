@@ -166,6 +166,7 @@ Execute.Text = ""
 Execute.TextColor3 = Color3.fromRGB(255, 255, 255)
 Execute.TextSize = 16.000
 Execute.TextWrapped = true
+Execute.ClearTextOnFocus = false
 
 Background3.Name = "Background3"
 Background3.Parent = CmdGui
@@ -342,6 +343,11 @@ local Cmd = {}
 Cmd[#Cmd + 1] = {Text = "versions 1",Title = "Script versions"}
 Cmd[#Cmd + 1] = {Text = "commands / command / cmds / cmd",Title = "Show Commands list"}
 Cmd[#Cmd + 1] = {Text = "autorespawn / autore / autorefresh",Title = "Toggles autorespawn to true or false"}
+Cmd[#Cmd + 1] = {Text = "killinmates / killinmate",Title = "Kill All Inmates"}
+Cmd[#Cmd + 1] = {Text = "killguards / killguard",Title = "Kill All Guards"}
+Cmd[#Cmd + 1] = {Text = "killcriminals / killcriminals",Title = "Kill All Criminals"}
+Cmd[#Cmd + 1] = {Text = "re / ref / refresh",Title = "Refreshes Character"}
+Cmd[#Cmd + 1] = {Text = "res / respawn",Title = "Respawn Character"}
 
 local Material = {}
 local Toggles = {AutoRespawn = false}
@@ -352,9 +358,11 @@ local Rservice = game:GetService("RunService")
 local Hbeat = Rservice.Heartbeat
 local Rstep = Rservice.RenderStepped
 local Stepped = Rservice.Stepped
-local LocalPlayer = game.Players.localPlayer
+local Players = game.Players
+local LocalPlayer = Players.localPlayer
 local Teams = game.Teams
-local cooldown = false
+local Rstorage = game.ReplicatedStorage
+local Whitelisted = {}
 SavedPositions.Crimpad = workspace["Criminals Spawn"].SpawnLocation.CFrame
 
 local Mouse = game.Players.LocalPlayer:GetMouse()
@@ -428,6 +436,32 @@ local function Notify(Message, Color, Text)
 	Notify1.TextColor3 = Color or Color3.fromRGB(255, 255, 255)
 end
 
+local Gun = function(args) 
+	workspace.Remote.ItemHandler:InvokeServer({Position = LocalPlayer.Character.Head.Position, Parent = workspace.Prison_ITEMS.giver:FindFirstChild(args) or workspace.Prison_ITEMS.single:FindFirstChild(args)})
+end
+
+function CheckWhitelist(arg)
+    return not (Whitelisted[arg.UserId])
+end
+
+local PlrFromArgs = function(plr, args)
+	if plr and plr:lower() == "me" then
+		return args
+	elseif not plr and not args then
+		return false
+	elseif not plr and args then
+		return args
+	end
+	local foundplr = false
+	for i,v in pairs(Players:GetPlayers()) do
+		local Name, DisplayName = v.Name:lower(), v.DisplayName:lower()
+		if Name:sub(1, #plr) == plr:lower() or DisplayName:sub(1, #plr) == plr:lower() then
+			foundplr = v
+		end
+	end
+	return foundplr
+end
+
 local LocTP = function(cframe)
 	LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame = cframe
 end
@@ -451,14 +485,8 @@ local TeamTo = function(args)
                TeamEve("Bright orange")
                LocalPlayer.CharacterAdded:Wait()
         end
-		if #Teams.Guards:GetPlayers() < 8 then
-				TeamEve("Bright blue")
-			else
-				TeamEve("Bright orange")
-			end
 			workspace["Criminals Spawn"].SpawnLocation.CanCollide = false
 			workspace["Criminals Spawn"].SpawnLocation.CFrame = LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame
-			LocalPlayer.CharacterAdded:Wait()
 			repeat task.wait()
 				pcall(function()
 					workspace["Criminals Spawn"].SpawnLocation.CFrame = LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame
@@ -537,6 +565,111 @@ function Respawn(bcolor)
 		end
 end
 
+local KillPL = function(plr, events, guntouse, WaitToDie) 
+	local AK = LocalPlayer.Backpack:FindFirstChild("AK-47") or LocalPlayer.Character:FindFirstChild("AK-47")
+	if not AK and not guntouse then
+		Gun("AK-47")
+		task.wait()
+		AK = LocalPlayer.Backpack:FindFirstChild("AK-47") or LocalPlayer.Character:FindFirstChild("AK-47")
+	elseif guntouse then
+		AK = LocalPlayer.Backpack:FindFirstChild(guntouse) or LocalPlayer.Character:FindFirstChild(guntouse)
+		if not AK then
+			Gun(guntouse)
+			task.wait()
+			AK = LocalPlayer.Backpack:FindFirstChild(guntouse)
+		end
+	end
+	if plr.Character:FindFirstChild("Humanoid").Health == 0 or plr.Character:FindFirstChildWhichIsA("ForceField") then
+		return
+	end
+	local Eve = events or 10
+	local ShootEvents = {};
+	for i = 1, Eve do
+		ShootEvents[#ShootEvents + 1] = {
+			Hit = plr.Character:FindFirstChildOfClass("Part");
+			Cframe = CFrame.new();
+			RayObject = Ray.new(Vector3.new(), Vector3.new());
+			Distance = 0;
+		};
+	end
+	task.spawn(function()
+		for i = 1, 5 do
+			Rstorage.ReloadEvent:FireServer(AK)
+			task.wait(.05)
+		end
+	end)
+	if plr.TeamColor == LocalPlayer.TeamColor then
+		if plr.TeamColor == BrickColor.new("Really red") or plr.TeamColor == BrickColor.new("Bright blue") then
+			SavedPositions.AutoRe = LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame
+			SaveCamPos()
+			TeamEve("Bright orange")
+			Rstorage.ShootEvent:FireServer(ShootEvents, AK)
+			task.wait(0.04)
+		else
+			TeamTo("criminal")
+			Rstorage.ShootEvent:FireServer(ShootEvents, AK)
+		end
+	else
+		Rstorage.ShootEvent:FireServer(ShootEvents, AK)
+	end
+	if WaitToDie then
+		repeat task.wait() until not plr.Character or not plr.Character:FindFirstChildOfClass("Humanoid") or plr.Character:FindFirstChildOfClass("Humanoid").Health == 0 or plr.Character:FindFirstChildWhichIsA("ForceField")
+	end
+end
+
+local MultiKill = function(plrs, exclude)
+	local AK = LocalPlayer.Backpack:FindFirstChild("AK-47") or LocalPlayer.Character:FindFirstChild("AK-47")
+	if not AK and not (LocalPlayer.TeamColor == BrickColor.new("Bright blue")) then
+		Gun("AK-47")
+		task.wait()
+		AK = LocalPlayer.Backpack:FindFirstChild("AK-47") or LocalPlayer.Character:FindFirstChild("AK-47")
+	elseif LocalPlayer.TeamColor == BrickColor.new("Bright blue") then
+		AK = LocalPlayer.Backpack:FindFirstChild("M9") or LocalPlayer.Character:FindFirstChild("M9")
+	end
+	local neutralkill, hasplayers = nil, nil
+	local ShootEvents = {}
+	for i,v in pairs(plrs:GetPlayers()) do
+		if not (v == LocalPlayer or v == exclude) and CheckWhitelist(v) then
+			if v.Character and not v.Character:FindFirstChildWhichIsA("ForceField") and not (v.Character:FindFirstChild("Humanoid").Health == 0) then
+				hasplayers = true
+				if v.TeamColor == LocalPlayer.TeamColor then
+					if v.TeamColor == BrickColor.new("Bright orange") then
+						TeamTo("criminal")
+					elseif v.TeamColor == BrickColor.new("Really red") or v.TeamColor == BrickColor.new("Bright blue") then
+						neutralkill = true
+					end
+				end
+				for i = 1, 10 do
+					ShootEvents[#ShootEvents + 1] = {
+						Hit = v.Character:FindFirstChildOfClass("Part");
+						Cframe = CFrame.new();
+						RayObject = Ray.new(Vector3.new(), Vector3.new());
+						Distance = 0;
+					}
+				end
+			end
+		end
+	end
+	if not hasplayers then
+		return
+	end
+	task.spawn(function()
+		for i = 1, 20 do
+			Rstorage.ReloadEvent:FireServer(AK)
+			task.wait(.1)
+		end
+	end)
+	if neutralkill then
+		SavedPositions.AutoRe = LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame
+		SaveCamPos()
+		TeamEve("Medium stone grey")
+		Rstorage.ShootEvent:FireServer(ShootEvents, AK)
+		task.wait(0.06)
+		TeamEve("Bright orange")
+	else
+		Rstorage.ShootEvent:FireServer(ShootEvents, AK)
+	end
+end
 local chatdebounce = false
 function PlayerChatted(Message)
 	if ScriptDisabled then return end
@@ -560,7 +693,30 @@ function PlayerChatted(Message)
             Toggles.AutoRespawn = not Toggles.AutoRespawn
         end
         Notify("Auto Respawn changed to "..tostring(Toggles.AutoRespawn), Color3.fromRGB(0, 255, 0), "Success")
-    elseif Command
+    elseif Command("killall") then
+        MultiKill(Players)
+        Notify("Kill All Players", Color3.fromRGB(0, 255, 0), "Success")
+    elseif Command("killinmates") or Command("killinmate") then
+        MultiKill(game.Teams.Inmates)
+        Notify("Kill All Inmates", Color3.fromRGB(0, 255, 0), "Success")
+    elseif Command("killguards") or Command("killguard") then
+        MultiKill(game.Teams.Guards)
+        Notify("Kill All Guards", Color3.fromRGB(0, 255, 0), "Success")
+    elseif Command("killcriminals") or Command("killcriminal") then
+        MultiKill(game.Teams.Criminals)
+        Notify("Kill All Criminals", Color3.fromRGB(0, 255, 0), "Success")
+    elseif Command("kill") then
+        local DaPlayer = PlrFromArgs(args[2], false)
+        if DaPlayer then
+               KillPL(DaPlayer)
+               Notify("Kill "..DaPlayer.DisplayName, Color3.fromRGB(0, 255, 0), "Success")
+        elseif not DaPlayer then
+               Notify("Not Player in server or player left", Color3.fromRGB(255, 0, 0), "Error")
+        end
+    elseif Command("re") or Command("ref") or Command("refresh") then
+               Refresh()
+    elseif Command("res") or Command("respawn") then
+               Respawn(LocalPlayer.TeamColor)
     else
         Notify("Not a command list", Color3.fromRGB(255, 0, 0), "Error")
     end
@@ -667,7 +823,20 @@ Connections.CharacterAdded = LocalPlayer.CharacterAdded:Connect(function(newChar
                             local tempos = LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame; SavedPositions.AutoRe = tempos; SaveCamPos()
 					        LocalPlayer.CharacterAdded:Wait(); waitfor(LocalPlayer.Character, "HumanoidRootPart", 1).CFrame = tempos; LoadCamPos()
 					        if wascriminal then
-						        TeamTo("criminal")
+						        if #Teams.Guards:GetPlayers() < 8 then
+				                     TeamEve("Bright blue")
+		                    	else
+				                     TeamEve("Bright orange")
+			                    end
+			                    workspace["Criminals Spawn"].SpawnLocation.CanCollide = false
+			                    workspace["Criminals Spawn"].SpawnLocation.CFrame = LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame
+			                    LocalPlayer.CharacterAdded:Wait()
+			                    repeat task.wait()
+				                      pcall(function()
+					                          workspace["Criminals Spawn"].SpawnLocation.CFrame = LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame
+				                      end)
+			                    until LocalPlayer.TeamColor == BrickColor.new("Really red"); workspace['Criminals Spawn'].SpawnLocation.CFrame = SavedPositions.Crimpad
+                                return
 					        end
                      end)
               end
@@ -709,4 +878,5 @@ getgenv().DisableScript = function()
 	end)
 end
 
+LocalPlayer.PlayerGui.Home.intro:Destroy()
 Notify("Loaded admin commands!", Color3.fromRGB(0, 255, 0), "Success")
