@@ -367,6 +367,7 @@ Cmd[#Cmd + 1] = {Text = "unloopkillcriminal / unloopkillcriminals",Title = "Stop
 Cmd[#Cmd + 1] = {Text = "autoguns / aguns [on/off]",Title = "Toggles autoguns to true or false"}
 Cmd[#Cmd + 1] = {Text = "loopkill [plr]",Title = "Loopkill Player"}
 Cmd[#Cmd + 1] = {Text = "unloopkill [plr]",Title = "Unloopkill Player"}
+Cmd[#Cmd + 1] = {Text = "bring [plr]",Title = "Bring Player to your"}
 
 local Material = {}
 local Toggles = {AutoRespawn = false; AutoGuns = nil}
@@ -1032,6 +1033,14 @@ function PlayerChatted(Message)
         if DaPlayer then
             Loops.Kill[DaPlayer.UserId] = nil
             Notify("Unloopkill "..DaPlayer.DisplayName, Color3.fromRGB(0, 255, 0), "Success")
+        elseif not DaPlayer then
+            Notify("Not Player in server or player left", Color3.fromRGB(255, 0, 0), "Error")
+        end
+    elseif Command("bring") then
+        local DaPlayer = PlrFromArgs(args[2], false)
+        if DaPlayer then
+            BringPL(DaPlayer, LocalPlayer)
+            Notify("Bring "..DaPlayer.DisplayName, Color3.fromRGB(0, 255, 0), "Success")
         elseif not DaPlayer then
             Notify("Not Player in server or player left", Color3.fromRGB(255, 0, 0), "Error")
         end
