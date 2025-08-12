@@ -343,6 +343,7 @@ local Cmd = {}
 Cmd[#Cmd + 1] = {Text = "versions 1",Title = "Script versions"}
 Cmd[#Cmd + 1] = {Text = "commands / command / cmds / cmd",Title = "Show Commands list"}
 Cmd[#Cmd + 1] = {Text = "autorespawn / autore / autorefresh",Title = "Toggles autorespawn to true or false"}
+Cmd[#Cmd + 1] = {Text = "kill [plr]",Title = "Kill Player"}
 Cmd[#Cmd + 1] = {Text = "killinmates / killinmate",Title = "Kill All Inmates"}
 Cmd[#Cmd + 1] = {Text = "killguards / killguard",Title = "Kill All Guards"}
 Cmd[#Cmd + 1] = {Text = "killcriminals / killcriminals",Title = "Kill All Criminals"}
@@ -350,10 +351,19 @@ Cmd[#Cmd + 1] = {Text = "re / ref / refresh",Title = "Refreshes Character"}
 Cmd[#Cmd + 1] = {Text = "res / respawn",Title = "Respawn Character"}
 Cmd[#Cmd + 1] = {Text = "inmate / in",Title = "Change Team Inmate"}
 Cmd[#Cmd + 1] = {Text = "guard / gu",Title = "Change Team Guard"}
+Cmd[#Cmd + 1] = {Text = "criminal / crim / makecrim [plr",Title = "Make Player Criminal"}
 Cmd[#Cmd + 1] = {Text = "remington / shotgun",Title = "Get Remington 870"}
 Cmd[#Cmd + 1] = {Text = "ak-47 / ak",Title = "Get AK-47"}
 Cmd[#Cmd + 1] = {Text = "m9",Title = "Get M9"}
 Cmd[#Cmd + 1] = {Text = "guns / gun",Title = "Get All Guns"}
+Cmd[#Cmd + 1] = {Text = "loopkillall",Title = "Loopkill All"}
+Cmd[#Cmd + 1] = {Text = "loopkillinmate / loopkillinmates",Title = "Loopkill Inmates"}
+Cmd[#Cmd + 1] = {Text = "loopkillguard / loopkillguards",Title = "Loopkill Guards"}
+Cmd[#Cmd + 1] = {Text = "loopkillcriminal / loopkillcriminals",Title = "Loopkill Criminals"}
+Cmd[#Cmd + 1] = {Text = "unloopkillall",Title = "Stopped loopkill all"}
+Cmd[#Cmd + 1] = {Text = "unloopkillinmate / unloopkillinmates",Title = "Stopped loopkill inmates"}
+Cmd[#Cmd + 1] = {Text = "unloopkillguard / unloopkillguards",Title = "Stopped loopkill guards"}
+Cmd[#Cmd + 1] = {Text = "unloopkillcriminal / unloopkillcriminals",Title = "Stopped loopkill criminals"}
 
 local Material = {}
 local Toggles = {AutoRespawn = false}
@@ -371,6 +381,7 @@ local Rstorage = game.ReplicatedStorage
 local Whitelisted = {}
 local States = {}
 local SavedArgs = {}
+local Loops = {KillTeams = {All = false, Inmate = false, Guard = false, Criminal = false}, Kill = {}}
 SavedPositions.Crimpad = workspace["Criminals Spawn"].SpawnLocation.CFrame
 
 local Mouse = game.Players.LocalPlayer:GetMouse()
@@ -449,9 +460,9 @@ local Gun = function(args)
 end
 
 function AllGuns()
-    spawn(Gun, "AK-47")
-    spawn(Gun, "Remington 870")
-    spawn(Gun, "M9")
+    task.spawn(Gun, "AK-47")
+    task.spawn(Gun, "Remington 870")
+    task.spawn(Gun, "M9")
 end
 
 function CheckWhitelist(arg)
@@ -734,7 +745,7 @@ local MultiKill = function(plrs, bullet, exclude)
 	task.spawn(function()
 		for i = 1, 20 do
 			Rstorage.ReloadEvent:FireServer(AK)
-			task.wait(.05)
+			task.wait(.01)
 		end
 	end)
 	if neutralkill then
@@ -742,7 +753,7 @@ local MultiKill = function(plrs, bullet, exclude)
 		SaveCamPos()
 		TeamEve("Medium stone grey")
 		Rstorage.ShootEvent:FireServer(ShootEvents, AK)
-		task.wait(0.05)
+		task.wait(0.02)
 		TeamEve("Bright orange")
 	else
 		Rstorage.ShootEvent:FireServer(ShootEvents, AK)
@@ -969,6 +980,30 @@ function PlayerChatted(Message)
     elseif Command("guns") or Command("gun") then
                AllGuns()
                Notify("Get All Guns", Color3.fromRGB(0, 255, 0), "Success")
+    elseif Command("loopkillall") then
+               Loops.KillTeams.All = true
+               Notify("Loopkill all", Color3.fromRGB(0, 255, 0), "Success")
+    elseif Command("loopkillinmate") or Command("loopkillinmates") then
+               Loops.KillTeams.Inmates = true
+               Notify("Loopkill inmates", Color3.fromRGB(0, 255, 0), "Success")
+    elseif Command("loopkillguard") or Command("loopkillguards") then
+               Loops.KillTeams.Guards = true
+               Notify("Loopkill guards", Color3.fromRGB(0, 255, 0), "Success")
+    elseif Command("loopkillcriminal") or Command("loopkillcriminals") then
+               Loops.KillTeams.Criminals = true
+               Notify("Loopkill criminals", Color3.fromRGB(0, 255, 0), "Success")
+    elseif Command("unloopkillall") then
+               Loops.KillTeams.All = false
+               Notify("Unloopkill all", Color3.fromRGB(0, 255, 0), "Success")
+    elseif Command("unloopkillinmate") or Command("unloopkillinmates") then
+               Loops.KillTeams.Inmates = false
+               Notify("Unloopkill inmates", Color3.fromRGB(0, 255, 0), "Success")
+    elseif Command("unloopkillguard") or Command("unloopkillguards") then
+               Loops.KillTeams.Guards = false
+               Notify("Unloopkill guards", Color3.fromRGB(0, 255, 0), "Success")
+    elseif Command("unloopkillcriminal") or Command("unloopkillcriminals") then
+               Loops.KillTeams.Criminals = false
+               Notify("Unloopkill criminals", Color3.fromRGB(0, 255, 0), "Success")
     else
         Notify("Not a command list", Color3.fromRGB(255, 0, 0), "Error")
     end
@@ -1113,6 +1148,62 @@ Execute.FocusLost:Connect(function(enterPressed, inputObj)
 	end
 end)
 
+task.spawn(function()
+	local task0 = function()
+		if Loops.KillTeams.All then
+            Gun("AK-47")
+			MultiKill(Players)
+            wait(CPing(nil, true) / 2)
+		else
+			for i,v in next, Loops.Kill do
+				if v and v.Character and not Saved.KillDebounce[v.Name] then
+					if v.Character:FindFirstChild("Humanoid") and not (v.Character:FindFirstChild("Humanoid").Health == 0 or v.Character:FindFirstChildWhichIsA("ForceField")) then
+						Saved.KillDebounce[v.Name] = true
+						coroutine.wrap(function()
+							if RTPing() then
+								Saved.KillDebounce[v.Name] = nil
+							end
+						end)()
+						KillPL(v)
+					end
+				end
+			end
+			if Loops.KillTeams.Inmates then
+				if not SavedArgs.KillDebounceInmate then
+					SavedArgs.KillDebounceInmate = true
+					task.delay(0.03, function()
+						RTPing(); SavedArgs.KillDebounceInmate = nil
+					end)
+					MultiKill(Teams.Inmates)
+				end
+			end
+			if Loops.KillTeams.Guards then
+				if not SavedArgs.KillDebounceGuard then
+					SavedArgs.KillDebounceGuard = true
+					task.delay(0.03, function()
+						RTPing(); SavedArgs.KillDebounceGuard = nil
+					end)
+					MultiKill(Teams.Guards)
+				end
+			end
+			if Loops.KillTeams.Criminals then
+				if not SavedArgs.KillDebounceCriminal then
+					SavedArgs.KillDebounceCriminal = true
+					task.delay(0.03, function()
+						RTPing(); SavedArgs.KillDebounceCriminal = nil
+					end)
+					MultiKill(Teams.Criminals)
+				end
+			end
+		end
+	end
+	while task.wait() do
+		pcall(task0)
+		if Unloaded then
+			break
+		end
+	end
+end)
 
 getgenv().DisableScript = function()
 	pcall(function()
