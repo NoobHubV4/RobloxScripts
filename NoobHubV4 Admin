@@ -348,6 +348,8 @@ Cmd[#Cmd + 1] = {Text = "killguards / killguard",Title = "Kill All Guards"}
 Cmd[#Cmd + 1] = {Text = "killcriminals / killcriminals",Title = "Kill All Criminals"}
 Cmd[#Cmd + 1] = {Text = "re / ref / refresh",Title = "Refreshes Character"}
 Cmd[#Cmd + 1] = {Text = "res / respawn",Title = "Respawn Character"}
+Cmd[#Cmd + 1] = {Text = "inmate / in",Title = "Change Team Inmate"}
+Cmd[#Cmd + 1] = {Text = "guard / gu",Title = "Change Team Guard"}
 
 local Material = {}
 local Toggles = {AutoRespawn = false}
@@ -363,6 +365,7 @@ local LocalPlayer = Players.localPlayer
 local Teams = game.Teams
 local Rstorage = game.ReplicatedStorage
 local Whitelisted = {}
+local States = {}
 SavedPositions.Crimpad = workspace["Criminals Spawn"].SpawnLocation.CFrame
 
 local Mouse = game.Players.LocalPlayer:GetMouse()
@@ -460,6 +463,41 @@ local PlrFromArgs = function(plr, args)
 		end
 	end
 	return foundplr
+end
+
+local LAction = function(args, args2)
+	if args == "sit" then
+		LocalPlayer.Character:FindFirstChild("Humanoid").Sit = true
+	elseif args == "unsit" then
+		if args2 then
+			local human = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+			for i = 1, 8 do Hbeat:Wait();human.Sit=false;Rstep:Wait();human.Sit=false;Stepped:Wait();human.Sit=false end
+		end;LocalPlayer.Character:FindFirstChildOfClass("Humanoid"):ChangeState(Enum.HumanoidStateType.Running)
+	elseif args == "speed" then
+		LocalPlayer.Character:FindFirstChild("Humanoid").WalkSpeed = args2
+	elseif args == "jumppw" then
+		LocalPlayer.Character:FindFirstChild("Humanoid").JumpPower = args2
+	elseif args == "die" then
+		LocalPlayer.Character:FindFirstChild("Humanoid").Health = 0
+	elseif args == "died" then
+		LocalPlayer.Character:FindFirstChildWhichIsA("Humanoid"):ChangeState(Enum.HumanoidStateType.Dead)
+	elseif args == "jump" then
+		LocalPlayer.Character:FindFirstChild("Humanoid"):ChangeState(Enum.HumanoidStateType.Jumping)
+	elseif args == "state" then
+		LocalPlayer.Character:FindFirstChildOfClass("Humanoid"):ChangeState(args2)
+	elseif args == "equip" then
+		LocalPlayer.Character:FindFirstChild("Humanoid"):EquipTool(args2)
+	elseif args == "unequip" then
+		LocalPlayer.Character:FindFirstChild("Humanoid"):UnequipTools()
+	end
+end
+
+local CPing = function(ConvertToHuman, OneWayTrip)
+	if ConvertToHuman then
+		return OneWayTrip and LocalPlayer:GetNetworkPing() * 1000 or game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValue()
+	else
+		return OneWayTrip and LocalPlayer:GetNetworkPing() or game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValue() / 1000
+	end
 end
 
 local LocTP = function(cframe)
@@ -715,8 +753,16 @@ function PlayerChatted(Message)
         end
     elseif Command("re") or Command("ref") or Command("refresh") then
                Refresh()
+               Notify("Refresh Your Character", Color3.fromRGB(0, 255, 0), "Success")
     elseif Command("res") or Command("respawn") then
                Respawn(LocalPlayer.TeamColor)
+               Notify("Respawn Your Character", Color3.fromRGB(0, 255, 0), "Success")
+    elseif Command("inmate") or Command("in") then
+               TeamTo("inmate")
+               Notify("Change Team Inmate", Color3.fromRGB(0, 255, 0), "Success")
+    elseif Command("guard") or Command("gu") then
+               TeamTo("guard")
+               Notify("Change Team Guard", Color3.fromRGB(0, 255, 0), "Success")
     else
         Notify("Not a command list", Color3.fromRGB(255, 0, 0), "Error")
     end
