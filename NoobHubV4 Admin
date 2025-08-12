@@ -342,7 +342,7 @@ local Cmd = {}
 
 Cmd[#Cmd + 1] = {Text = "versions 1",Title = "Script versions"}
 Cmd[#Cmd + 1] = {Text = "commands / command / cmds / cmd",Title = "Show Commands list"}
-Cmd[#Cmd + 1] = {Text = "autorespawn / autore / autorefresh",Title = "Toggles autorespawn to true or false"}
+Cmd[#Cmd + 1] = {Text = "autorespawn / autore / autorefresh [on/off]",Title = "Toggles autorespawn to true or false"}
 Cmd[#Cmd + 1] = {Text = "kill [plr]",Title = "Kill Player"}
 Cmd[#Cmd + 1] = {Text = "killinmates / killinmate",Title = "Kill All Inmates"}
 Cmd[#Cmd + 1] = {Text = "killguards / killguard",Title = "Kill All Guards"}
@@ -351,7 +351,7 @@ Cmd[#Cmd + 1] = {Text = "re / ref / refresh",Title = "Refreshes Character"}
 Cmd[#Cmd + 1] = {Text = "res / respawn",Title = "Respawn Character"}
 Cmd[#Cmd + 1] = {Text = "inmate / in",Title = "Change Team Inmate"}
 Cmd[#Cmd + 1] = {Text = "guard / gu",Title = "Change Team Guard"}
-Cmd[#Cmd + 1] = {Text = "criminal / crim / makecrim [plr",Title = "Make Player Criminal"}
+Cmd[#Cmd + 1] = {Text = "criminal / crim / makecrim [plr]",Title = "Make Player Criminal"}
 Cmd[#Cmd + 1] = {Text = "remington / shotgun",Title = "Get Remington 870"}
 Cmd[#Cmd + 1] = {Text = "ak-47 / ak",Title = "Get AK-47"}
 Cmd[#Cmd + 1] = {Text = "m9",Title = "Get M9"}
@@ -364,10 +364,13 @@ Cmd[#Cmd + 1] = {Text = "unloopkillall",Title = "Stopped loopkill all"}
 Cmd[#Cmd + 1] = {Text = "unloopkillinmate / unloopkillinmates",Title = "Stopped loopkill inmates"}
 Cmd[#Cmd + 1] = {Text = "unloopkillguard / unloopkillguards",Title = "Stopped loopkill guards"}
 Cmd[#Cmd + 1] = {Text = "unloopkillcriminal / unloopkillcriminals",Title = "Stopped loopkill criminals"}
+Cmd[#Cmd + 1] = {Text = "autoguns / aguns [on/off]",Title = "Toggles autoguns to true or false"}
+Cmd[#Cmd + 1] = {Text = "loopkill [plr]",Title = "Loopkill Player"}
+Cmd[#Cmd + 1] = {Text = "unloopkill [plr]",Title = "Unloopkill Player"}
 
 local Material = {}
-local Toggles = {AutoRespawn = false}
-local SavedPositions = {AutoRe = nil; Crimpad = nil}
+local Toggles = {AutoRespawn = false; AutoGuns = nil}
+local SavedPositions = {AutoRe = nil; Crimpad = workspace["Criminals Spawn"].SpawnLocation.CFrame}
 local Connections = {Died = nil}
 local Camera = game:FindService("Workspace").CurrentCamera
 local Rservice = game:GetService("RunService")
@@ -381,8 +384,8 @@ local Rstorage = game.ReplicatedStorage
 local Whitelisted = {}
 local States = {}
 local SavedArgs = {}
-local Loops = {KillTeams = {All = false, Inmate = false, Guard = false, Criminal = false}, Kill = {}}
-SavedPositions.Crimpad = workspace["Criminals Spawn"].SpawnLocation.CFrame
+local Loops = {Kill = {}, KillTeams = {All = false, Inmate = false, Guard = false, Criminal = false}}
+local Saved = {}
 
 local Mouse = game.Players.LocalPlayer:GetMouse()
 
@@ -614,6 +617,7 @@ function Respawn(bcolor)
 			TeamEve("Bright blue")
 		elseif bcolor == BrickColor.new("Really red") then
 			task.spawn(TeamEve, "Bright orange")
+            LocalPlayer.CharacterAdded:Wait()
 			TeamEve("Bright blue")
 			repeat Stepped:Wait()
 				pcall(function()
@@ -683,7 +687,7 @@ local KillPL = function(plr, events, guntouse, WaitToDie)
 	task.spawn(function()
 		for i = 1, 5 do
 			Rstorage.ReloadEvent:FireServer(AK)
-			task.wait(.05)
+			task.wait(.005)
 		end
 	end)
 	if plr.TeamColor == LocalPlayer.TeamColor then
@@ -692,7 +696,7 @@ local KillPL = function(plr, events, guntouse, WaitToDie)
 			SaveCamPos()
 			TeamEve("Bright orange")
 			Rstorage.ShootEvent:FireServer(ShootEvents, AK)
-			task.wait(0.04)
+			task.wait(0.03)
 		else
 			TeamTo("criminal")
 			Rstorage.ShootEvent:FireServer(ShootEvents, AK)
@@ -715,6 +719,7 @@ local MultiKill = function(plrs, bullet, exclude)
 		AK = LocalPlayer.Backpack:FindFirstChild("M9") or LocalPlayer.Character:FindFirstChild("M9")
 	end
 	local neutralkill, hasplayers = nil, nil
+    local wascriminal = LocalPlayer.TeamColor.Name == "Really red"
     local Eve = bullet or 10
 	local ShootEvents = {}
 	for i,v in pairs(plrs:GetPlayers()) do
@@ -745,7 +750,7 @@ local MultiKill = function(plrs, bullet, exclude)
 	task.spawn(function()
 		for i = 1, 20 do
 			Rstorage.ReloadEvent:FireServer(AK)
-			task.wait(.01)
+			task.wait(.005)
 		end
 	end)
 	if neutralkill then
@@ -753,7 +758,7 @@ local MultiKill = function(plrs, bullet, exclude)
 		SaveCamPos()
 		TeamEve("Medium stone grey")
 		Rstorage.ShootEvent:FireServer(ShootEvents, AK)
-		task.wait(0.02)
+		task.wait(0.01)
 		TeamEve("Bright orange")
 	else
 		Rstorage.ShootEvent:FireServer(ShootEvents, AK)
@@ -1004,6 +1009,31 @@ function PlayerChatted(Message)
     elseif Command("unloopkillcriminal") or Command("unloopkillcriminals") then
                Loops.KillTeams.Criminals = false
                Notify("Unloopkill criminals", Color3.fromRGB(0, 255, 0), "Success")
+    elseif Command("autoguns") or Command("aguns") then
+        if args[2] == "on" then
+            Toggles.AutoGuns = true
+        elseif args[2] == "off" then
+            Toggles.AutoGuns = false
+        else
+            Toggles.AutoGuns = not Toggles.AutoGuns
+        end
+        Notify("Auto Guns changed to "..tostring(Toggles.AutoGuns), Color3.fromRGB(0, 255, 0), "Success")
+    elseif Command("loopkill") then
+        local DaPlayer = PlrFromArgs(args[2], false)
+        if DaPlayer then
+            Loops.Kill[DaPlayer.UserId] = DaPlayer
+            Notify("Loopkill "..DaPlayer.DisplayName, Color3.fromRGB(0, 255, 0), "Success")
+        elseif not DaPlayer then
+            Notify("Not Player in server or player left", Color3.fromRGB(255, 0, 0), "Error")
+        end
+    elseif Command("loopkill") then
+        local DaPlayer = PlrFromArgs(args[2], false)
+        if DaPlayer then
+            Loops.Kill[DaPlayer.UserId] = nil
+            Notify("Unloopkill "..DaPlayer.DisplayName, Color3.fromRGB(0, 255, 0), "Success")
+        elseif not DaPlayer then
+            Notify("Not Player in server or player left", Color3.fromRGB(255, 0, 0), "Error")
+        end
     else
         Notify("Not a command list", Color3.fromRGB(255, 0, 0), "Error")
     end
@@ -1016,11 +1046,9 @@ LocalPlayer.Chatted:Connect(function(t)
 		end); if not success then
 			--
 		end
-		task.wait(.6);chatdebounce = nil
+		task.wait(.5); chatdebounce = nil
 	end
 end)
-SavedPositions.AutoRe = nil
-Connections.Died = nil
 local lochar = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
 local function ondiedevent()
 	coroutine.wrap(function()
@@ -1060,15 +1088,9 @@ local function charaddtask()
 	local LHuman = lochar:WaitForChild("Humanoid", 1)
 	if LHuman then
 		Connections.Died = LHuman.Died:Connect(ondiedevent)
-		if Connections.CharacterChildAdded then
-			Connections.CharacterChildAdded:Disconnect(); Connections.CharacterChildAdded = nil
-		end
         if Connections.HeadChildAdded then
 			Connections.HeadChildAdded:Disconnect(); Connections.HeadChildAdded = nil
 		end
-		Connections.CharacterChildAdded = lochar.ChildAdded:Connect(function()
-		       --
-		end)
         Connections.HeadChildAdded = lochar.Head.ChildAdded:Connect(function(child)
                if child.Name == "handcuffedGui" and Toggles.AutoRespawn then
                       Refresh()
@@ -1171,7 +1193,7 @@ task.spawn(function()
 			if Loops.KillTeams.Inmates then
 				if not SavedArgs.KillDebounceInmate then
 					SavedArgs.KillDebounceInmate = true
-					task.delay(0.03, function()
+					task.delay(0.015, function()
 						RTPing(); SavedArgs.KillDebounceInmate = nil
 					end)
 					MultiKill(Teams.Inmates)
@@ -1180,7 +1202,7 @@ task.spawn(function()
 			if Loops.KillTeams.Guards then
 				if not SavedArgs.KillDebounceGuard then
 					SavedArgs.KillDebounceGuard = true
-					task.delay(0.03, function()
+					task.delay(0.015, function()
 						RTPing(); SavedArgs.KillDebounceGuard = nil
 					end)
 					MultiKill(Teams.Guards)
@@ -1189,7 +1211,7 @@ task.spawn(function()
 			if Loops.KillTeams.Criminals then
 				if not SavedArgs.KillDebounceCriminal then
 					SavedArgs.KillDebounceCriminal = true
-					task.delay(0.03, function()
+					task.delay(0.015, function()
 						RTPing(); SavedArgs.KillDebounceCriminal = nil
 					end)
 					MultiKill(Teams.Criminals)
@@ -1199,10 +1221,32 @@ task.spawn(function()
 	end
 	while task.wait() do
 		pcall(task0)
-		if Unloaded then
-			break
-		end
 	end
+end)
+
+task.spawn(function()
+    function task1()
+        if Toggles.AutoGuns then
+            pcall(AllGuns)
+        end
+    end
+    while task.wait() do
+        pcall(task1)
+    end
+end)
+
+Connections.TeamChange = LocalPlayer:GetPropertyChangedSignal("Team"):Connect(function()
+    if LocalPlayer.TeamColor.Name == "Medium stone grey" then
+        task.delay(0.05, function()
+            game:GetService("StarterGui"):SetCoreGuiEnabled(Enum.CoreGuiType.All, true)
+        end); for i = 1, 10 do
+            pcall(function()
+                LocalPlayer.PlayerGui.Home.intro.Visible = false; LocalPlayer.PlayerGui.Home.hud.Visible = true
+                game:GetService("Workspace").CurrentCamera.FieldOfView = 70; game:GetService("Workspace").CurrentCamera.CameraType = Enum.CameraType.Custom
+                game:GetService("Workspace").CurrentCamera.CameraSubject = LocalPlayer.Character:FindFirstChild("Humanoid")
+            end); task.wait()
+        end
+    end
 end)
 
 getgenv().DisableScript = function()
@@ -1219,5 +1263,4 @@ getgenv().DisableScript = function()
 	end)
 end
 
-LocalPlayer.PlayerGui.Home.intro:Destroy()
 Notify("Loaded admin commands!", Color3.fromRGB(0, 255, 0), "Success")
