@@ -340,9 +340,11 @@ local UseCommand = false
 local Cmd = {}
 
 Cmd[#Cmd + 1] = {Text = "versions 1",Title = "Script versions"}
+Cmd[#Cmd + 1] = {Text = "commands / command / cmds / cmd",Title = "Show Commands list"}
+Cmd[#Cmd + 1] = {Text = "autorespawn / autore / autorefresh",Title = "Toggles autorespawn to true or false"}
 
 local Material = {}
-local Toggles = {AutoRespawn = true}
+local Toggles = {AutoRespawn = false}
 local SavedPositions = {AutoRe = nil; Crimpad = nil}
 local Connections = {Died = nil}
 local Camera = game:FindService("Workspace").CurrentCamera
@@ -352,6 +354,7 @@ local Rstep = Rservice.RenderStepped
 local Stepped = Rservice.Stepped
 local LocalPlayer = game.Players.localPlayer
 local Teams = game.Teams
+local cooldown = false
 SavedPositions.Crimpad = workspace["Criminals Spawn"].SpawnLocation.CFrame
 
 local Mouse = game.Players.LocalPlayer:GetMouse()
@@ -514,6 +517,65 @@ function Refresh(RefreshAs, Position)
 		end; LoadCamPos()
 end
 
+function Respawn(bcolor)
+		SavedPositions.AutoRe = nil
+		if bcolor == BrickColor.new("Bright orange") then
+			TeamEve("Bright orange")
+		elseif bcolor == BrickColor.new("Bright blue") then
+			TeamEve("Bright orange")
+			TeamEve("Bright blue")
+		elseif bcolor == BrickColor.new("Really red") then
+			task.spawn(TeamEve, "Bright orange")
+			TeamEve("Bright blue")
+			repeat Stepped:Wait()
+				pcall(function()
+					LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame = workspace["Criminals Spawn"].SpawnLocation.CFrame
+				end)
+			until LocalPlayer.TeamColor == BrickColor.new("Really red")
+		else
+			TeamEve("Medium stone grey")
+		end
+end
+
+local chatdebounce = false
+function PlayerChatted(Message)
+	if ScriptDisabled then return end
+	local args = Message:split(" ")
+    function Command(Cmd)
+           return args[1] == Prefix..Cmd
+    end
+    if Command("cmd") or Command("cmds") or Command("commands") or Command("command") then
+           if Background.Visible == true then
+			Background.Visible = false
+		else
+			Background.Visible = true
+		end
+		Notify("Showed Commands", Color3.fromRGB(0, 255, 0), "Success")
+    elseif Command("autorespawn") or Command("autore") or Command("autorefresh") then
+        if args[2] == "on" then
+            Toggles.AutoRespawn = true
+        elseif args[2] == "off" then
+            Toggles.AutoRespawn = false
+        else
+            Toggles.AutoRespawn = not Toggles.AutoRespawn
+        end
+        Notify("Auto Respawn changed to "..tostring(Toggles.AutoRespawn), Color3.fromRGB(0, 255, 0), "Success")
+    elseif Command
+    else
+        Notify("Not a command list", Color3.fromRGB(255, 0, 0), "Error")
+    end
+end
+LocalPlayer.Chatted:Connect(function(t)
+	if not chatdebounce then
+		chatdebounce = true
+		local success, errors = pcall(function()
+			PlayerChatted(t)
+		end); if not success then
+			--
+		end
+		task.wait(.6);chatdebounce = nil
+	end
+end)
 SavedPositions.AutoRe = nil
 Connections.Died = nil
 local lochar = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
@@ -611,6 +673,27 @@ Connections.CharacterAdded = LocalPlayer.CharacterAdded:Connect(function(newChar
               end
        end)
 end)
+
+Execute.FocusLost:Connect(function(enterPressed, inputObj)
+	if Execute.Text == "" then
+		return
+	end
+	if enterPressed then
+		local success, errors = pcall(function()
+			if string.sub(Execute.Text, 0, 1) == Prefix then
+				PlayerChatted(Execute.Text)
+			else
+				PlayerChatted(Prefix .. Execute.Text)
+			end
+		end)
+		if not success then
+			--
+		end
+		task.wait(.2)
+		Execute.Text = ""
+	end
+end)
+
 
 getgenv().DisableScript = function()
 	pcall(function()
