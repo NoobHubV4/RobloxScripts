@@ -374,6 +374,9 @@ Cmd[#Cmd + 1] = {Text = "car",Title = "Teleport car to your"}
 Cmd[#Cmd + 1] = {Text = "bringcar",Title = "Bring car to your"}
 Cmd[#Cmd + 1] = {Text = "arrest [plr]",Title = "Arrest Player"}
 Cmd[#Cmd + 1] = {Text = "arrestall",Title = "Arrest All Player"}
+Cmd[#Cmd + 1] = {Text = "damage / dmg [plr,team,all] [amount]",Title = "Damage Player"}
+Cmd[#Cmd + 1] = {Text = "teleport / tp [plr1] [plr2]",Title = "Teleport player1 to player2"}
+Cmd[#Cmd + 1] = {Text = "roof [plr]",Title = "Teleports player to roof"}
 
 local Material = {}
 local Toggles = {AutoRespawn = false; AutoGuns = nil}
@@ -726,21 +729,26 @@ local KillPL = function(plr, events, guntouse, WaitToDie)
 	end
 end
 
-local MultiKill = function(plrs, bullet, exclude)
+local MultiKill = function(plrs, bullet, guntouse)
 	local AK = LocalPlayer.Backpack:FindFirstChild("AK-47") or LocalPlayer.Character:FindFirstChild("AK-47")
-	if not AK and not (LocalPlayer.TeamColor == BrickColor.new("Bright blue")) then
+	if not AK and not guntouse then
 		Gun("AK-47")
 		task.wait()
 		AK = LocalPlayer.Backpack:FindFirstChild("AK-47") or LocalPlayer.Character:FindFirstChild("AK-47")
-	elseif LocalPlayer.TeamColor == BrickColor.new("Bright blue") then
-		AK = LocalPlayer.Backpack:FindFirstChild("M9") or LocalPlayer.Character:FindFirstChild("M9")
+	elseif guntouse then
+		AK = LocalPlayer.Backpack:FindFirstChild(guntouse) or LocalPlayer.Character:FindFirstChild(guntouse)
+		if not AK then
+			Gun(guntouse)
+			task.wait()
+			AK = LocalPlayer.Backpack:FindFirstChild(guntouse)
+		end
 	end
 	local neutralkill, hasplayers = nil, nil
     local wascriminal = LocalPlayer.TeamColor.Name == "Really red"
     local Eve = bullet or 10
 	local ShootEvents = {}
 	for i,v in pairs(plrs:GetPlayers()) do
-		if not (v == LocalPlayer or v == exclude) and CheckWhitelist(v) then
+		if not (v == LocalPlayer) and CheckWhitelist(v) then
 			if v.Character and not v.Character:FindFirstChildWhichIsA("ForceField") and not (v.Character:FindFirstChild("Humanoid").Health == 0) then
 				hasplayers = true
 				if v.TeamColor == LocalPlayer.TeamColor then
@@ -775,7 +783,7 @@ local MultiKill = function(plrs, bullet, exclude)
 		SaveCamPos()
 		TeamEve("Medium stone grey")
 		Rstorage.ShootEvent:FireServer(ShootEvents, AK)
-		task.wait(0.03)
+		task.wait(0.02)
 		TeamEve("Bright orange")
 	else
 		Rstorage.ShootEvent:FireServer(ShootEvents, AK)
@@ -968,7 +976,7 @@ local GetIllegalReg = function(args)
 end
 local ArrestPL = function(args, savepos, isHidden)
 	SavedPositions.ArrestPlr = LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame
-	local Timedout, readytoar = tick() + 6, tick() + CPing()
+	local Timedout, readytoar = tick() + 5, tick() + CPing()
 	LocTP(args.Character:FindFirstChild("HumanoidRootPart").CFrame)
 	repeat task.wait()
 		local potangina = args.Character and args.Character:FindFirstChild("Humanoid").Health == 0
@@ -1179,20 +1187,25 @@ function PlayerChatted(Message)
     elseif Command("arrest") then
         local DaPlayer = PlrFromArgs(args[2], LocalPlayer)
         if DaPlayer then
-            ArrestPL(DaPlayer, true, false)
-            Notify("Arrest "..DaPlayer.DisplayName, Color3.fromRGB(0, 255, 0), "Success")
+            if DaPlayer.TeamColor == BrickColor.new("Really red") or (DaPlayer.TeamColor == BrickColor.new("Bright orange") and GetIllegalReg(DaPlayer)) then
+				if DaPlayer == LocalPlayer then
+					ArrestEve(DaPlayer)
+				else
+					ArrestPL(DaPlayer, true, args[3] == "true")
+				end; Notify("Arrested "..DaPlayer.DisplayName, Color3.fromRGB(0, 255, 0), "Success")
+			else Notify("Player is unarrestable.", Color3.fromRGB(255, 0, 0), "Error"); end
         elseif not DaPlayer then
             Notify("Not Player in server or player left", Color3.fromRGB(255, 0, 0), "Error")
         end
     elseif Command("arrestall") then
-        for i,v in next, Players:GetPlayers() do
-            if v.Character.Humanoid.Health ~= 0 and GetIllegalReg(v) then
-                if v ~= game.Players.LocalPlayer and CheckWhitelist(v) then
-                    ArrestPL(v, true, false)
-                end
-            end
-        end
-        Notify("Arrest All Player", Color3.fromRGB(0, 255, 0), "Success")
+        local tempos = LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame
+			for i,v in pairs(Players:GetPlayers()) do
+				if v ~= LocalPlayer and CheckWhitelist(v) then
+					if v.TeamColor == BrickColor.new("Really red") or (v.TeamColor == BrickColor.new("Bright orange") and GetIllegalReg(v)) then
+						ArrestPL(v, false, args[3] == "true")
+					end
+				end
+			end; LocTP(tempos); Notify("Arrest all players", Color3.fromRGB(0, 255, 0), "Success")
     elseif Command("roof") then
         local DaPlayer = PlrFromArgs(args[2], LocalPlayer)
         if DaPlayer == LocalPlayer then
@@ -1203,6 +1216,42 @@ function PlayerChatted(Message)
             Notify("Bought "..DaPlayer.DisplayName.." to roof", Color3.fromRGB(0, 255, 0), "Success")
         elseif not DaPlayer then
             Notify("Not Player in server or player left", Color3.fromRGB(255, 0, 0), "Error")
+        end
+    elseif Command("teleport") or Command("tp") then
+        local DaPlayer1 = PlrFromArgs(args[2], false)
+        local DaPlayer2 = PlrFromArgs(args[3], false)
+        if DaPlayer1 and DaPlayer2 then
+            BringPL(DaPlayer1, DaPlayer2)
+            Notify("Teleport "..DaPlayer1.DisplayName.." to "..DaPlayer2.DisplayName, Color3.fromRGB(0, 255, 0), "Success")
+        elseif not DaPlayer1 or not DaPlayer2 then
+            Notify("Not Player in server or player left", Color3.fromRGB(255, 0, 0), "Error")
+        end
+    elseif Command("damage") or Command("dmg") then
+        local DaPlayer = PlrFromArgs(args[2], false)
+        local dmg = tonumber(args[3])
+        if DaPlayer and dmg then
+            KillPL(DaPlayer, dmg, "M9")
+            Notify("Damage "..DaPlayer.DisplayName.." "..dmg, Color3.fromRGB(0, 255, 0), "Success")
+        end
+        local arg2 = args[2] and args[2]:lower()
+        if dmg then
+            if arg2 == "all" then
+                MultiKill(Players, dmg, "M9")
+                Notify("Damage All "..dmg, Color3.fromRGB(0, 255, 0), "Success")
+            elseif arg2 == "inmates" then
+                MultiKill(game.Teams.Inmates, dmg, "M9")
+                Notify("Damage Inmates "..dmg, Color3.fromRGB(0, 255, 0), "Success")
+            elseif arg2 == "guards" then
+                MultiKill(game.Teams.Guards, dmg, "M9")
+                Notify("Damage Guards "..dmg, Color3.fromRGB(0, 255, 0), "Success")
+            elseif arg2 == "criminals" then
+                MultiKill(game.Teams.Criminals, dmg, "M9")
+                Notify("Damage Criminals "..dmg, Color3.fromRGB(0, 255, 0), "Success")
+            elseif not DaPlayer then
+                Notify("Not Player in server or player left", Color3.fromRGB(255, 0, 0), "Error")
+            end
+        else
+            Notify("Not Damage Found", Color3.fromRGB(255, 0, 0), "Error")
         end
     else
         Notify("Not a command list", Color3.fromRGB(255, 0, 0), "Error")
@@ -1407,7 +1456,7 @@ end)
 
 Connections.TeamChange = LocalPlayer:GetPropertyChangedSignal("Team"):Connect(function()
     if LocalPlayer.TeamColor.Name == "Medium stone grey" then
-        task.delay(0.025, function()
+        task.delay(0.05, function()
             game:GetService("StarterGui"):SetCoreGuiEnabled(Enum.CoreGuiType.All, true)
         end); for i = 1, 10 do
             pcall(function()
