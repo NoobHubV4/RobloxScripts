@@ -1526,18 +1526,18 @@ label.TextSize = 20
 label.TextWrapped = false
 
 button1.MouseButton1Click:Connect(function()
-	SavedPositions.AutoRe = nil; workspace.Remote.TeamEvent:FireServer("Bright orange")
-end);button2.MouseButton1Click:Connect(function()
-	SavedPositions.AutoRe = nil; workspace.Remote.TeamEvent:FireServer("Bright blue")
-	if #Teams.Guards:GetPlayers() > 7 then
-		Notify("Guards team is full!", Color3.fromRGB(255, 0, 0), "Error")
-	end
-end);button3.MouseButton1Click:Connect(function()
 	local crimpad = workspace["Criminals Spawn"].SpawnLocation.CFrame;SavedPositions.AutoRe = nil
 	workspace.Remote.TeamEvent:FireServer("Bright orange");LocalPlayer.CharacterAdded:Wait()
 	for i = 1, 10 do
 		waitfor(LocalPlayer.Character, "HumanoidRootPart").CFrame = crimpad
 	end
+end);button2.MouseButton1Click:Connect(function()
+    SavedPositions.AutoRe = nil; workspace.Remote.TeamEvent:FireServer("Bright blue")
+	if #Teams.Guards:GetPlayers() > 7 then
+		Notify("Guards team is full!", Color3.fromRGB(255, 0, 0), "Error")
+	end
+end);button3.MouseButton1Click:Connect(function()
+    SavedPositions.AutoRe = nil; workspace.Remote.TeamEvent:FireServer("Bright orange")
 end);Connections.TeamChange = LocalPlayer:GetPropertyChangedSignal("Team"):Connect(function()
     if LocalPlayer.TeamColor.Name == "Medium stone grey" then
         screengui.Enabled = true
