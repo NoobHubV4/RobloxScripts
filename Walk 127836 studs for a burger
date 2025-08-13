@@ -1,6 +1,7 @@
 local lib = loadstring(Game:HttpGet("https://raw.githubusercontent.com/NoobHubV1/NoobHubV1/main/Wizard%20Lib.lua"))()
 local autoSpeed
 local autoRespawn
+local autoWin
 local SavedPositions = {AutoRe = nil;}
 local Connections = {Died = nil;}
 local Camera = game:FindService("Workspace").CurrentCamera
@@ -18,11 +19,17 @@ function LoadCamPos()
 	Rstep:Wait()
 	Camera.CFrame = SavedPositions.OldCameraPos or Camera.CFrame
 end
+function Refresh()
+    game.ReplicatedStorage.RequestCompletionRebirth:FireServer()
+end
 Section:CreateToggle("Auto Speed", function(state)
   autoSpeed = state
 end)
 Section:CreateToggle("Auto Respawn", function(state)
   autoRespawn = state
+end)
+Section:CreateToggle("Auto Win", function(state)
+  autoWin = state
 end)
 spawn(function()
   task0 = function()
@@ -41,8 +48,8 @@ local function ondiedevent()
 	coroutine.wrap(function()
 		Connections.Died:Disconnect(); SaveCamPos()
 		SavedPositions.AutoRe = lochar:WaitForChild("HumanoidRootPart", 1) and LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame
-        if autoRespawn then
-               game.ReplicatedStorage.RequestCompletionRebirth:FireServer()
+        if autoRespawn and not autoWin then
+               Refresh()
         end
 	end)()
 end
@@ -56,7 +63,7 @@ local function charaddtask()
 end
 local function oncharadded()
 	lochar = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
-	if SavedPositions.AutoRe and autoRespawn then
+	if SavedPositions.AutoRe and autoRespawn and not autoWin then
 		local LRoot = lochar:WaitForChild("HumanoidRootPart", 1)
 		if LRoot then
 			LRoot.CFrame = SavedPositions.AutoRe; LoadCamPos(); LRoot.CFrame = SavedPositions.AutoRe
@@ -73,3 +80,14 @@ local function oncharadded()
 end
 Connections.Died = lochar:WaitForChild("Humanoid").Died:Connect(ondiedevent)
 Connections.CharacterAdded = LocalPlayer.CharacterAdded:Connect(oncharadded)
+spawn(function()
+    while wait(.275) do
+        if autoWin then
+            game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = workspace.Maps.Map5.Model.burger.CFrame
+            wait(.2125)
+            fireproximityprompt(workspace.Maps.Map5.Model.burger:FindFirstChild("ProximityPrompt"))
+            wait(.3125)
+            Refresh()
+        end
+    end
+end)
