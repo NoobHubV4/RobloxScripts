@@ -1014,6 +1014,17 @@ local MakeCrim = function(args, savepos, tpback, ArrestLater)
 		end
 	end
 end
+function HideTeamGui()
+    task.delay(0.05, function()
+        game:GetService("StarterGui"):SetCoreGuiEnabled(Enum.CoreGuiType.All, true)
+    end); for i = 1, 10 do
+        pcall(function()
+            LocalPlayer.PlayerGui.Home.intro.Visible = false; LocalPlayer.PlayerGui.Home.hud.Visible = true
+            game:GetService("Workspace").CurrentCamera.FieldOfView = 70; game:GetService("Workspace").CurrentCamera.CameraType = Enum.CameraType.Custom
+            game:GetService("Workspace").CurrentCamera.CameraSubject = LocalPlayer.Character:FindFirstChild("Humanoid")
+        end); task.wait()
+    end
+end
 local chatdebounce = false
 function PlayerChatted(Message)
 	if ScriptDisabled then return end
@@ -1243,6 +1254,8 @@ function PlayerChatted(Message)
         else
             Notify("Not Damage Found", Color3.fromRGB(255, 0, 0), "Error")
         end
+    elseif Command("neutral") or Command("ne") then
+            TeamEve("Medium stone grey")
     else
         Notify("Not a command list", Color3.fromRGB(255, 0, 0), "Error")
     end
@@ -1311,14 +1324,15 @@ local function oncharadded()
 	lochar = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
 	if SavedPositions.AutoRe and Toggles.AutoRespawn then
 		local LRoot = lochar:WaitForChild("HumanoidRootPart", 1)
-		if LRoot then
+        local neutral = LocalPlayer.TeamColor.Name == "Medium stone grey"
+		if LRoot and not neutral then
 			LRoot.CFrame = SavedPositions.AutoRe; LoadCamPos(); LRoot.CFrame = SavedPositions.AutoRe
 			task.spawn(function()
 				for i = 1, 4 do
 					task.wait(); LRoot.CFrame = SavedPositions.AutoRe
 				end
 			end)
-      if game.Players.LocalPlayer.PlayerGui.Home.hud.Topbar.titleBar.Title.Text == "Lights out" then
+      if not neutral and game.Players.LocalPlayer.PlayerGui.Home.hud.Topbar.titleBar.Title.Text == "Lights out" then
 				for i = 1, 5 do
 					LRoot.CFrame = SavedPositions.AutoRe; waitfor(LocalPlayer.Character, "HumanoidRootPart", 1).CFrame = SavedPositions.AutoRe
 				end; lochar:WaitForChild("HumanoidRootPart", 1).CFrame = SavedPositions.AutoRe
@@ -1541,17 +1555,9 @@ end);button3.MouseButton1Click:Connect(function()
 end);Connections.TeamChange = LocalPlayer:GetPropertyChangedSignal("Team"):Connect(function()
     if LocalPlayer.TeamColor.Name == "Medium stone grey" then
         screengui.Enabled = true
-        task.delay(0.05, function()
-            game:GetService("StarterGui"):SetCoreGuiEnabled(Enum.CoreGuiType.All, true)
-        end); for i = 1, 10 do
-            pcall(function()
-                LocalPlayer.PlayerGui.Home.intro.Visible = false; LocalPlayer.PlayerGui.Home.hud.Visible = true
-                game:GetService("Workspace").CurrentCamera.FieldOfView = 70; game:GetService("Workspace").CurrentCamera.CameraType = Enum.CameraType.Custom
-                game:GetService("Workspace").CurrentCamera.CameraSubject = LocalPlayer.Character:FindFirstChild("Humanoid")
-            end); task.wait()
-        end
+        HideTeamGui()
     else screengui.Enabled = false; end
-end)
+end);local enable = LocalPlayer.TeamColor.Name == "Medium stone grey"; screengui.Enabled = enable; if enable then HideTeamGui() end
 
 getgenv().DisableScript = function()
 	pcall(function()
