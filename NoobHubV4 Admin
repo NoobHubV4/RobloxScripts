@@ -557,7 +557,6 @@ local TeamTo = function(args)
 	if args == "criminal" then
         if LocalPlayer.TeamColor.Name == "Medium stone grey" then
                TeamEve("Bright orange")
-               LocalPlayer.CharacterAdded:Wait()
         end
 			workspace["Criminals Spawn"].SpawnLocation.CanCollide = false
 			workspace["Criminals Spawn"].SpawnLocation.CFrame = LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame
@@ -666,15 +665,6 @@ local RTPing = function(value)
 	local RT2 = tick()
 	local RoundTrip = (RT2-RT1) * 1000
 	return RoundTrip
-end
-
-function TurnForceField()
-    States.ForceField = true
-    while States.ForceField and wait() do
-        if not LocalPlayer.Character.ForceField then
-            Refresh()
-        end
-    end
 end
 
 local KillPL = function(plr, events, guntouse, WaitToDie) 
@@ -1454,8 +1444,103 @@ task.spawn(function()
     end
 end)
 
-Connections.TeamChange = LocalPlayer:GetPropertyChangedSignal("Team"):Connect(function()
+local screengui = Instance.new("ScreenGui",game.Players.LocalPlayer.PlayerGui)
+local team = Instance.new("Frame",screengui)
+local team2 = Instance.new("Frame",team)
+local label = Instance.new("TextLabel",team)
+local button1 = Instance.new("TextButton",team2)
+local button2 = Instance.new("TextButton",team2)
+local button3 = Instance.new("TextButton",team2)
+screengui.Name = "NH4ADMIN_MENU"
+screengui.Enabled = false
+screengui.ResetOnSpawn = true
+screengui.ZIndexBehavior = "Sibling"
+team.Name = "TeamFrame"
+team.Active = false
+team.AnchorPoint = Vector2.new(0.5, 0.5)
+team.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+team.BorderColor3 = Color3.fromRGB(0, 0, 0)
+team.BorderSizePixel = 0
+team.Position = UDim2.new(0.5, 0, 0.88, 0)
+team.Size = UDim2.new(0, 300, 0, 65)
+team2.Name = "Teams"
+team2.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+team2.Active = false
+team2.BorderColor3 = Color3.fromRGB(0, 0, 0)
+team2.BorderSizePixel = 0
+team2.Position = UDim2.new(0, 0, 0.338, 0)
+team2.Size = UDim2.new(0, 300, 0, 42)
+button1.Name = "CriminalButton"
+button1.Active = true
+button1.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+button1.BorderColor3 = Color3.fromRGB(45, 45, 45)
+button1.BorderMode = "Inset"
+button1.BorderSizePixel = 3
+button1.Position = UDim2.new(0, 0, 0.071, 0)
+button1.Size = UDim2.new(0, 95, 0, 35)
+button1.Font = Enum.Font.SourceSans
+button1.Text = "CRIMINAL"
+button1.TextColor3 = Color3.fromRGB(255, 255, 255)
+button1.TextScaled = false
+button1.TextSize = 21
+button1.TextWrapped = true
+button2.Name = "GuardButton"
+button2.Active = true
+button2.BackgroundColor3 = Color3.fromRGB(0, 0, 255)
+button2.BorderColor3 = Color3.fromRGB(45, 45, 45)
+button2.BorderMode = "Inset"
+button2.BorderSizePixel = 3
+button2.Position = UDim2.new(0.683, 0, 0.071, 0)
+button2.Size = UDim2.new(0, 95, 0, 35)
+button2.Font = Enum.Font.SourceSans
+button2.Text = "GUARD"
+button2.TextColor3 = Color3.fromRGB(255, 255, 255)
+button2.TextScaled = false
+button2.TextSize = 21
+button2.TextWrapped = true
+button3.Name = "InmateButton"
+button3.Active = true
+button3.BackgroundColor3 = Color3.fromRGB(255, 85, 0)
+button3.BorderColor3 = Color3.fromRGB(45, 45, 45)
+button3.BorderMode = "Inset"
+button3.BorderSizePixel = 3
+button3.Position = UDim2.new(0.34, 0, 0.071, 0)
+button3.Size = UDim2.new(0, 95, 0, 35)
+button3.Font = Enum.Font.SourceSans
+button3.Text = "INMATE"
+button3.TextColor3 = Color3.fromRGB(255, 255, 255)
+button3.TextScaled = false
+button3.TextSize = 21
+button3.TextWrapped = true
+label.Name = "TeamLabel"
+label.Active = false
+label.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+label.BorderColor3 = Color3.fromRGB(0, 0, 0)
+label.BorderSizePixel = 0
+label.Size = UDim2.new(0, 300, 0, 22)
+label.Font = Enum.Font.SourceSans
+label.Text = "SELECT A TEAM"
+label.TextColor3 = Color3.fromRGB(255, 255, 255)
+label.TextScaled = false
+label.TextSize = 20
+label.TextWrapped = false
+
+button1.MouseButton1Click:Connect(function()
+	SavedPositions.AutoRe = nil; workspace.Remote.TeamEvent:FireServer("Bright orange")
+end);button2.MouseButton1Click:Connect(function()
+	SavedPositions.AutoRe = nil; workspace.Remote.TeamEvent:FireServer("Bright blue")
+	if #Teams.Guards:GetPlayers() > 7 then
+		Notify("Guards team is full!", Color3.fromRGB(255, 0, 0), "Error")
+	end
+end);button3.MouseButton1Click:Connect(function()
+	local crimpad = workspace["Criminals Spawn"].SpawnLocation.CFrame;SavedPositions.AutoRe = nil
+	workspace.Remote.TeamEvent:FireServer("Bright orange");LocalPlayer.CharacterAdded:Wait()
+	for i = 1, 10 do
+		waitfor(LocalPlayer.Character, "HumanoidRootPart").CFrame = crimpad
+	end
+end);Connections.TeamChange = LocalPlayer:GetPropertyChangedSignal("Team"):Connect(function()
     if LocalPlayer.TeamColor.Name == "Medium stone grey" then
+        screengui.Enabled = true
         task.delay(0.05, function()
             game:GetService("StarterGui"):SetCoreGuiEnabled(Enum.CoreGuiType.All, true)
         end); for i = 1, 10 do
@@ -1465,7 +1550,7 @@ Connections.TeamChange = LocalPlayer:GetPropertyChangedSignal("Team"):Connect(fu
                 game:GetService("Workspace").CurrentCamera.CameraSubject = LocalPlayer.Character:FindFirstChild("Humanoid")
             end); task.wait()
         end
-    end
+    else screengui.Enabled = false; end
 end)
 
 getgenv().DisableScript = function()
