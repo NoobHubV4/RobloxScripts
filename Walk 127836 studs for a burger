@@ -52,12 +52,6 @@ local function charaddtask()
 	local LHuman = lochar:WaitForChild("Humanoid", 1)
 	if LHuman then
 		Connections.Died = LHuman.Died:Connect(ondiedevent)
-		if Connections.CharacterChildAdded then
-			Connections.CharacterChildAdded:Disconnect(); Connections.CharacterChildAdded = nil
-		end
-		Connections.CharacterChildAdded = lochar.ChildAdded:Connect(function(tool)
-			--
-		end)
 	end
 end
 local function oncharadded()
@@ -67,7 +61,7 @@ local function oncharadded()
 		if LRoot then
 			LRoot.CFrame = SavedPositions.AutoRe; LoadCamPos(); LRoot.CFrame = SavedPositions.AutoRe
 			task.spawn(function()
-				for i = 1, 4 do
+				for i = 1, 7 do
 					task.wait(); LRoot.CFrame = SavedPositions.AutoRe
 				end
 			end)
