@@ -1,0 +1,17 @@
+local lib = loadstring(Game:HttpGet("https://raw.githubusercontent.com/NoobHubV1/NoobHubV1/main/Wizard%20Lib.lua"))()
+local autoAge
+local Window = lib:NewWindow("Every Jump You Get +1 Age")
+local Section = Window:NewSection("Main")
+Section:CreateToggle("Auto Age", function(state)
+  autoAge = state
+end)
+spawn(function()
+  task0 = function()
+    if autoAge then
+      game.ReplicatedStorage.Network.Game.IncreasePoint:FireServer()
+    end
+  end
+  while task.wait() do
+    pcall(task0)
+  end
+end)
