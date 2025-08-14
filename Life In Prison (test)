@@ -1,0 +1,182 @@
+local lib = loadstring(game:HttpGet("https://raw.github.com/NoobHubV1/NoobHubV1/main/Wizard%20Lib.lua"))()
+local Window = lib:NewWindow("Life In Prison")
+local Main = Window:NewSection("Main")
+local Team = Window:NewSection("Team")
+local SavedPositions = {AutoRe = nil}
+local Connections = {Died = nil;}
+local Camera = game:FindService("Workspace").CurrentCamera
+local Rservice = game:GetService("RunService")
+local Hbeat = Rservice.Heartbeat
+local Rstep = Rservice.RenderStepped
+local Stepped = Rservice.Stepped
+local LocalPlayer = game.Players.localPlayer
+local Teams = game.Teams
+local autoRespawn = nil
+local killAura = nil
+
+local LocTP = function(cframe)
+	LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame = cframe
+end
+
+function SaveCamPos()
+	SavedPositions.OldCameraPos = Camera.CFrame
+end
+function LoadCamPos()
+	Rstep:Wait()
+	Camera.CFrame = SavedPositions.OldCameraPos or Camera.CFrame
+end
+
+function ChangeTeam(args)
+  game.ReplicatedStorage.RemoteEvent:FireServer("ChangeTeam", Teams:FindFirstChild(args))
+end
+
+function MeleeEvent(args)
+  game.ReplicatedStorage.RemoteEvent:FireServer("meleeEvent", args.Character:FindFirstChild("Humanoid"))
+end
+
+function TeamTo(args)
+  local tmp = LocalPlayer.Character.HumanoidRootPart.CFrame; SavedPositions.AutoRe = tmp; SaveCamPos()
+  ChangeTeam("Neutral")
+  if args == "criminal" then
+    ChangeTeam("Criminals")
+  elseif args == "inmate" then
+    ChangeTeam("Prisoners")
+  elseif args == "guard" then
+    ChangeTeam("Police")
+  end; LocalPlayer.CharacterAdded:Wait()
+		if waitfor(LocalPlayer.Character, "HumanoidRootPart", 4) then
+			LocTP(tmp)
+		end; LoadCamPos()
+end
+
+function Refresh()
+    local team = LocalPlayer.Team; local tmp = LocalPlayer.Character.HumanoidRootPart.CFrame; SavedPositions.AutoRe = tmp; SaveCamPos()
+    if team == Teams.Criminals then
+        ChangeTeam("Neutral")
+        ChangeTeam("Criminals")
+    elseif team == Teams.Prisoners then
+        ChangeTeam("Neutral")
+        ChangeTeam("Prisoners")
+    elseif team == Teams.Police then
+        ChangeTeam("Neutral")
+        ChangeTeam("Police")
+    elseif team == Teams.Neutral then
+        ChangeTeam("Prisoners")
+        ChangeTeam("Neutral")
+    end; LocalPlayer.CharacterAdded:Wait()
+		if waitfor(LocalPlayer.Character, "HumanoidRootPart", 4) then
+			LocTP(tmp)
+		end; LoadCamPos()
+end
+
+waitfor = function(source, args, interval)
+	local int = interval or 5
+	local timeout = tick() + int
+	repeat Stepped:Wait() until source:FindFirstChild(args) or tick() - timeout >=0
+	timeout = nil
+	if source:FindFirstChild(args) then
+		return source:FindFirstChild(args)
+	else
+		return nil
+	end
+end
+
+Main:CreateButton("Refresh", function()
+  Refresh()
+end)
+
+Main:CreateToggle("Auto Respawn", function(state)
+  autoRespawn = state
+end)
+
+Main:CreateToggle("Kill Aura", function(state)
+  killAura = state
+end)
+
+Team:CreateButton("Criminal", function()
+  TeamTo("criminal")
+end)
+
+Team:CreateButton("Inmate", function()
+  TeamTo("inmate")
+end)
+
+Team:CreateButton("Guard", function()
+  TeamTo("guard")
+end)
+
+local lochar = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+local function ondiedevent()
+	coroutine.wrap(function()
+		Connections.Died:Disconnect(); SaveCamPos()
+		SavedPositions.AutoRe = lochar:WaitForChild("HumanoidRootPart", 1) and LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame; Camera.CameraType = Enum.CameraType.Track
+        if autoRespawn then
+            local team = LocalPlayer.Team
+            if team == Teams.Criminals then
+                ChangeTeam("Neutral")
+                ChangeTeam("Criminals")
+            elseif team == Teams.Prisoners then
+                ChangeTeam("Neutral")
+                ChangeTeam("Prisoners")
+            elseif team == Teams.Police then
+                ChangeTeam("Neutral")
+                ChangeTeam("Police")
+            elseif team == Teams.Neutral then
+                ChangeTeam("Prisoners")
+                ChangeTeam("Neutral")
+            end
+        end
+	end)()
+end
+local function charaddtask()
+	Connections.Died:Disconnect()
+	local LHuman = lochar:WaitForChild("Humanoid", 1)
+	if LHuman then
+		Connections.Died = LHuman.Died:Connect(ondiedevent)
+	end
+end
+local function oncharadded()
+	lochar = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+	if SavedPositions.AutoRe and autoRespawn then
+		local LRoot = lochar:WaitForChild("HumanoidRootPart", 1)
+		if LRoot then
+			LRoot.CFrame = SavedPositions.AutoRe; LoadCamPos(); LRoot.CFrame = SavedPositions.AutoRe
+			task.spawn(function()
+				for i = 1, 4 do
+					task.wait(); LRoot.CFrame = SavedPositions.AutoRe
+				end
+			end)
+		end
+	end
+	lochar:WaitForChild("Humanoid", 1):SetStateEnabled(Enum.HumanoidStateType.FallingDown, false)
+	lochar:WaitForChild("Humanoid", 1):SetStateEnabled(Enum.HumanoidStateType.Ragdoll, false)
+  coroutine.wrap(charaddtask)()
+end
+Connections.Died = lochar:WaitForChild("Humanoid").Died:Connect(ondiedevent)
+Connections.CharacterAdded = LocalPlayer.CharacterAdded:Connect(function(newChar)
+  oncharadded()
+  newChar.Head.ChildAdded:Connect(function(child)
+    if child.Name == "handcuffedGui" then
+      Refresh()
+    end
+  end)
+end)
+
+task.spawn(function()
+  task1 = function()
+    if killAura then
+      for i,v in ipairs(game.Players:GetPlayers()) do
+        if not v.Character:FindFirstChild("ForceField") and v.Character.Humanoid.Health ~= 0 then
+          if v ~= LocalPlayer and (LocalPlayer.Character.HumanoidRootPart.Position - v.Character.HumanoidRootPart.Position).Magnitude <= 25 then
+            MeleeEvent(v)
+          end
+        end
+      end
+    end
+  end
+  while task.wait() do
+    task.spawn(task1)
+  end
+end)
+
+Window:SelectTab(1)
