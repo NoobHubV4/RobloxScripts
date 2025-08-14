@@ -1,1 +1,23 @@
---Patched
+local lib = loadstring(Game:HttpGet("https://raw.githubusercontent.com/NoobHubV1/NoobHubV1/main/Wizard%20Lib.lua"))()
+local Rstorage = game.ReplicatedStorage
+local autoMoon
+local Window = lib:NewWindow("Create a Factory")
+local Section = Window:NewSection("Main")
+Section:CreateTextbox("Give Money", function(text)
+  for i = 1,4 do
+    Rstorage.SetupConveyorTouches:FireServer(workspace:FindFirstChild("Base"..i).PlacedPieces.Seller, tonumber(text), 0)
+  end
+end)
+Section:CreateToggle("Auto Moon Coin", function(state)
+  autoMoon = state
+end)
+spawn(function()
+  function task0()
+    if autoMoon then
+      Rstorage.GiveMoonCoin:FireServer()
+    end
+  end
+  while task.wait() do
+    task.spawn(task0)
+  end
+end)
