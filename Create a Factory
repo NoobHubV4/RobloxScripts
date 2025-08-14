@@ -1,15 +1,38 @@
 local lib = loadstring(Game:HttpGet("https://raw.githubusercontent.com/NoobHubV1/NoobHubV1/main/Wizard%20Lib.lua"))()
 local Rstorage = game.ReplicatedStorage
 local autoMoon
+local enchant = "Rare"
 local Window = lib:NewWindow("Create a Factory")
-local Section = Window:NewSection("Main")
-Section:CreateTextbox("Give Money", function(text)
+local Main = Window:NewSection("Main")
+local NPC = Window:NewSection("NPC")
+Main:CreateTextbox("Give Money", function(text)
   for i = 1,4 do
     Rstorage.SetupConveyorTouches:FireServer(workspace:FindFirstChild("Base"..i).PlacedPieces.Seller, tonumber(text), 0)
   end
 end)
-Section:CreateToggle("Auto Moon Coin", function(state)
+Main:CreateToggle("Auto Moon Coin", function(state)
   autoMoon = state
+end)
+NPC:CreateDropdown("Enchant", {"Rare","Legendary","Mythical"}, 1, function(select)
+  enchant = select
+end)
+NPC:CreateButton("Enchant All NPC", function()
+  for i = 1,4 do
+    for i,v in next, game.workspace:FindFirstChild("Base"..i):GetChildren() do
+      if v.Name:lower():find("npc_") then
+        Rstorage.NPCDecision:FireServer("Orb", v, enchant)
+      end
+    end
+  end
+end)
+NPC:CreateButton("Drop All NPC", function()
+  for i = 1,4 do
+    for i,v in next, game.workspace:FindFirstChild("Base"..i):GetChildren() do
+      if v.Name:lower():find("npc_") then
+        Rstorage.Drop:FireServer("Orb", v, "Mythical")
+      end
+    end
+  end
 end)
 spawn(function()
   function task0()
