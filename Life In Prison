@@ -129,7 +129,7 @@ local function oncharadded()
   coroutine.wrap(charaddtask)()
 end
 Connections.Died = lochar:WaitForChild("Humanoid").Died:Connect(ondiedevent)
-Connections.CharacterAdded = LocalPlayer.CharacterAdded:Connect(function(oncharadded)
+Connections.CharacterAdded = LocalPlayer.CharacterAdded:Connect(oncharadded)
 
 -- Button Script:
 
