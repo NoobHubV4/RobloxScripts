@@ -68,8 +68,8 @@ function LoadCamPos()
 	Camera.CFrame = SavedPositions.OldCameraPos or Camera.CFrame
 end
 
-function TeamEve(args)
-  game.ReplicatedStorage.RemoteEvent:FireServer("ChangeTeam", args)
+function ChangeTeam(args)
+  game.ReplicatedStorage.RemoteEvent:FireServer("ChangeTeam", Teams:FindFirstChild(args))
 end
 
 local waitfor = function(source, args, interval)
@@ -93,12 +93,15 @@ local function ondiedevent()
 		SavedPositions.AutoRe = lochar:WaitForChild("HumanoidRootPart", 1) and LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame; Camera.CameraType = Enum.CameraType.Track
     if autoRespawn then
         local locteam = LocalPlayer.Team
-        if locteam == Teams.Prisoners then
-            TeamEve(Teams.Neutral)
-            TeamEve(Teams.Prisoners)
-        elseif locteam == game.Teams.Police then
-            TeamEve(Teams.Neutral)
-            TeamEve(Teams.Police)
+        if locteam == Teams.Criminals then
+               ChangeTeam("Neutral")
+               ChangeTeam("Criminals")
+        elseif locteam == Teams.Prisoners then
+               ChangeTeam("Neutral")
+               ChangeTeam("Prisoners")
+        elseif locteam == Teams.Police then
+               ChangeTeam("Neutral")
+               ChangeTeam("Police")
         end
     end
 	end)()
