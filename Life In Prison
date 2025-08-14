@@ -14,18 +14,18 @@ local Teams = game.Teams
 local autoRespawn = nil
 local killAura = nil
 local remote = game.ReplicatedStorage.RemoteEvent
-local source = workspace.pickups:FindFirstChild("AK-74"):FindFirstChild("U\215\225Kc\143Z\1867R\183)\243m\152\241\207@]\016`\236Z\209\144\226\159$\229\196\029\163.\202\195U*?\242\024\248\170\153\241\145m\239\018\2117")
+local source = workspace.pickups:FindFirstChild("AWM"):FindFirstChild("~+\198\005C\221%\196jq\239\208\236\153\015\221\152++\222\255\15738E\133Q\151\1980\135\150\222f\164:\153\181\173\t\221\1891\152\185\160\127c\1967")
 
 local LocTP = function(cframe)
 	LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame = cframe
 end
 
-function GetAK()
+function GetAwm()
     SavedPositions.Gun = LocalPlayer.Character.HumanoidRootPart.CFrame
     repeat task.wait()
         game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = source.CFrame
         remote:FireServer("ItemHandler",source)
-    until LocalPlayer.Character:FindFirstChild("AK-74") or LocalPlayer.Backpack:FindFirstChild("AK-74")
+    until LocalPlayer.Character:FindFirstChild("AWM") or LocalPlayer.Backpack:FindFirstChild("AWM")
     LocalPlayer.Character.HumanoidRootPart.CFrame = SavedPositions.Gun
 end
 function SaveCamPos()
@@ -91,10 +91,6 @@ waitfor = function(source, args, interval)
 	end
 end
 
-function KillAll()
-	--Patched
-end
-
 Main:CreateButton("Refresh", function()
   Refresh()
 end)
@@ -107,8 +103,8 @@ Main:CreateToggle("Kill Aura", function(state)
   killAura = state
 end)
 
-Main:CreateButton("Kill All", function()
-  KillAll()
+Main:CreateButton("Get Awm Gun", function()
+  GetAwm()
 end)
 
 Team:CreateButton("Criminal", function()
