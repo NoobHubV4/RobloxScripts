@@ -380,9 +380,14 @@ Cmd[#Cmd + 1] = {Text = "roof [plr]",Title = "Teleports player to roof"}
 Cmd[#Cmd + 1] = {Text = "antitase [on/off]",Title = "Toggles antitase to true or false"}
 Cmd[#Cmd + 1] = {Text = "neutralspawn [plr]",Title = "Teleport Player to neutralspawn"}
 Cmd[#Cmd + 1] = {Text = "spampunch [on/off]",Title = "Toggles spampunch to true or false"}
+Cmd[#Cmd + 1] = {Text = "antibring [on/off]",Title = "Toggles antibring to true or false"}
+Cmd[#Cmd + 1] = {Text = "loudpunch [on/off]",Title = "States loudpunch to true or false"}
+Cmd[#Cmd + 1] = {Text = "servercrash",Title = "Crash the Server"}
+Cmd[#Cmd + 1] = {Text = "notifybar",Title = "Visible Notify bar"}
+Cmd[#Cmd + 1] = {Text = "armory [plr]",Title = "Teleport Player to armory"}
 
 local Material = {}
-local Toggles = {AutoRespawn = false; AutoGuns = nil, AntiTase = false, SpamPunch = false}
+local Toggles = {AutoRespawn = false; AutoGuns = nil, AntiTase = false, SpamPunch = false, AntiBring = false}
 local SavedPositions = {AutoRe = nil; Crimpad = workspace["Criminals Spawn"].SpawnLocation.CFrame}
 local Connections = {Died = nil}
 local Camera = game:FindService("Workspace").CurrentCamera
@@ -395,7 +400,7 @@ local LocalPlayer = Players.localPlayer
 local Teams = game.Teams
 local Rstorage = game.ReplicatedStorage
 local Whitelisted = {}
-local States = {LoudPunch = true, Crawl = false}
+local States = {LoudPunch = false, Crawl = false}
 local SavedArgs = {}
 local Loops = {Kill = {}, KillTeams = {All = false, Inmate = false, Guard = false, Criminal = false}}
 local Saved = {KillDebounce = {}, NormalSpeed = 16, WalkSpeed = nil, JumpPower = nil, NormalJump = 50, RunSpeed = 25}
@@ -403,6 +408,9 @@ local animMove = nil
 local animStop = nil
 local runMove = nil
 local runStop = nil
+local Unloaded = false
+local DisableScript
+local screengui
 local Teleports = {nspawn = CFrame.new(879, 28, 2349), cells = CFrame.new(918.9735107421875, 99.98998260498047, 2451.423583984375), nexus = CFrame.new(877.929688, 99.9899826, 2373.57031, 0.989495575, 1.64841456e-08, 0.144563332, -3.13438235e-08, 1, 1.00512544e-07, -0.144563332, -1.0398788e-07, 0.989495575), armory = CFrame.new(836.130432, 99.9899826, 2284.55908, 0.999849498, 5.64007507e-08, -0.0173475463, -5.636889e-08, 1, 2.3254485e-09, 0.0173475463, -1.34723666e-09, 0.999849498), yard = CFrame.new(787.560425, 97.9999237, 2468.32056, -0.999741256, -7.32754017e-08, -0.0227459427, -7.49895506e-08, 1, 7.45077955e-08, 0.0227459427, 7.6194226e-08, -0.999741256), crimbase = CFrame.new(-864.760071, 94.4760284, 2085.87671, 0.999284029, 1.78674284e-08, 0.0378339142, -1.85715123e-08, 1, 1.82584365e-08, -0.0378339142, -1.89479969e-08, 0.999284029), cafe = CFrame.new(884.492798, 99.9899368, 2293.54907, -0.0628612712, -2.14097344e-08, -0.998022258, -9.52544568e-08, 1, -1.54524784e-08, 0.998022258, 9.40947018e-08, -0.0628612712), kitchen = CFrame.new(936.633118, 99.9899368, 2224.77148, -0.00265917974, -9.30829671e-08, 0.999996483, -3.28682326e-08, 1, 9.29958901e-08, -0.999996483, -3.26208252e-08, -0.00265917974), roof = CFrame.new(918.694092, 139.709427, 2266.60986, -0.998788536, -7.55880691e-08, -0.0492084064, -7.8453354e-08, 1, 5.62961198e-08, 0.0492084064, 6.00884817e-08, -0.998788536), vents = CFrame.new(933.55376574342, 121.534234671875, 2232.7952174975), office = CFrame.new(706.1928465, 103.14982749, 2344.3957382525), ytower = CFrame.new(786.731873, 125.039917, 2587.79834, -0.0578307845, 8.82393678e-08, 0.998326421, 6.09781523e-08, 1, -8.48549675e-08, -0.998326421, 5.59688687e-08, -0.0578307845), gtower = CFrame.new(505.551605, 125.039917, 2127.41138, -0.99910152, 5.44945458e-08, 0.0423811078, 5.36830491e-08, 1, -2.02856469e-08, -0.0423811078, -1.79922726e-08, -0.99910152), garage = CFrame.new(618.705566, 98.039917, 2469.14136, 0.997341573, 1.85835844e-08, -0.0728682056, -1.79448154e-08, 1, 9.42077172e-09, 0.0728682056, -8.0881204e-09, 0.997341573), sewers = CFrame.new(917.123657, 78.6990509, 2297.05298, -0.999281704, -9.98203404e-08, -0.0378962979, -1.01324503e-07, 1, 3.77708638e-08, 0.0378962979, 4.15835579e-08, -0.999281704), neighborhood = CFrame.new(-281.254669, 54.1751289, 2484.75513, 0.0408788249, 3.26279768e-08, 0.999164104, -3.88249717e-08, 1, -3.10668256e-08, -0.999164104, -3.75225433e-08, 0.0408788249), gas = CFrame.new(-497.284821, 54.3937759, 1686.3175, 0.585129559, -4.33374865e-08, -0.810939848, 5.33533938e-13, 1, -5.34406759e-08, 0.810939848, 3.12692876e-08, 0.585129559), deadend = CFrame.new(-979.852478, 54.1750259, 1382.78967, 0.0152699631, 8.88235174e-09, 0.999883413, 6.75286884e-08, 1, -9.9146682e-09, -0.999883413, 6.76722109e-08, 0.0152699631), store = CFrame.new(455.089508, 11.4253607, 1222.89746, 0.99995482, -3.92535604e-09, 0.00950394664, 2.84450263e-09, 1, 1.1374032e-07, -0.00950394664, -1.13708147e-07, 0.99995482), roadend = CFrame.new(1060.81995, 67.5668106, 1847.08923, 0.0752086118, -1.01192255e-08, -0.997167826, 4.30985886e-10, 1, -1.01154605e-08, 0.997167826, 3.31004502e-10, 0.0752086118), trapbuilding = CFrame.new(-306.715485, 84.2401199, 1984.13367, -0.802221119, 5.70582088e-08, -0.597027004, 4.81801123e-08, 1, 3.08312771e-08, 0.597027004, -4.0313255e-09, -0.802221119), mansion = CFrame.new(-315.790436, 64.5724411, 1840.83521, 0.80697298, -4.47871713e-08, 0.590588331, 1.14004006e-08, 1, 6.02574701e-08, -0.590588331, -4.18932053e-08, 0.80697298), trapbase = CFrame.new(-943.973145, 94.1287613, 1919.73694, 0.025614135, -1.48015129e-08, 0.999671876, 1.00375175e-07, 1, 1.22345032e-08, -0.999671876, 1.00028863e-07, 0.025614135), buildingroof = CFrame.new(-317.689331, 118.838821, 2009.28186, 0.749499857, 2.48145682e-09, 0.662004471, 3.51757373e-10, 1, -4.14664703e-09, -0.662004471, 3.34077632e-09, 0.749499857)}
 
 local Mouse = game.Players.LocalPlayer:GetMouse()
@@ -456,10 +464,6 @@ Mouse.Move:Connect(function()
 		Background3.Visible = false
 	end
 end)
-
-if DisableScript then
-	DisableScript()
-end
 
 local function Notify(Message, Color, Text)
 	Notify6.Text = Notify5.Text
@@ -851,7 +855,7 @@ local MultiKill = function(plrs, bullet, guntouse)
 		SaveCamPos()
 		TeamEve("Medium stone grey")
 		Rstorage.ShootEvent:FireServer(ShootEvents, AK)
-		task.wait(0.02)
+		task.wait(0.015)
 		TeamEve("Bright orange")
 	else
 		Rstorage.ShootEvent:FireServer(ShootEvents, AK)
@@ -1104,7 +1108,7 @@ function HideTeamGui()
     end
 end
 
-local TasePL = function(plr, args)
+TasePL = function(plr, args)
 	local oldteam = nil
 	if not (LocalPlayer.TeamColor == BrickColor.new("Bright blue")) then
 		oldteam = LocalPlayer.TeamColor
@@ -1113,37 +1117,23 @@ local TasePL = function(plr, args)
 	end
 	local Taser = LocalPlayer.Backpack:FindFirstChild("Taser") or LocalPlayer.Character:FindFirstChild("Taser")
 	local ShootEvents = {};
-	if args == "teams" then
-		for _, tea in pairs(plr:GetPlayers()) do
-			if (not (tea == LocalPlayer) and not (tea.TeamColor == BrickColor.new("Bright blue"))) and CheckWhitelist(tea) and tea.Character and tea.Character:FindFirstChild("Humanoid") and not (tea.Character:FindFirstChild("Humanoid").Health == 0) then
-				ShootEvents[#ShootEvents + 1] = {
-					Hit = tea.Character:FindFirstChildOfClass("Part");
-					Cframe = CFrame.new();
-					RayObject = Ray.new(Vector3.new(), Vector3.new());
-					Distance = 0;
-				};
-			end
-		end
-	elseif args == "tables" then
-		for i,v in next, plr do
-			if not (v == LocalPlayer) and CheckWhitelist(v) and v.Character and v.Character:FindFirstChild("Humanoid") and not (v.Character:FindFirstChild("Humanoid").Health == 0) then
-				ShootEvents[#ShootEvents + 1] = {
-					Hit = v.Character:FindFirstChildOfClass("Part");
-					Cframe = CFrame.new();
-					RayObject = Ray.new(Vector3.new(), Vector3.new());
-					Distance = 0;
-				};
-			end
-		end
-	else
-		if plr and plr.Character and plr.Character:FindFirstChild("Humanoid") and not (plr.Character:FindFirstChild("Humanoid").Health == 0) then
+	for _, tea in pairs(plr:GetPlayers()) do
+		if (not (tea == LocalPlayer) and not (tea.TeamColor == BrickColor.new("Bright blue"))) and CheckWhitelist(tea) and tea.Character and tea.Character:FindFirstChild("Humanoid") and not (tea.Character:FindFirstChild("Humanoid").Health == 0) then
 			ShootEvents[#ShootEvents + 1] = {
-				Hit = plr.Character:FindFirstChildOfClass("Part");
+				Hit = tea.Character:FindFirstChildOfClass("Part");
 				Cframe = CFrame.new();
 				RayObject = Ray.new(Vector3.new(), Vector3.new());
 				Distance = 0;
 			};
 		end
+	end
+	if plr and plr.Character and plr.Character:FindFirstChild("Humanoid") and not (plr.Character:FindFirstChild("Humanoid").Health == 0) then
+		ShootEvents[#ShootEvents + 1] = {
+			Hit = plr.Character:FindFirstChildOfClass("Part");
+			Cframe = CFrame.new();
+			RayObject = Ray.new(Vector3.new(), Vector3.new());
+			Distance = 0;
+		};
 	end
 	Rstorage.ShootEvent:FireServer(ShootEvents, Taser)
 	Rstorage.ReloadEvent:FireServer(Taser)
@@ -1156,8 +1146,16 @@ local TasePL = function(plr, args)
 		end
 	end
 end
+DisableScript = function()
+	pcall(function()
+		CmdGui:Destroy(); States = {}; Toggles = {}; Loops = {}; Saved = {}; for i,v in next, Connections do
+               v:Disconnect(); v = nil
+        end; Connections = {}; SavedPositions = {}; Unloaded = true
+        screengui:Destroy(); screengui = nil
+	end)
+end
 function PlayerChatted(Message)
-	if ScriptDisabled then return end
+	if Unloaded then return end
 	local args = Message:split(" ")
     function Command(Cmd)
            return args[1] == Prefix..Cmd
@@ -1415,6 +1413,57 @@ function PlayerChatted(Message)
             Toggles.SpamPunch = not Toggles.SpamPunch
         end
         Notify("Spam Punch changed to "..tostring(Toggles.SpamPunch), Color3.fromRGB(0, 255, 0), "Success")
+    elseif Command("antibring") then
+        if args[2] == "on" then
+            Toggles.AntiBring = true
+        elseif args[2] == "off" then
+            Toggles.AntiBring = false
+        else
+            Toggles.AntiBring = not Toggles.AntiBring
+        end
+        Notify("Anti Bring changed to "..tostring(Toggles.AntiBring), Color3.fromRGB(0, 255, 0), "Success")
+    elseif Command("loudpunch") then
+        if args[2] == "on" then
+            States.LoudPunch = true
+        elseif args[2] == "off" then
+            States.LoudPunch = false
+        else
+            States.LoudPunch = not States.LoudPunch
+        end
+        Notify("Loud Punch changed to "..tostring(States.LoudPunch), Color3.fromRGB(0, 255, 0), "Success")
+    elseif Command("servercrash") then
+        local event = workspace.Remote.TeamEvent
+        Connections.CharacterAdded:Disconnect(); Connections.CharacterAdded = nil; DisableScript()
+        settings():GetService("NetworkSettings").IncomingReplicationLag = math.huge
+        for i = 1, 1e6 do
+                coroutine.wrap(function()
+                    event:FireServer("Bright orange")
+                end)()
+        end; Rstep:Connect(function()
+                event:FireServer("Bright orange")
+        end)
+        game:FindService("StarterGui"):SetCore("SendNotification",{Title="Success",Text="Server is crash",Icon="",Duration=5})
+    elseif Command("unload") then
+        DisableScript()
+        game:FindService("StarterGui"):SetCore("SendNotification",{Title="Success",Text="Script is Unloaded",Icon="",Duration=5})
+    elseif Command("notifybar") then
+           if Background4.Visible == true then
+			Background4.Visible = false
+		else
+			Background4.Visible = true
+		end
+		Notify("Showed Notify Bar", Color3.fromRGB(0, 255, 0), "Success")
+    elseif Command("armory") then
+        local DaPlayer = PlrFromArgs(args[2], LocalPlayer)
+        if DaPlayer == LocalPlayer then
+            LocTP(Teleports.armory)
+            Notify("Bought "..LocalPlayer.DisplayName.." to armory", Color3.fromRGB(0, 255, 0), "Success")
+        elseif DaPlayer then
+            BringPL(DaPlayer, Teleports.armory, true, nil, true)
+            Notify("Bought "..DaPlayer.DisplayName.." to armory", Color3.fromRGB(0, 255, 0), "Success")
+        elseif not DaPlayer then
+            Notify("Not Player in server or player left", Color3.fromRGB(255, 0, 0), "Error")
+        end
     else
         Notify("Not a command list", Color3.fromRGB(255, 0, 0), "Error")
     end
@@ -1615,6 +1664,9 @@ task.spawn(function()
 	end
 	while task.wait() do
 		pcall(task0)
+        if Unloaded then
+            break
+        end
 	end
 end)
 
@@ -1635,13 +1687,19 @@ task.spawn(function()
 				LAction("speed", Saved.RunSpeed)
 			end
 		end
+        if Toggles.AntiBring and LocalPlayer.Character.Humanoid.Sit then
+            LAction("unsit")
+        end
     end
     while task.wait() do
         pcall(task1)
+        if Unloaded then
+            break
+        end
     end
 end)
 
-local screengui = Instance.new("ScreenGui",game.Players.LocalPlayer.PlayerGui)
+screengui = Instance.new("ScreenGui",game.Players.LocalPlayer.PlayerGui)
 local team = Instance.new("Frame",screengui)
 local team2 = Instance.new("Frame",team)
 local label = Instance.new("TextLabel",team)
@@ -1805,14 +1863,14 @@ end);button1.MouseButton1Click:Connect(function()
                       if runMove.IsPlaying then
                              runMove:Stop()
                       end
-                      if runStop.IsPlaying == false then
+                      if not runStop.IsPlaying then
                              runStop:Play()
                       end
               else
                       if runStop.IsPlaying then
                              runStop:Stop()
                       end
-                      if runMove.IsPlaying == false then
+                      if not runMove.IsPlaying then
                              runMove:Play()
                       end
               end
@@ -1829,19 +1887,4 @@ end);button3.MouseButton1Down:Connect(function()
 end);button3.MouseButton1Up:Connect(function()
 	States.Running = false; LAction("speed",Saved.NormalSpeed)
 end)
-
-getgenv().DisableScript = function()
-	pcall(function()
-		CmdGui:Destroy()
-		States = {}
-		LoopKill = {}
-		LoopTase = {}
-		Admin = {}
-		ScriptDisabled = true
-		for i,v in pairs(game.Lighting:GetChildren()) do
-			v.Parent = workspace
-		end
-	end)
-end
-
 Notify("Loaded admin commands!", Color3.fromRGB(0, 255, 0), "Success")
