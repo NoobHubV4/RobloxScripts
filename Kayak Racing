@@ -1,3 +1,21 @@
+local gui = Instance.new("ScreenGui",game.CoreGui)
+gui.Name = "speed"
+gui.ZIndexBehavior = "Sibling"
+local TextLabel = Instance.new("TextLabel",gui)
+TextLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+TextLabel.BackgroundTransparency = 1
+TextLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
+TextLabel.BorderSizePixel = 0
+TextLabel.Size = UDim2.new(0, 396, 0, 48)
+TextLabel.Font = Enum.Font.Cartoon
+TextLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+TextLabel.TextScaled = true
+TextLabel.TextSize = 14.000
+TextLabel.TextWrapped = true
+TextLabel.TextXAlignment = Enum.TextXAlignment.Left
+local Stroke = Instance.new("UIStroke",TextLabel)
+Stroke.Thickness = 4
+
 local lib = loadstring(Game:HttpGet("https://raw.githubusercontent.com/NoobHubV1/NoobHubV1/main/Wizard%20Lib.lua"))()
 local autoPower
 local Train = "1"
@@ -58,3 +76,15 @@ game.RunService.RenderStepped:Connect(function()
               end
        end
 end)
+task.spawn(function()
+       function task0()
+              TextLabel.Text = game.Players.LocalPlayer.PlayerGui.ProgressGui.Bottom.Meter.Speed.Text
+              if Stroke then
+                     Stroke.Color = Color3.fromHSV(tick() % (10/2) / (10/2), 1, 1)
+              end
+       end
+       while task.wait() do
+              task.spawn(task0)
+       end
+end)
+game.Players.LocalPlayer.PlayerGui.ProgressGui.Bottom.Meter.Speed.Visible = false
