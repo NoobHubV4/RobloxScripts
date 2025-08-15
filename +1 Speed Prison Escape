@@ -1,0 +1,17 @@
+if game.PlaceId == 73934517857372 then
+game.CoreGui.RobloxPromptGui.promptOverlay.ChildAdded:Connect(function(child)
+  if child.Name == "ErrorPrompt" then
+    game.TeleportService:Teleport(game.PlaceId)
+  end
+end)
+spawn(function()
+  function work()
+    game.Players.LocalPlayer.PlayerGui.PlayerWinGui.Enabled = false
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-33, 14, 3799)
+    game.ReplicatedStorage.Remotes.RemoteFunctions.GetWinRewards:InvokeServer()
+  end
+  while task.wait() do
+    coroutine.wrap(work)()
+  end
+end)
+end
