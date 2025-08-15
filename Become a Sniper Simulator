@@ -1,1 +1,30 @@
---Patched
+local lib = loadstring(Game:HttpGet("https://raw.githubusercontent.com/NoobHubV1/NoobHubV1/main/Wizard%20Lib.lua"))()
+local autoPower
+local autoRebirth
+local Rstorage = game.ReplicatedStorage
+local remote = Rstorage.RemoteEvents
+local remote2 = Rstorage.Packages:FindFirstChild("_Index"):FindFirstChild("sleitnick_knit@1.7.0").knit.Services.RebirthService.RF
+local Window = lib:NewWindow("Become a Sniper Simulator")
+local Section = Window:NewSection("Main")
+Section:CreateTextbox("Give Wins", function(text)
+  remote.EarnWinsEvent:FireServer(tonumber(text), true)
+end)
+Section:CreateToggle("Auto Power Click", function(state)
+  autoPower = state
+end)
+Section:CreateToggle("Auto Rebirth", function(state)
+  autoRebirth = state
+end)
+spawn(function()
+  task0 = function()
+    if autoPower then
+      remote.PowerClickFarmEvent:FireServer()
+    end
+    if autoRebirth then
+      remote2.Rebirth:InvokeServer(game.Players.LocalPlayer)
+    end
+  end
+  while task.wait() do
+    pcall(task0)
+  end
+end)
