@@ -1,6 +1,7 @@
 local lib = loadstring(Game:HttpGet("https://raw.githubusercontent.com/NoobHubV1/NoobHubV1/main/Wizard%20Lib.lua"))()
 local autoPower
 local Train = "1"
+local remove
 local Window = lib:NewWindow("Kayak Racing")
 local Section = Window:NewSection("Main")
 function Power()
@@ -36,13 +37,22 @@ end)
 Section:CreateToggle("Auto Power", function(state)
   autoPower = state
 end)
-spawn(function()
-  task0 = function()
-    if autoPower then
-      Power()
-    end
-  end
-  while task.wait() do
-    pcall(task0)
-  end
+Section:CreateToggle("Remove Power UI", function(state)
+  remove = state
+end)
+game.RunService.RenderStepped:Connect(function()
+       if autoPower then
+              for i = 1,25 do
+                     Power()
+              end
+       end
+       if remove then
+              for i = 1,2 do
+                     for i,v in next, game.Players.LocalPlayer.PlayerGui.MainUI:GetChildren() do
+                            if v.Name == "PowerPopup" then
+                                   v:Destroy()
+                            end
+                     end
+              end
+       end
 end)
