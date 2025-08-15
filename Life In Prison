@@ -2,6 +2,7 @@ local lib = loadstring(game:HttpGet("https://raw.github.com/NoobHubV1/NoobHubV1/
 local Window = lib:NewWindow("Life In Prison")
 local Main = Window:NewSection("Main")
 local Team = Window:NewSection("Team")
+local Main2 = Window:NewSection("Kill Or Arrest")
 local SavedPositions = {AutoRe = nil}
 local Connections = {Died = nil;}
 local Camera = game:FindService("Workspace").CurrentCamera
@@ -36,23 +37,15 @@ function LoadCamPos()
 	Camera.CFrame = SavedPositions.OldCameraPos or Camera.CFrame
 end
 
-function ChangeTeam(args)
-  remote:FireServer("ChangeTeam", Teams:FindFirstChild(args))
-end
-
-function MeleeEvent(args)
-  remote:FireServer("meleeEvent", args.Character:FindFirstChild("Humanoid"))
-end
-
 function TeamTo(args)
   local tmp = LocalPlayer.Character.HumanoidRootPart.CFrame; SavedPositions.AutoRe = tmp; SaveCamPos()
-  ChangeTeam("Neutral")
+  remote:FireServer("ChangeTeam", Teams.Neutral)
   if args == "criminal" then
-    ChangeTeam("Criminals")
+    remote:FireServer("ChangeTeam", Teams.Criminals)
   elseif args == "inmate" then
-    ChangeTeam("Prisoners")
+    remote:FireServer("ChangeTeam", Teams.Prisoners)
   elseif args == "guard" then
-    ChangeTeam("Police")
+    remote:FireServer("ChangeTeam", Teams.Police)
   end; LocalPlayer.CharacterAdded:Wait()
 		if waitfor(LocalPlayer.Character, "HumanoidRootPart", 4) then
 			LocTP(tmp)
@@ -62,17 +55,17 @@ end
 function Refresh()
     local team = LocalPlayer.Team; local tmp = LocalPlayer.Character.HumanoidRootPart.CFrame; SavedPositions.AutoRe = tmp; SaveCamPos()
     if team == Teams.Criminals then
-        ChangeTeam("Neutral")
-        ChangeTeam("Criminals")
+        remote:FireServer("ChangeTeam", Teams.Neutral)
+        remote:FireServer("ChangeTeam", Teams.Criminals)
     elseif team == Teams.Prisoners then
-        ChangeTeam("Neutral")
-        ChangeTeam("Prisoners")
+        remote:FireServer("ChangeTeam", Teams.Neutral)
+        remote:FireServer("ChangeTeam", Teams.Prisoners)
     elseif team == Teams.Police then
-        ChangeTeam("Neutral")
-        ChangeTeam("Police")
-    elseif team == Teams.Neutral then
-        ChangeTeam("Prisoners")
-        ChangeTeam("Neutral")
+        remote:FireServer("ChangeTeam", Teams.Neutral)
+        remote:FireServer("ChangeTeam", Teams.Police)
+    else
+        remote:FireServer("ChangeTeam", Teams.Prisoners)
+        remote:FireServer("ChangeTeam", Teams.Neutral)
     end; LocalPlayer.CharacterAdded:Wait()
 		if waitfor(LocalPlayer.Character, "HumanoidRootPart", 4) then
 			LocTP(tmp)
@@ -119,6 +112,32 @@ Team:CreateButton("Guard", function()
   TeamTo("guard")
 end)
 
+Team:CreateButton("Neutral", function()
+  remote:FireServer("ChangeTeam", Teams.Neutral)
+end)
+
+Main2:CreateButton("Arrest All", function()
+  for i,v in pairs(game.Teams.Criminals:GetPlayers()) do
+    if not v.Character:FindFirstChild("ForceField") and v.Character.Humanoid.Health ~= 0 and v ~= game.Players.LocalPlayer then
+      repeat task.wait()
+        LocalPlayer.Character.HumanoidRootPart.CFrame = v.Character.HumanoidRootPart.CFrame
+        remote:FireServer("Handcuffs", v)
+      until v.Character.Head:FindFirstChild("handcuffedGui")
+    end
+  end
+end)
+
+Main2:CreateButton("Kill All", function()
+  for i,v in pairs(game.Players:GetPlayers()) do
+    if not v.Character:FindFirstChild("ForceField") and v.Character.Humanoid.Health ~= 0 and v ~= game.Players.LocalPlayer then
+      repeat task.wait()
+        LocalPlayer.Character.HumanoidRootPart.CFrame = v.Character.HumanoidRootPart.CFrame * CFrame.new(0, 0, 1.5)
+        remote:FireServer("meleeEvent", v.Character.Humanoid)
+      until v.Character.Humanoid.Health == 0
+    end
+  end
+end)
+
 local lochar = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
 local function ondiedevent()
 	coroutine.wrap(function()
@@ -127,17 +146,17 @@ local function ondiedevent()
         if autoRespawn then
             local team = LocalPlayer.Team
             if team == Teams.Criminals then
-                ChangeTeam("Neutral")
-                ChangeTeam("Criminals")
+                remote:FireServer("ChangeTeam", Teams.Neutral)
+                remote:FireServer("ChangeTeam", Teams.Criminals)
             elseif team == Teams.Prisoners then
-                ChangeTeam("Neutral")
-                ChangeTeam("Prisoners")
+                remote:FireServer("ChangeTeam", Teams.Neutral)
+                remote:FireServer("ChangeTeam", Teams.Prisoners)
             elseif team == Teams.Police then
-                ChangeTeam("Neutral")
-                ChangeTeam("Police")
-            elseif team == Teams.Neutral then
-                ChangeTeam("Prisoners")
-                ChangeTeam("Neutral")
+                remote:FireServer("ChangeTeam", Teams.Neutral)
+                remote:FireServer("ChangeTeam", Teams.Police)
+            else
+                remote:FireServer("ChangeTeam", Teams.Prisoners)
+                remote:FireServer("ChangeTeam", Teams.Neutral)
             end
         end
 	end)()
@@ -170,7 +189,7 @@ Connections.Died = lochar:WaitForChild("Humanoid").Died:Connect(ondiedevent)
 Connections.CharacterAdded = LocalPlayer.CharacterAdded:Connect(function(newChar)
   oncharadded()
   newChar.Head.ChildAdded:Connect(function(child)
-    if child.Name == "handcuffedGui" then
+    if autoRespawn and child.Name == "handcuffedGui" then
       Refresh()
     end
   end)
@@ -182,7 +201,7 @@ task.spawn(function()
       for i,v in ipairs(game.Players:GetPlayers()) do
         if not v.Character:FindFirstChild("ForceField") and v.Character.Humanoid.Health ~= 0 then
           if v ~= LocalPlayer and (LocalPlayer.Character.HumanoidRootPart.Position - v.Character.HumanoidRootPart.Position).Magnitude <= 25 then
-            MeleeEvent(v)
+            remote:FireServer("meleeEvent", v.Character:FindFirstChild("Humanoid"))
           end
         end
       end
