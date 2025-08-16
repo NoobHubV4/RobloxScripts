@@ -1,0 +1,73 @@
+local lib = loadstring(Game:HttpGet("https://raw.githubusercontent.com/NoobHubV1/NoobHubV1/main/Wizard%20Lib.lua"))()
+local autoPower
+local Train = "1"
+local Connect
+local amount = 1
+local remote = game.ReplicatedStorage.Warp.Index.Event.Reliable
+local Window = lib:NewWindow("Fish Training")
+local Section = Window:NewSection("Main")
+function Power()
+  local arg = buffer.fromstring("\r")
+  if Train == "1" then
+    remote:FireServer(arg, buffer.fromstring("\254\002\000\006\005Power\001\001"))
+  elseif Train == "2" then
+    remote:FireServer(arg, buffer.fromstring("\254\002\000\006\005Power\001\002"))
+  elseif Train == "3" then
+    remote:FireServer(arg, buffer.fromstring("\254\002\000\006\005Power\001\003"))
+  elseif Train == "4" then
+    remote:FireServer(arg, buffer.fromstring("\254\002\000\006\005Power\001\004"))
+  elseif Train == "5" then
+    remote:FireServer(arg, buffer.fromstring("\254\002\000\006\005Power\001\005"))
+  elseif Train == "6" then
+    remote:FireServer(arg, buffer.fromstring("\254\002\000\006\005Power\001\006"))
+  elseif Train == "7" then
+    remote:FireServer(arg, buffer.fromstring("\254\002\000\006\005Power\001\007"))
+  elseif Train == "8" then
+    remote:FireServer(arg, buffer.fromstring("\254\002\000\006\005Power\001\008"))
+  elseif Train == "9" then
+    remote:FireServer(arg, buffer.fromstring("\254\002\000\006\005Power\001\009"))
+  elseif Train == "10" then
+    remote:FireServer(arg, buffer.fromstring("\254\002\000\006\005Power\001\n"))
+  elseif Train == "11" then
+    remote:FireServer(arg, buffer.fromstring("\254\002\000\006\005Power\001\v"))
+  elseif Train == "12" then
+    remote:FireServer(arg, buffer.fromstring("\254\002\000\006\005Power\001\f"))
+  end
+end
+Section:CreateDropdown("Training Select", {"1","2","3","4","5","6","7","8","9","10","11","12"}, 1, function(select)
+  Train = select
+end)
+Section:CreateTextbox("Auto Power Amount", function(text)
+  amount = tonumber(text)
+end)
+Section:CreateToggle("Auto Power", function(state)
+  autoPower = state
+end)
+Section:CreateToggle("Remove Power UI", function(state)
+  if state then
+    Connect = game.RunService.Heartbeat:Connect(function()
+      for i = 1,5 do
+        for i,v in pairs(game.Players.LocalPlayer.PlayerGui.MainUI:GetChildren()) do
+          if v.Name == "PowerPopup" then
+            v.Parent = nil
+          end
+        end
+      end
+    end)
+  else
+    Connect:Disconnect()
+    Connect = nil
+  end
+end)
+task.spawn(function()
+       function work()
+              if autoPower and not game.Players.LocalPlayer.PlayerGui.ProgressGui.Bottom.Meter.Visible then
+                     for i = 1,amount do
+                            Power()
+                     end
+              end
+       end
+       while task.wait() do
+              task.spawn(work)
+       end
+end)
