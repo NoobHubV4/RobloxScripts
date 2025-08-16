@@ -1,42 +1,8 @@
-local gui = Instance.new("ScreenGui",game.CoreGui)
-local frame = Instance.new("Frame",gui)
-local TextLabel = Instance.new("TextLabel",frame)
-local TextLabel2 = Instance.new("TextLabel",frame)
-gui.Name = "stats"
-gui.ZIndexBehavior = "Sibling"
-gui.Enabled = false
-frame.Name = "frame"
-frame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-frame.BackgroundTransparency = 1
-frame.Size = UDim2.new(0.25, 0, 0.1, 0)
-TextLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-TextLabel.BackgroundTransparency = 0
-TextLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
-TextLabel.BorderSizePixel = 0
-TextLabel.Size = UDim2.new(1, 0, 0, 35)
-TextLabel.Font = Enum.Font.Cartoon
-TextLabel.TextColor3 = Color3.fromRGB(0, 0, 0)
-TextLabel.TextScaled = true
-TextLabel.TextSize = 8
-TextLabel.TextWrapped = true
-TextLabel.TextXAlignment = Enum.TextXAlignment.Left
-TextLabel2.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-TextLabel2.BackgroundTransparency = 0
-TextLabel2.BorderColor3 = Color3.fromRGB(0, 0, 0)
-TextLabel2.BorderSizePixel = 0
-TextLabel2.Position = UDim2.new(0, 0, 1, 0)
-TextLabel2.Size = UDim2.new(1, 0, 0, 35)
-TextLabel2.Font = Enum.Font.Cartoon
-TextLabel2.TextColor3 = Color3.fromRGB(0, 0, 0)
-TextLabel2.TextScaled = true
-TextLabel2.TextSize = 8
-TextLabel2.TextWrapped = true
-TextLabel2.TextXAlignment = Enum.TextXAlignment.Left
-
 local lib = loadstring(Game:HttpGet("https://raw.githubusercontent.com/NoobHubV1/NoobHubV1/main/Wizard%20Lib.lua"))()
 local autoPower
 local Train = "1"
-local Connection
+local Connect
+local amount = 1
 local Window = lib:NewWindow("Kayak Racing")
 local Section = Window:NewSection("Main")
 function Power()
@@ -69,22 +35,32 @@ end
 Section:CreateDropdown("Training Select", {"1","2","3","4","5","6","7","8","9","10","11","12"}, 1, function(select)
   Train = select
 end)
+Section:CreateTextbox("Auto Power Amount", function(text)
+  amount = tonumber(text)
+end)
 Section:CreateToggle("Auto Power", function(state)
   autoPower = state
 end)
-Section:CreateToggle("Hide Game UI", function(state)
+Section:CreateToggle("Remove Power UI", function(state)
   if state then
-    game.Players.LocalPlayer.PlayerGui.MainUI.Enabled = false
-    gui.Enabled = true
+    Connect = game.RunService.Heartbeat:Connect(function()
+      for i = 1,5 do
+        for i,v in pairs(game.Players.LocalPlayer.PlayerGui.MainUI:GetChildren()) do
+          if v.Name == "PowerPopup" then
+            v.Parent = nil
+          end
+        end
+      end
+    end)
   else
-    game.Players.LocalPlayer.PlayerGui.MainUI.Enabled = true
-    gui.Enabled = false
+    Connect:Disconnect()
+    Connect = nil
   end
 end)
 task.spawn(function()
        function work()
               if autoPower and not game.Players.LocalPlayer.PlayerGui.ProgressGui.Bottom.Meter.Visible then
-                     for i = 1,30 do
+                     for i = 1,amount do
                             Power()
                      end
               end
