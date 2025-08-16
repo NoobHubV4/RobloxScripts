@@ -1,0 +1,79 @@
+local anim = nil
+local loadanim = nil
+local state = nil
+local Connection = nil
+local Connection2 = nil
+local runTrack = runId or "rbxassetid://913376220"
+local screengui = Instance.new("ScreenGui",game.CoreGui)
+local frame = Instance.new("Frame",screengui)
+local textbutton = Instance.new("TextButton",frame)
+screengui.Name = "EgorPlay"
+screengui.ResetOnSpawn = true
+screengui.ZIndexBehavior = "Global"
+frame.Name = "EgorPlayMenu"
+frame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+frame.BorderColor3 = Color3.fromRGB(27, 42, 52)
+frame.BorderSizePixel = 1
+frame.Position = UDim2.new(0.1, 0, 0.7, 0)
+frame.Size = UDim2.new(0, 200, 0, 100)
+frame.Active = true
+frame.Archivable = true
+frame.Draggable = true
+textbutton.Name = "EgorOn"
+textbutton.BackgroundColor3 = Color3.fromRGB(0, 180, 0)
+textbutton.BorderColor3 = Color3.fromRGB(27, 42, 53)
+textbutton.BorderSizePixel = 1
+textbutton.Position = UDim2.new(0, 10, 0, 32.5)
+textbutton.Size = UDim2.new(1, -20, 0, 30)
+textbutton.Text = "Egor: Off"
+textbutton.TextColor3 = Color3.fromRGB(255, 255, 255)
+textbutton.TextScaled = false
+textbutton.TextSize = 10
+textbutton.TextStrokeTransparency = 1
+function enableEgor()
+        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 3
+        anim = Instance.new("Animation")
+        anim.AnimationId = runTrack
+        loadanim = game.Players.LocalPlayer.Character.Humanoid.Animator:LoadAnimation(anim)
+        loadanim.Priority = Enum.AnimationPriority.Action
+        loadanim:Play()
+        loadanim:AdjustSpeed(10)
+        Connection = game.RunService.Heartbeat:Connect(function()
+            if game.Players.LocalPlayer.Character.Humanoid.MoveDirection.Magnitude == 0 then
+                if not loadanim.IsPlaying == false then
+                    loadanim:Stop()
+                end
+            else
+                if not loadanim.IsPlaying == true then
+                    loadanim:Play()
+                    loadanim:AdjustSpeed(10)
+                end
+            end
+        end)
+end
+function disableEgor()
+        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 16
+        loadanim:Stop()
+        anim:Destroy()
+        Connection:Disconnect()
+end
+textbutton.MouseButton1Click:Connect(function()
+      state = not state
+      if state then
+             enableEgor()
+             textbutton.BackgroundColor3 = Color3.fromRGB(0, 180, 0)
+             textbutton.Text = "Egor: On"
+             Connection2 = game.Players.LocalPlayer.CharacterAdded:Connect(function()
+                 task.wait(.05)
+                 disableEgor()
+                 task.wait(.1)
+                 enableEgor()
+             end)
+      else
+             disableEgor()
+             textbutton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+             textbutton.Text = "Egor: Off"
+             Connection2:Disconnect()
+             Connection2 = nil
+      end
+end)
