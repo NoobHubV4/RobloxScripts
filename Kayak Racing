@@ -1,20 +1,37 @@
 local gui = Instance.new("ScreenGui",game.CoreGui)
-gui.Name = "speed"
+local frame = Instance.new("Frame",gui)
+local TextLabel = Instance.new("TextLabel",frame)
+local TextLabel2 = Instance.new("TextLabel",frame)
+gui.Name = "stats"
 gui.ZIndexBehavior = "Sibling"
-local TextLabel = Instance.new("TextLabel",gui)
+gui.Enabled = false
+frame.Name = "frame"
+frame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+frame.BackgroundTransparency = 1
+frame.Size = UDim2.new(0.25, 0, 0.1, 0)
 TextLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-TextLabel.BackgroundTransparency = 1
+TextLabel.BackgroundTransparency = 0
 TextLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
 TextLabel.BorderSizePixel = 0
-TextLabel.Size = UDim2.new(0, 396, 0, 48)
+TextLabel.Size = UDim2.new(1, 0, 0, 35)
 TextLabel.Font = Enum.Font.Cartoon
-TextLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+TextLabel.TextColor3 = Color3.fromRGB(0, 0, 0)
 TextLabel.TextScaled = true
-TextLabel.TextSize = 14.000
+TextLabel.TextSize = 8
 TextLabel.TextWrapped = true
 TextLabel.TextXAlignment = Enum.TextXAlignment.Left
-local Stroke = Instance.new("UIStroke",TextLabel)
-Stroke.Thickness = 4
+TextLabel2.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+TextLabel2.BackgroundTransparency = 0
+TextLabel2.BorderColor3 = Color3.fromRGB(0, 0, 0)
+TextLabel2.BorderSizePixel = 0
+TextLabel2.Position = UDim2.new(0, 0, 1, 0)
+TextLabel2.Size = UDim2.new(1, 0, 0, 35)
+TextLabel2.Font = Enum.Font.Cartoon
+TextLabel2.TextColor3 = Color3.fromRGB(0, 0, 0)
+TextLabel2.TextScaled = true
+TextLabel2.TextSize = 8
+TextLabel2.TextWrapped = true
+TextLabel2.TextXAlignment = Enum.TextXAlignment.Left
 
 local lib = loadstring(Game:HttpGet("https://raw.githubusercontent.com/NoobHubV1/NoobHubV1/main/Wizard%20Lib.lua"))()
 local autoPower
@@ -55,36 +72,33 @@ end)
 Section:CreateToggle("Auto Power", function(state)
   autoPower = state
 end)
-Section:CreateToggle("Remove Power UI", function(state)
+Section:CreateToggle("Hide Game UI", function(state)
   if state then
-    Connection = game.Players.LocalPlayer.PlayerGui.MainUI.ChildAdded:Connect(function()
-      for i,v in ipairs(game.Players.LocalPlayer.PlayerGui.MainUI:GetChildren()) do
-        if v.Name == "PowerPopup" then
-          v:Destroy()
-        end
-      end
-    end)
+    game.Players.LocalPlayer.PlayerGui.MainUI.Enabled = false
+    gui.Enabled = true
   else
-    Connection:Disconnect()
-    Connection = nil
+    game.Players.LocalPlayer.PlayerGui.MainUI.Enabled = true
+    gui.Enabled = false
   end
 end)
-game.RunService.RenderStepped:Connect(function()
-       if autoPower and not game.Players.LocalPlayer.PlayerGui.ProgressGui.Bottom.Meter.Visible then
-              for i = 1,25 do
-                     Power()
+task.spawn(function()
+       function work()
+              if autoPower and not game.Players.LocalPlayer.PlayerGui.ProgressGui.Bottom.Meter.Visible then
+                     for i = 1,30 do
+                            Power()
+                     end
               end
+       end
+       while task.wait() do
+              task.spawn(work)
        end
 end)
 task.spawn(function()
        function task0()
-              TextLabel.Text = game.Players.LocalPlayer.PlayerGui.ProgressGui.Bottom.Meter.Speed.Text
-              if Stroke then
-                     Stroke.Color = Color3.fromHSV(tick() % (10/2) / (10/2), 1, 1)
-              end
+              TextLabel.Text = "Power: "..game.Players.LocalPlayer.PlayerGui.MainUI.Right.Power.TextLabel.Text
+              TextLabel2.Text = "Wins: "..game.Players.LocalPlayer.PlayerGui.MainUI.Right.Wins.TextLabel.Text
        end
        while task.wait() do
               task.spawn(task0)
        end
 end)
-game.Players.LocalPlayer.PlayerGui.ProgressGui.Bottom.Meter.Speed.Visible = false
