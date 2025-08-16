@@ -82,3 +82,57 @@ spawn(function()
         pcall(task0)
     end
 end)
+
+local anim = nil
+local loadanim = nil
+local state = nil
+local frame = Instance.new("Frame",ScreenGui)
+local textbox = Instance.new("TextBox",frame)
+local textbutton = Instance.new("TextButton",frame)
+frame.Name = "AnimationPlayMenu"
+frame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+frame.BorderColor3 = Color3.fromRGB(27, 42, 52)
+frame.BorderSizePixel = 1
+frame.Position = UDim2.new(0.1, 0, 0.7, 0)
+frame.Size = UDim2.new(0, 200, 0, 100)
+frame.Draggable = true
+textbox.Name = "AnimationId"
+textbox.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
+textbox.BorderColor3 = Color3.fromRGB(27, 42, 52)
+textbox.Position = UDim2.new(0, 10, 0, 10)
+textbox.Size = UDim2.new(1, -20, 0, 30)
+textbox.PlaceholderColor3 = Color3.fromRGB(178, 178, 178)
+textbox.PlaceholderText = "Enter Animation ID"
+textbox.Text = ""
+textbox.TextColor3 = Color3.fromRGB(255, 255, 255)
+textbox.TextScaled = false
+textbox.TextSize = 10
+textbox.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+textbox.TextStrokeTransparency = 1
+textbutton.Name = "RunAnimation"
+textbutton.BackgroundColor3 = Color3.fromRGB(0, 180, 0)
+textbutton.BorderColor3 = Color3.fromRGB(27, 42, 53)
+textbutton.BorderSizePixel = 1
+textbutton.Position = UDim2.new(0, 10, 0, 50)
+textbutton.Size = UDim2.new(1, -20, 0, 30)
+textbutton.Text = "Run Animation"
+textbutton.TextColor3 = Color3.fromRGB(255, 255, 255)
+textbutton.TextScaled = false
+textbutton.TextSize = 10
+textbutton.TextStrokeTransparency = 1
+textbutton.MouseButton1Click:Connect(function()
+      state = not state
+      if state then
+             anim = Instance.new("Animation", game.Players.LocalPlayer.Character.Humanoid)
+             anim.AnimationId = textbox.Text
+             loadanim = game.Players.LocalPlayer.Character.Humanoid.Animator:LoadAnimation(anim)
+             loadanim:Play()
+             textbutton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+             textbutton.Text = "Stop Animation"
+      else
+             loadanim:Stop()
+             anim:Destroy()
+             textbutton.BackgroundColor3 = Color3.fromRGB(0, 180, 0)
+             textbutton.Text = "Run Animation"
+      end
+end)
