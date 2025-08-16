@@ -4,11 +4,13 @@ game.CoreGui.RobloxPromptGui.promptOverlay.ChildAdded:Connect(function(child)
     game.TeleportService:Teleport(game.PlaceId)
   end
 end)
+local remote = game.ReplicatedStorage.Remotes.RemoteFunctions
 spawn(function()
   function work()
     game.Players.LocalPlayer.PlayerGui.PlayerWinGui.Enabled = false
+    remote.PlayerRebirth:InvokeServer()
     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-33, 14, 3799)
-    game.ReplicatedStorage.Remotes.RemoteFunctions.GetWinRewards:InvokeServer()
+    remote.GetWinRewards:InvokeServer()
   end
   while task.wait() do
     coroutine.wrap(work)()
