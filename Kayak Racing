@@ -3,33 +3,35 @@ local autoPower
 local Train = "1"
 local Connect
 local amount = 1
+local remote = game.ReplicatedStorage.Warp.Index.Event.Reliable
 local Window = lib:NewWindow("Kayak Racing")
 local Section = Window:NewSection("Main")
 function Power()
+  local arg = buffer.fromstring("\027")
   if Train == "1" then
-    game.ReplicatedStorage.Warp.Index.Event.Reliable:FireServer(buffer.fromstring("\027"), buffer.fromstring("\254\002\000\006\005Power\001\001"))
+    remote:FireServer(arg, buffer.fromstring("\254\002\000\006\005Power\001\001"))
   elseif Train == "2" then
-    game.ReplicatedStorage.Warp.Index.Event.Reliable:FireServer(buffer.fromstring("\027"), buffer.fromstring("\254\002\000\006\005Power\001\002"))
+    remote:FireServer(arg, buffer.fromstring("\254\002\000\006\005Power\001\002"))
   elseif Train == "3" then
-    game.ReplicatedStorage.Warp.Index.Event.Reliable:FireServer(buffer.fromstring("\027"), buffer.fromstring("\254\002\000\006\005Power\001\003"))
+    remote:FireServer(arg, buffer.fromstring("\254\002\000\006\005Power\001\003"))
   elseif Train == "4" then
-    game.ReplicatedStorage.Warp.Index.Event.Reliable:FireServer(buffer.fromstring("\027"), buffer.fromstring("\254\002\000\006\005Power\001\004"))
+    remote:FireServer(arg, buffer.fromstring("\254\002\000\006\005Power\001\004"))
   elseif Train == "5" then
-    game.ReplicatedStorage.Warp.Index.Event.Reliable:FireServer(buffer.fromstring("\027"), buffer.fromstring("\254\002\000\006\005Power\001\005"))
+    remote:FireServer(arg, buffer.fromstring("\254\002\000\006\005Power\001\005"))
   elseif Train == "6" then
-    game.ReplicatedStorage.Warp.Index.Event.Reliable:FireServer(buffer.fromstring("\027"), buffer.fromstring("\254\002\000\006\005Power\001\006"))
+    remote:FireServer(arg, buffer.fromstring("\254\002\000\006\005Power\001\006"))
   elseif Train == "7" then
-    game.ReplicatedStorage.Warp.Index.Event.Reliable:FireServer(buffer.fromstring("\027"), buffer.fromstring("\254\002\000\006\005Power\001\007"))
+    remote:FireServer(arg, buffer.fromstring("\254\002\000\006\005Power\001\007"))
   elseif Train == "8" then
-    game.ReplicatedStorage.Warp.Index.Event.Reliable:FireServer(buffer.fromstring("\027"), buffer.fromstring("\254\002\000\006\005Power\001\008"))
+    remote:FireServer(arg, buffer.fromstring("\254\002\000\006\005Power\001\008"))
   elseif Train == "9" then
-    game.ReplicatedStorage.Warp.Index.Event.Reliable:FireServer(buffer.fromstring("\027"), buffer.fromstring("\254\002\000\006\005Power\001\009"))
+    remote:FireServer(arg, buffer.fromstring("\254\002\000\006\005Power\001\009"))
   elseif Train == "10" then
-    game.ReplicatedStorage.Warp.Index.Event.Reliable:FireServer(buffer.fromstring("\027"), buffer.fromstring("\254\002\000\006\005Power\001\n"))
+    remote:FireServer(arg, buffer.fromstring("\254\002\000\006\005Power\001\n"))
   elseif Train == "11" then
-    game.ReplicatedStorage.Warp.Index.Event.Reliable:FireServer(buffer.fromstring("\027"), buffer.fromstring("\254\002\000\006\005Power\001\v"))
+    remote:FireServer(arg, buffer.fromstring("\254\002\000\006\005Power\001\v"))
   elseif Train == "12" then
-    game.ReplicatedStorage.Warp.Index.Event.Reliable:FireServer(buffer.fromstring("\027"), buffer.fromstring("\254\002\000\006\005Power\001\f"))
+    remote:FireServer(arg, buffer.fromstring("\254\002\000\006\005Power\001\f"))
   end
 end
 Section:CreateDropdown("Training Select", {"1","2","3","4","5","6","7","8","9","10","11","12"}, 1, function(select)
@@ -67,14 +69,5 @@ task.spawn(function()
        end
        while task.wait() do
               task.spawn(work)
-       end
-end)
-task.spawn(function()
-       function task0()
-              TextLabel.Text = "Power: "..game.Players.LocalPlayer.PlayerGui.MainUI.Right.Power.TextLabel.Text
-              TextLabel2.Text = "Wins: "..game.Players.LocalPlayer.PlayerGui.MainUI.Right.Wins.TextLabel.Text
-       end
-       while task.wait() do
-              task.spawn(task0)
        end
 end)
