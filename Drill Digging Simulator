@@ -1,0 +1,20 @@
+local lib = loadstring(Game:HttpGet("https://raw.githubusercontent.com/NoobHubV1/NoobHubV1/main/Wizard%20Lib.lua"))()
+local autoCash
+local remote = game.ReplicatedStorage.GiveCash
+local Window = lib:NewWindow("Drill Digging Simulator")
+local Section = Window:NewSection("Main")
+Section:CreateToggle("Auto Cash", function(state)
+  autoCash = state
+end)
+spawn(function()
+  task0 = function()
+    if autoCash then
+      for i = 1,100 do
+        remote:FireServer(game.Players.LocalPlayer.Character:FindFirstChildOfClass("Tool"))
+      end
+    end
+  end
+  while task.wait() do
+    pcall(task0)
+  end
+end)
