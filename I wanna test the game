@@ -1,0 +1,18 @@
+local lib = loadstring(Game:HttpGet("https://raw.githubusercontent.com/NoobHubV1/NoobHubV1/main/Wizard%20Lib.lua"))()
+local autoRespawn
+local LocalPlayer = game.Players.localPlayer
+local Window = lib:NewWindow("I wanna test the game")
+local Section = Window:NewSection("Main")
+Section:CreateToggle("Auto Respawn", function(state)
+  autoRespawn = state
+end)
+LocalPlayer.CharacterAdded:Connect(function(NewCharacter)
+	NewCharacter:WaitForChild("HumanoidRootPart")
+	NewCharacter:WaitForChild("Head")
+	NewCharacter:WaitForChild("Humanoid").Died:Connect(function()
+		if autoRespawn then
+			game.ReplicatedStorage.SharedContainer.Remotes.Game.Respawn:FireServer()
+		end
+	end)
+end)
+game.ReplicatedStorage.SharedContainer.Remotes.Game.Respawn:FireServer()
