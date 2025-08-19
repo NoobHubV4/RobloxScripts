@@ -200,25 +200,17 @@ do
               showCircle = Options.State4.Value
        end)
 end
-workspace.Balls.ChildAdded:Connect(function(child)
-       ResetConnection()
-       Connection = child:GetAttributeChangedSignal("Target"):Connect(function()
-              if Parried then
-                     while Parried and task.wait() do
-                            Parried = false
-                     end
-              end
-       end)
-end)
 task.spawn(function()
        function auto()
               local Ball, HRP, block = GetBall(), GetRoot(), ParryDistance
               if Ball:GetAttribute("Target") == Player.Name and not Parried and (HRP.Position - Ball.Position).Magnitude / Ball.LinearVelocity.VectorVelocity.Magnitude <= block and AutoParry then
                      game.ReplicatedStorage.Framework.RemoteFunction:InvokeServer("SwordService","Block",{0})
                      Parried = true
-                     Cooldown = tick()
-                     if (tick() - Cooldown) >= 1 then
-                            Parried = false
+                     while Parried and task.wait() do
+                            if Ball:GetAttribute("Target") ~= Player.Name then
+                                   Parried = false
+                                   break
+                            end
                      end
               end
        end
@@ -290,11 +282,9 @@ spawn(function()
            pcall(task3)
       end
 end)
-function newChar()
-        Parried = false
-        createBallSpeed()
-end
-Player.CharacterAdded:Connect(newChar)
+Player.CharacterAdded:Connect(function()
+      createBallSpeed()
+      Parried = false
+end)
 createBallSpeed()
-Fluent:Notify({Title = "NoobHubV4 Hub", Content = "Script not work in delta", Duration = 5})
 Window:SelectTab(1)
