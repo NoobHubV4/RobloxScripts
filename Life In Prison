@@ -21,6 +21,14 @@ local LocTP = function(cframe)
 	LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame = cframe
 end
 
+function FindMedkit()
+    for i, v in ipairs(workspace.pickups:GetChildren()) do
+        if v.Name == "Medkit" then
+            return v:FindFirstChild("Meshes/outside")
+        end
+    end
+end
+
 function GetAwm()
     SavedPositions.Gun = LocalPlayer.Character.HumanoidRootPart.CFrame
     repeat task.wait()
@@ -28,6 +36,20 @@ function GetAwm()
         remote:FireServer("ItemHandler",source)
     until LocalPlayer.Character:FindFirstChild("AWM") or LocalPlayer.Backpack:FindFirstChild("AWM")
     LocalPlayer.Character.HumanoidRootPart.CFrame = SavedPositions.Gun
+end
+function PlaceMedkit()
+    local medkit = FindMedkit()
+    SavedPositions.Medkit = LocalPlayer.Character.HumanoidRootPart.CFrame
+    repeat task.wait()
+        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = medkit.CFrame
+        remote:FireServer("ItemHandler",medkit)
+    until LocalPlayer.Character:FindFirstChild("Medkit") or LocalPlayer.Backpack:FindFirstChild("Medkit")
+    LocalPlayer.Character.HumanoidRootPart.CFrame = SavedPositions.Medkit
+    repeat task.wait()
+        game.Players.LocalPlayer.Character.Humanoid:EquipTool(LocalPlayer.Backpack:FindFirstChild("Medkit"))
+    until LocalPlayer.Character:FindFirstChild("Medkit")
+    wait(.25)
+    remote:FireServer("PlaceMedkit",LocalPlayer.Character:FindFirstChild("Medkit"))
 end
 function SaveCamPos()
 	SavedPositions.OldCameraPos = Camera.CFrame
@@ -100,6 +122,10 @@ Main:CreateButton("Get Awm Gun", function()
   GetAwm()
 end)
 
+Main:CreateButton("Place Medkit", function()
+  PlaceMedkit()
+end)
+
 Team:CreateButton("Criminal", function()
   TeamTo("criminal")
 end)
@@ -131,7 +157,7 @@ Main2:CreateButton("Kill All", function()
   for i,v in pairs(game.Players:GetPlayers()) do
     if not v.Character:FindFirstChild("ForceField") and v.Character.Humanoid.Health ~= 0 and v ~= game.Players.LocalPlayer then
       repeat task.wait()
-        LocalPlayer.Character.HumanoidRootPart.CFrame = v.Character.HumanoidRootPart.CFrame * CFrame.new(0, 0, 1.5)
+        LocalPlayer.Character.HumanoidRootPart.CFrame = v.Character.HumanoidRootPart.CFrame
         remote:FireServer("meleeEvent", v.Character.Humanoid)
       until v.Character.Humanoid.Health == 0
     end
@@ -162,10 +188,16 @@ local function ondiedevent()
 	end)()
 end
 local function charaddtask()
-	Connections.Died:Disconnect()
 	local LHuman = lochar:WaitForChild("Humanoid", 1)
 	if LHuman then
+        if Connections.Died then Connections.Died:Disconnect(); Connections.Died = nil end
+        if Connections.Animation then Connections.Animation:Disconnect(); Connections.Animation = nil end
 		Connections.Died = LHuman.Died:Connect(ondiedevent)
+        Connections.Animation = LHuman.AnimationPlayed:Connect(function(anim)
+               if autoRespawn and anim.Animation.AnimationId == "rbxassetid://125882711002228" then
+                      Refresh()
+               end
+        end)
 	end
 end
 local function oncharadded()
