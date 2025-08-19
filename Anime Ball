@@ -16,7 +16,6 @@ local Toggle = Instance.new("TextButton", ScreenGui)
 local Toggle2 = Instance.new("TextButton", ScreenGui)
 local UICorner = Instance.new("UICorner", Toggle2)
 local SpamParry = false
-local Connection
 local visual1
 local visual2
 local mesh1
@@ -92,13 +91,6 @@ function GetRoot()
   end
 end
 
-function ResetConnection()
-  if Connection then
-    Connection:Disconnect()
-    Connection = nil
-  end
-end
-
 function t(Title, Text, Time)
     game:FindService("StarterGui"):SetCore("SendNotification",{Title=Title,Text=Text,Icon="",Duration=Time,})
 end
@@ -108,7 +100,6 @@ function createCircle()
     mesh1 = Instance.new("SpecialMesh",visual1)
     mesh2 = Instance.new("SpecialMesh",visual2)
     visual1.Name = "Circle"
-    visual1.Color = Color3.fromRGB(0, 0, 255)
     visual1.Material = "Plastic"
     visual1.Transparency = 0.75
     visual1.Size = Vector3.new(10, 0.4, 10)
@@ -118,7 +109,6 @@ function createCircle()
     mesh1.MeshType = "FileMesh"
     mesh1.Scale = Vector3.new(0.05, 0.05, 0.05)
     visual2.Name = "CircleFollowBall"
-    visual2.Color = Color3.fromRGB(0, 0, 255)
     visual2.Material = "Plastic"
     visual2.Transparency = 0
     visual2.Size = Vector3.new(10, 0.4, 10)
@@ -239,9 +229,12 @@ game.RunService.RenderStepped:Connect(step)
 spawn(function()
      function task1()
          local Ball, humanoid = GetBall(), Player.Character.Humanoid
-         if not Ball or not humanoid then return end
          if Ball and humanoid and AutoMove then
                 humanoid:MoveTo(Ball.Position)
+         end
+         if visual1 and visual2 then
+                visual1.Color = Color3.fromHSV(tick() % (10/1.5) / (10/1.5), 1, 1)
+                visual2.Color = Color3.fromHSV(tick() % (10/1.5) / (10/1.5), 1, 1)
          end
      end
      while task.wait() do
@@ -262,6 +255,9 @@ spawn(function()
                 TextLabel.Text = math.round(Ball.LinearVelocity.VectorVelocity.Magnitude * ParryDistance)
                 Stroke.Color = Color3.fromHSV(tick() % (10/2) / (10/2), 1, 1)
          end
+         if not AutoParry and visual1 and visual2 then
+           visual2.CFrame = GetRoot().CFrame
+         end
      end
      while task.wait() do
          pcall(task2)
@@ -269,13 +265,14 @@ spawn(function()
 end)
 spawn(function()
       task3 = function()
-           if not GetBall() and visual1 and visual2 and AutoParry then
-                  visual1.CFrame = GetRoot().CFrame
-                  visual2.CFrame = GetRoot().CFrame
+           if visual1 and visual2 then
+               visual1.CFrame = GetRoot().CFrame
            end
-           if not AutoParry and visual1 and visual2 then
-                  visual1.CFrame = GetRoot().CFrame
-                  visual2.CFrame = GetRoot().CFrame
+           if GetBall() and AutoParry and visual1 and visual2 then
+               visual2.CFrame = CFrame.new(GetRoot().CFrame.p, GetBall().CFrame.p)
+           end
+           if not GetBall() and AutoParry and visual1 and visual2 then
+               visual2.CFrame = GetRoot().CFrame
            end
       end
       while task.wait() do
