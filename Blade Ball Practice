@@ -109,7 +109,6 @@ function createCircle()
     mesh1 = Instance.new("SpecialMesh",visual1)
     mesh2 = Instance.new("SpecialMesh",visual2)
     visual1.Name = "Circle"
-    visual1.Color = Color3.fromRGB(0, 0, 255)
     visual1.Material = "Plastic"
     visual1.Transparency = 0.75
     visual1.Size = Vector3.new(10, 0.4, 10)
@@ -119,7 +118,6 @@ function createCircle()
     mesh1.MeshType = "FileMesh"
     mesh1.Scale = Vector3.new(0.05, 0.05, 0.05)
     visual2.Name = "CircleFollowBall"
-    visual2.Color = Color3.fromRGB(0, 0, 255)
     visual2.Material = "Plastic"
     visual2.Transparency = 0
     visual2.Size = Vector3.new(10, 0.4, 10)
@@ -205,11 +203,7 @@ workspace.Effects.ChildAdded:Connect(function(child)
        if child.Name ~= "Shockwave" and child:GetAttribute("Target_First") == "BallSpawn" then
               ResetConnection()
               Connection = child:GetAttributeChangedSignal("Target"):Connect(function()
-                     if Parried then
-                            while Parried and task.wait() do
-                                   Parried = false
-                            end
-                     end
+                     Parried = false
               end)
        end
 end)
@@ -284,16 +278,18 @@ spawn(function()
            if AutoParry and visual1 and visual2 then
                visual2.CFrame = CFrame.new(GetRoot().CFrame.p, GetBall().CFrame.p)
            end
+           if visual1 and visual2 then
+               visual1.Color = Color3.fromHSV(tick() % (10/1.5) / (10/1.5), 1, 1)
+               visual2.Color = Color3.fromHSV(tick() % (10/1.5) / (10/1.5), 1, 1)
+           end
       end
       while task.wait() do
            pcall(task3)
       end
 end)
 function newChar()
-        Parried = false
         createBallSpeed()
 end
 Player.CharacterAdded:Connect(newChar)
 createBallSpeed()
-Fluent:Notify({Title = "NoobHubV4 Hub", Content = "Script not work in delta", Duration = 5})
 Window:SelectTab(1)
