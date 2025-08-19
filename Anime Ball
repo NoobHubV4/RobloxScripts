@@ -22,6 +22,7 @@ local mesh1
 local mesh2
 local ParryDistance = 0
 local showCircle
+local Connection
 local bill
 local frame
 local TextLabel
@@ -119,6 +120,13 @@ function createCircle()
     mesh2.Scale = Vector3.new(0.05, 0.05, 0.05)
 end
 
+function ResetConnection()
+    if Connection then
+        Connection:Disconnect()
+        Connection = nil
+    end
+end
+
 function createBallSpeed()
     bill = Instance.new("BillboardGui",Player.Character.Head)
     frame = Instance.new("Frame",bill)
@@ -190,22 +198,26 @@ do
               showCircle = Options.State4.Value
        end)
 end
+workspace.Balls.ChildAdded:Connect(function(child)
+       ResetConnection()
+       Connection = child:GetAttributeChangedSignal("Target"):Connect(function()
+              Parried = false
+       end)
+end)
 task.spawn(function()
        function auto()
               local Ball, HRP, block = GetBall(), GetRoot(), ParryDistance
               if Ball:GetAttribute("Target") == Player.Name and not Parried and (HRP.Position - Ball.Position).Magnitude / Ball.LinearVelocity.VectorVelocity.Magnitude <= block and AutoParry then
                      game.ReplicatedStorage.Framework.RemoteFunction:InvokeServer("SwordService","Block",{0})
                      Parried = true
-                     while Parried and task.wait() do
-                            if Ball:GetAttribute("Target") ~= Player.Name then
-                                   Parried = false
-                                   break
-                            end
+                     Cooldown = tick()
+                     if (tick() - Cooldown) >= 1 then
+                            Parried = false
                      end
               end
        end
        while task.wait() do
-              task.spawn(auto)
+              pcall(auto)
        end
 end)
 spawn(function()
