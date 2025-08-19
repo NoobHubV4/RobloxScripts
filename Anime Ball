@@ -210,15 +210,20 @@ workspace.Balls.ChildAdded:Connect(function(child)
               end
        end)
 end)
-game.RunService.Heartbeat:Connect(function()
-       local Ball, HRP, block = GetBall(), GetRoot(), ParryDistance
-       if Ball:GetAttribute("Target") == Player.Name and not Parried and (Ball.Position - HRP.Position).Magnitude / Ball.LinearVelocity.VectorVelocity.Magnitude <= block and AutoParry then
-              game.ReplicatedStorage.Framework.RemoteFunction:InvokeServer("SwordService","Block",{0})
-              Parried = true
-              Cooldown = tick()
-              if (tick() - Cooldown) >= 1 then
-                     Parried = false
+task.spawn(function()
+       function auto()
+              local Ball, HRP, block = GetBall(), GetRoot(), ParryDistance
+              if Ball:GetAttribute("Target") == Player.Name and not Parried and (HRP.Position - Ball.Position).Magnitude / Ball.LinearVelocity.VectorVelocity.Magnitude <= block and AutoParry then
+                     game.ReplicatedStorage.Framework.RemoteFunction:InvokeServer("SwordService","Block",{0})
+                     Parried = true
+                     Cooldown = tick()
+                     if (tick() - Cooldown) >= 1 then
+                            Parried = false
+                     end
               end
+       end
+       while task.wait() do
+              task.spawn(auto)
        end
 end)
 spawn(function()
