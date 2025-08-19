@@ -79,10 +79,8 @@ end)
 UICorner.CornerRadius = UDim.new(0, 5)
 
 function GetBall()
-  for i,v in ipairs(game.workspace.Balls:GetChildren()) do
-    if v:GetAttribute("Target") then
-      return v
-    end
+  for i,v in pairs(game.workspace.Balls:GetChildren()) do
+    return v
   end
 end
 
@@ -118,6 +116,7 @@ function createCircle()
     visual1.Anchored = true
     mesh1.MeshId = "rbxassetid://471124075"
     mesh1.MeshType = "FileMesh"
+    mesh1.Scale = Vector3.new(0.05, 0.05, 0.05)
     visual2.Name = "CircleFollowBall"
     visual2.Color = Color3.fromRGB(0, 0, 255)
     visual2.Material = "Plastic"
@@ -127,6 +126,7 @@ function createCircle()
     visual2.Anchored = true
     mesh2.MeshId = "rbxassetid://471124075"
     mesh2.MeshType = "FileMesh"
+    mesh2.Scale = Vector3.new(0.05, 0.05, 0.05)
 end
 
 function createBallSpeed()
