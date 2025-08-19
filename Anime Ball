@@ -6,7 +6,7 @@ end
 local Fluent = loadstring(game:HttpGet("https://github.com/NoobHubV4/RobloxScripts/blob/main/Fluent/Lib?raw=true"))()
 local Window = Fluent:CreateWindow({Title = "Anime Ball",SubTitle = "v1.2",TabWidth = 100,Size = UDim2.fromOffset(480, 300),Acrylic = false,Theme = "Amethyst",MinimizeKey = Enum.KeyCode.RightShift})
 local Tabs = {Home = Window:AddTab({ Title = "Home", Icon = "" }),Combat = Window:AddTab({ Title = "Combat", Icon = "" }),}
-local Player = game.Players.LocalPlayer
+local Player = game.Players.localPlayer
 local VIM = game:GetService("VirtualInputManager") or game:FindFirstDescendant("VirtualInputManager")
 local AutoMove = false
 local AutoParry
@@ -27,9 +27,6 @@ local bill
 local frame
 local TextLabel
 local Stroke
-local bill2
-local frame2
-local TextLabel2
 
 ScreenGui.Name = "gui"
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
@@ -83,7 +80,9 @@ UICorner.CornerRadius = UDim.new(0, 5)
 
 function GetBall()
   for i,v in ipairs(game.workspace.Balls:GetChildren()) do
-    return v
+    if v:GetAttribute("Target") then
+      return v
+    end
   end
 end
 
@@ -131,7 +130,7 @@ function createCircle()
 end
 
 function createBallSpeed()
-    bill = Instance.new("BillboardGui",game.Players.LocalPlayer.Character.Head)
+    bill = Instance.new("BillboardGui",Player.Character.Head)
     frame = Instance.new("Frame",bill)
     TextLabel = Instance.new("TextLabel",frame)
     Stroke = Instance.new("UIStroke",TextLabel)
@@ -175,49 +174,6 @@ function createBallSpeed()
     TextLabel.Text = "0"
     Stroke.Thickness = 2
 end
-function createDistanceBall(part)
-    bill2 = Instance.new("BillboardGui",part)
-    frame2 = Instance.new("Frame",bill2)
-    TextLabel2 = Instance.new("TextLabel",frame2)
-    bill2.Name = "distance"
-    bill2.Active = true
-    bill2.Enabled = true
-    bill2.ResetOnSpawn = true
-    bill2.AlwaysOnTop = false
-    bill2.DistanceLowerLimit = 0
-    bill2.DistanceStep = 0
-    bill2.DistanceUpperLimit = -1
-    bill2.LightInfluence = 1
-    bill2.MaxDistance = 100
-    bill2.Size = UDim2.new(6.25, 0, 2.5, 0)
-    bill2.StudsOffset = Vector3.new(0, 2, 0)
-    bill2.Brightness = 10
-    bill2.StudsOffsetWorldSpace = Vector3.new(0, 1.1, 0)
-    bill2.ZIndexBehavior = "Sibling"
-    bill2.ClipsDescendants = true
-    frame2.Active = false
-    frame2.AnchorPoint = Vector2.new(0.5, 0.5)
-    frame2.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    frame2.BackgroundTransparency = 1
-    frame2.Position = UDim2.new(0.5, 0, 0.5, 0)
-    frame2.BorderColor3 = Color3.fromRGB(0, 0, 0)
-    frame2.BorderSizePixel = 0
-    frame2.Size = UDim2.new(1.25, 0, 0.75, 0)
-    TextLabel2.Active = false
-    TextLabel2.AnchorPoint = Vector2.new(0.5, 0.5)
-    TextLabel2.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    TextLabel2.BorderColor3 = Color3.fromRGB(0, 0, 0)
-    TextLabel2.BorderSizePixel = 0
-    TextLabel2.BackgroundTransparency = 1
-    TextLabel2.Position = UDim2.new(0.5, 0, 0.5, 0)
-    TextLabel2.Size = UDim2.new(1.15, 0, 1.25, 0)
-    TextLabel2.TextScaled = true
-    TextLabel2.TextSize = 25
-    TextLabel2.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
-    TextLabel2.TextStrokeTransparency = 1
-    TextLabel2.TextColor3 = Color3.fromRGB(255, 255, 255)
-    TextLabel2.Text = "0"
-end
 
 local Options = Fluent.Options
 do
@@ -245,13 +201,6 @@ do
        end)
 end
 workspace.Balls.ChildAdded:Connect(function(child)
-       if bill2 and frame2 then
-              bill2:Destroy()
-              frame2:Destroy()
-              bill2 = nil
-              frame2 = nil
-       end
-       createDistanceBall(child)
        ResetConnection()
        Connection = child:GetAttributeChangedSignal("Target"):Connect(function()
               if Parried then
@@ -286,6 +235,11 @@ spawn(function()
         if SpamParry then
             game.ReplicatedStorage.Framework.RemoteFunction:InvokeServer("SwordService","Block",{0})
         end
+        if showCircle and not visual1 and not visual2 then
+            createCircle()
+        elseif not showCircle and visual1 and visual2 then
+            visual1:Destroy(); visual2:Destroy(); visual1 = nil; visual2 = nil
+        end
     end
     while task.wait() do
         pcall(task0)
@@ -297,18 +251,6 @@ spawn(function()
          if not Ball or not humanoid then return end
          if Ball and humanoid and AutoMove then
                 humanoid:MoveTo(Ball.Position)
-         end
-         if showCircle then
-                if not visual1 and not visual2 then
-                       createCircle()
-                end
-         else
-                if visual1 and visual2 then
-                       visual1:Destroy()
-                       visual2:Destroy()
-                       visual1 = nil
-                       visual2 = nil
-                end
          end
      end
      while task.wait() do
@@ -344,19 +286,6 @@ spawn(function()
                   visual1.CFrame = GetRoot().CFrame
                   visual2.CFrame = GetRoot().CFrame
            end
-           if bill2 and frame2 and TextLabel2 then
-                  local Ball, HRP = GetBall(), GetRoot()
-                  TextLabel2.Text = math.round((HRP.Position - Ball.Position).Magnitude)
-                  if Ball:GetAttribute("Target") == Player.Name and (HRP.Position - Ball.Position).Magnitude <= 40 then
-                         if TextLabel2.TextColor3 == Color3.fromRGB(255, 255, 255) then
-                                TextLabel2.TextColor3 = Color3.fromRGB(255, 0, 0)
-                         end
-                  elseif Ball:GetAttribute("Target") ~= Player.Name and (HRP.Position - Ball.Position).Magnitude >= 40 then
-                         if TextLabel2.TextColor3 == Color3.fromRGB(255, 0, 0) then
-                                TextLabel2.TextColor3 = Color3.fromRGB(255, 255, 255)
-                         end
-                  end
-           end
       end
       while task.wait() do
            pcall(task3)
@@ -367,9 +296,5 @@ function newChar()
         createBallSpeed()
 end
 Player.CharacterAdded:Connect(newChar)
-Window:SelectTab(1)
 createBallSpeed()
-local ball = GetBall()
-if ball then
-createDistanceBall(ball)
-end
+Window:SelectTab(1)
