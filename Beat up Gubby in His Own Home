@@ -1,0 +1,13 @@
+local lib = loadstring(Game:HttpGet("https://raw.githubusercontent.com/NoobHubV1/NoobHubV1/main/Wizard%20Lib.lua"))()
+local infMoney
+local remote = game.ReplicatedStorage.Networking.Server.RemoteEvents.DamageEvents
+local Window = lib:NewWindow("Beat up Gubby in His Own Home")
+local Section = Window:NewSection("Main")
+Section:CreateToggle("infinite Money", function(state)
+  infMoney = state
+end)
+game.RunService.PreSimulation:Connect(function()
+  if infMoney then
+    remote.VoidDamage:FireServer(workspace.Gubbies.RegularGubby.Hitbox.Position)
+  end
+end)
