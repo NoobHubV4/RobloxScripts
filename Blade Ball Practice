@@ -17,12 +17,9 @@ local Toggle2 = Instance.new("TextButton", ScreenGui)
 local UICorner = Instance.new("UICorner", Toggle2)
 local SpamParry = false
 local Connection
-local visual1
-local visual2
-local mesh1
-local mesh2
+local visual
 local ParryDistance = 0
-local showCircle
+local showVisualizer
 local Method
 local bill
 local frame
@@ -84,7 +81,7 @@ value.Name = "IsBlocking"
 
 function GetBall()
   for i,v in ipairs(game.workspace.Effects:GetChildren()) do
-    if v.Name ~= "Shockwave" and v:GetAttribute("Target_First") == "BallSpawn" then
+    if v.Name ~= "Shockwave" and not v.Name:lower():find("visualball_") then
       return v
     end
   end
@@ -108,29 +105,14 @@ end
 function t(Title, Text, Time)
     game:FindService("StarterGui"):SetCore("SendNotification",{Title=Title,Text=Text,Icon="",Duration=Time,})
 end
-function createCircle()
-    visual1 = Instance.new("Part",workspace)
-    visual2 = Instance.new("Part",workspace)
-    mesh1 = Instance.new("SpecialMesh",visual1)
-    mesh2 = Instance.new("SpecialMesh",visual2)
-    visual1.Name = "Circle"
-    visual1.Color = Color3.fromRGB(0, 0, 255)
-    visual1.Material = "Plastic"
-    visual1.Transparency = 0.75
-    visual1.Size = Vector3.new(10, 0.4, 10)
-    visual1.CanCollide = false
-    visual1.Anchored = true
-    mesh1.MeshId = "rbxassetid://471124075"
-    mesh1.MeshType = "FileMesh"
-    visual2.Name = "CircleFollowBall"
-    visual2.Color = Color3.fromRGB(0, 0, 255)
-    visual2.Material = "Plastic"
-    visual2.Transparency = 0
-    visual2.Size = Vector3.new(10, 0.4, 10)
-    visual2.CanCollide = false
-    visual2.Anchored = true
-    mesh2.MeshId = "rbxassetid://471124075"
-    mesh2.MeshType = "FileMesh"
+function createVisualizer()
+    visual = Instance.new("Part",workspace)
+    visual.Name = "Visualizer"
+    visual.Material = "ForceField"
+    visual.CastShadow = false
+    visual.CanCollide = false
+    visual.Anchored = true
+    visual.Shape = "Ball"
 end
 
 function createBallSpeed()
@@ -209,7 +191,7 @@ do
               ParryDistance = value
        end)
        Show:OnChanged(function()
-              showCircle = Options.State4.Value
+              showVisualizer = Options.State4.Value
        end)
        parrymethod:OnChanged(function(select)
               Method = select
@@ -246,17 +228,10 @@ spawn(function()
         if SpamParry then
             ParryAttempt()
         end
-        if showCircle then
-            if not visual1 and not visual2 then
-                createCircle()
-            end
-        else
-            if visual1 and visual2 then
-                visual1:Destroy()
-                visual2:Destroy()
-                visual1 = nil
-                visual2 = nil
-            end
+        if showVisualizer and not visual then
+            createVisualizer()
+        elseif not showVisualizer and visual then
+            visual:Destroy(); visual = nil
         end
     end
     while task.wait() do
@@ -281,55 +256,24 @@ end)
 spawn(function()
      task2 = function()
          local Ball = GetBall()
-         local speed = Ball.Positional.MaxVelocity / (GetRoot().Position - Ball.Position).Magnitude * ParryDistance
-         if speed and visual1 and visual2 and AutoParry then
-                visual1.CFrame = GetRoot().CFrame
-                visual2.CFrame = CFrame.new(GetRoot().Position, Ball.Position)
-                mesh1.Scale = Vector3.new(speed, 0.05, speed)
-                mesh2.Scale = Vector3.new(speed, 0.05, speed)
+         local speed = Ball.Positional.MaxVelocity * ParryDistance
+         if speed and visual and AutoParry then
+                visual.Size = Vector3.new(speed, speed, speed)
          end
          if bill and frame and TextLabel and Stroke then
-                TextLabel.Text = Ball.Positional.MaxVelocity * ParryDistance
+                TextLabel.Text = math.round(speed)
          end
-         if not GetBall() and visual1 and visual2 and AutoParry then
-                visual1.CFrame = GetRoot().CFrame
-                visual2.CFrame = GetRoot().CFrame
+         if visual then
+                visual.CFrame = GetRoot().CFrame
+                visual.Color = Color3.fromHSV(tick() % (10/1.5) / (10/1.5), 1, 1)
          end
      end
      while task.wait() do
          pcall(task2)
      end
 end)
-spawn(function()
-      task3 = function()
-           if not GetBall() and visual1 and visual2 and AutoParry then
-                  visual1.CFrame = GetRoot().CFrame
-                  visual2.CFrame = GetRoot().CFrame
-                  mesh1.Scale = Vector3.new(0.05, 0.05, 0.05)
-                  mesh2.Scale = Vector3.new(0.05, 0.05, 0.05)
-           end
-           if not AutoParry and visual1 and visual2 then
-                  visual1.CFrame = GetRoot().CFrame
-                  visual2.CFrame = GetRoot().CFrame
-                  mesh1.Scale = Vector3.new(0.05, 0.05, 0.05)
-                  mesh2.Scale = Vector3.new(0.05, 0.05, 0.05)
-           end
-      end
-      while task.wait() do
-           pcall(task3)
-      end
+Player.CharacterAdded:Connect(function()
+     Player.IsBlocking.Value = nil; createBallSpeed()
 end)
-local died
-function event()
-        died:Disconnect()
-        died = nil
-        Parried = false
-end
-function newChar()
-        died = Player.Character.Humanoid.Died:Connect(event)
-        createBallSpeed()
-end
-died = Player.Character.Humanoid.Died:Connect(event)
-Player.CharacterAdded:Connect(newChar)
-Window:SelectTab(1)
 createBallSpeed()
+Window:SelectTab(1)
