@@ -1,13 +1,12 @@
 for i,v in ipairs(game.CoreGui:GetChildren()) do
-        if v.Name == "ScreenGui" then
+        if v.Name == "gui" then
                 v:Destroy()
         end
 end
 local Fluent = loadstring(game:HttpGet("https://github.com/NoobHubV4/RobloxScripts/blob/main/Fluent/Lib?raw=true"))()
-local Window = Fluent:CreateWindow({Title = "Blade Ball Practice",SubTitle = "v1.1",TabWidth = 100,Size = UDim2.fromOffset(480, 300),Acrylic = false,Theme = "Amethyst",MinimizeKey = Enum.KeyCode.RightShift})
+local Window = Fluent:CreateWindow({Title = "Blade Ball Practice",SubTitle = "v1.2",TabWidth = 100,Size = UDim2.fromOffset(480, 300),Acrylic = false,Theme = "Amethyst",MinimizeKey = Enum.KeyCode.RightShift})
 local Tabs = {Home = Window:AddTab({ Title = "Home", Icon = "" }),Combat = Window:AddTab({ Title = "Combat", Icon = "" }),}
-local Player = game.Players.LocalPlayer
-local VIM = game:GetService("VirtualInputManager") or game:FindFirstDescendant("VirtualInputManager")
+local Player = game.Players.localPlayer
 local AutoMove = false
 local AutoParry
 local Cooldown = tick()
@@ -17,10 +16,12 @@ local Toggle2 = Instance.new("TextButton", ScreenGui)
 local UICorner = Instance.new("UICorner", Toggle2)
 local SpamParry = false
 local Connection
-local visual
+local visual1
+local visual2
+local mesh1
+local mesh2
 local ParryDistance = 0
-local showVisualizer
-local Method
+local showCircle
 local bill
 local frame
 local TextLabel
@@ -68,7 +69,7 @@ Toggle2.Draggable = true
 local script2 = Instance.new("LocalScript", Toggle2)
 script2.Parent.MouseButton1Click:Connect(function()
      for i,v in next, game.CoreGui.ScreenGui:GetChildren() do
-if v.Name == "Frame" and v.Size ~= UDim2.new(0, 79, 0, 112) and v.Size ~= UDim2.new(0, 89, 0, 112) then
+if v.Name == "Frame" then
 v.Visible = not v.Visible
 end
 end
@@ -76,12 +77,9 @@ end)
 
 UICorner.CornerRadius = UDim.new(0, 5)
 
-local value = Instance.new("BoolValue",Player)
-value.Name = "IsBlocking"
-
 function GetBall()
-  for i,v in ipairs(game.workspace.Effects:GetChildren()) do
-    if v.Name ~= "Shockwave" and not v.Name:lower():find("visualball_") then
+  for i,v in pairs(game.workspace.Effects:GetChildren()) do
+    if v.Name ~= "Shockwave" and v:GetAttribute("Target_First") == "BallSpawn" then
       return v
     end
   end
@@ -105,18 +103,35 @@ end
 function t(Title, Text, Time)
     game:FindService("StarterGui"):SetCore("SendNotification",{Title=Title,Text=Text,Icon="",Duration=Time,})
 end
-function createVisualizer()
-    visual = Instance.new("Part",workspace)
-    visual.Name = "Visualizer"
-    visual.Material = "ForceField"
-    visual.CastShadow = false
-    visual.CanCollide = false
-    visual.Anchored = true
-    visual.Shape = "Ball"
+function createCircle()
+    visual1 = Instance.new("Part",workspace)
+    visual2 = Instance.new("Part",workspace)
+    mesh1 = Instance.new("SpecialMesh",visual1)
+    mesh2 = Instance.new("SpecialMesh",visual2)
+    visual1.Name = "Circle"
+    visual1.Color = Color3.fromRGB(0, 0, 255)
+    visual1.Material = "Plastic"
+    visual1.Transparency = 0.75
+    visual1.Size = Vector3.new(10, 0.4, 10)
+    visual1.CanCollide = false
+    visual1.Anchored = true
+    mesh1.MeshId = "rbxassetid://471124075"
+    mesh1.MeshType = "FileMesh"
+    mesh1.Scale = Vector3.new(0.05, 0.05, 0.05)
+    visual2.Name = "CircleFollowBall"
+    visual2.Color = Color3.fromRGB(0, 0, 255)
+    visual2.Material = "Plastic"
+    visual2.Transparency = 0
+    visual2.Size = Vector3.new(10, 0.4, 10)
+    visual2.CanCollide = false
+    visual2.Anchored = true
+    mesh2.MeshId = "rbxassetid://471124075"
+    mesh2.MeshType = "FileMesh"
+    mesh2.Scale = Vector3.new(0.05, 0.05, 0.05)
 end
 
 function createBallSpeed()
-    bill = Instance.new("BillboardGui",game.Players.LocalPlayer.Character.Head)
+    bill = Instance.new("BillboardGui",Player.Character.Head)
     frame = Instance.new("Frame",bill)
     TextLabel = Instance.new("TextLabel",frame)
     Stroke = Instance.new("UIStroke",TextLabel)
@@ -130,7 +145,7 @@ function createBallSpeed()
     bill.DistanceUpperLimit = -1
     bill.LightInfluence = 1
     bill.MaxDistance = 100
-    bill.Size = UDim2.new(6, 0, 2.25, 0)
+    bill.Size = UDim2.new(6.25, 0, 2.875, 0)
     bill.StudsOffset = Vector3.new(0, 2, 0)
     bill.Brightness = 10
     bill.StudsOffsetWorldSpace = Vector3.new(0, 1.1, 0)
@@ -140,10 +155,10 @@ function createBallSpeed()
     frame.AnchorPoint = Vector2.new(0.5, 0.5)
     frame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
     frame.BackgroundTransparency = 1
-    frame.Position = UDim2.new(0.5, 0, 0.5, 0)
+    frame.Position = UDim2.new(0.5, 0, 0.375, 0)
     frame.BorderColor3 = Color3.fromRGB(0, 0, 0)
     frame.BorderSizePixel = 0
-    frame.Size = UDim2.new(1, 0, 0.5, 0)
+    frame.Size = UDim2.new(1.25, 0, 0.75, 0)
     TextLabel.Active = false
     TextLabel.AnchorPoint = Vector2.new(0.5, 0.5)
     TextLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
@@ -151,28 +166,20 @@ function createBallSpeed()
     TextLabel.BorderSizePixel = 0
     TextLabel.BackgroundTransparency = 1
     TextLabel.Position = UDim2.new(0.5, 0, 0.5, 0)
-    TextLabel.Size = UDim2.new(0.9, 0, 1, 0)
+    TextLabel.Size = UDim2.new(1.15, 0, 1.25, 0)
     TextLabel.TextScaled = true
-    TextLabel.TextSize = 100
+    TextLabel.TextSize = 25
     TextLabel.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
     TextLabel.TextStrokeTransparency = 1
     TextLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    TextLabel.Text = "0"
     Stroke.Thickness = 2
-end
-function ParryAttempt()
-    if Method == "Keypress" then
-        VIM:SendKeyEvent(true,"F",false,game)
-    elseif Method == "Click" then
-        VIM:SendMouseButtonEvent(0, 0, 0, true, game, 0)
-    elseif Method == "Remote" then
-        game.ReplicatedStorage.Events.Block:InvokeServer(GetRoot().CFrame, GetRoot().Position)
-    end
 end
 
 local Options = Fluent.Options
 do
        Tabs.Home:AddParagraph({Title = "Credits",Content = "Credits by NoobHubV4"})
-       local parrymethod = Tabs.Combat:AddDropdown("Dropdown", {Title = "Parry Method",Values = {"Keypress","Click","Remote"},Multi = false,Default = 1,})
+       Tabs.Home:AddButton({Title = "Copy Script",Description = "",Callback = function() setclipboard("https://github.com/NoobHubV4/RobloxScripts") end})
        local autoblock = Tabs.Combat:AddToggle("State1", {Title = "Auto Parry", Default = false })
        local manualspam = Tabs.Combat:AddToggle("State2", {Title = "Manual Spam", Default = false })
        local automove = Tabs.Combat:AddToggle("State3", {Title = "Follow Ball", Default = false })
@@ -191,62 +198,56 @@ do
               ParryDistance = value
        end)
        Show:OnChanged(function()
-              showVisualizer = Options.State4.Value
-       end)
-       parrymethod:OnChanged(function(select)
-              Method = select
+              showCircle = Options.State4.Value
        end)
 end
-spawn(function()
-    function Parry()
-        local Ball, HRP = GetBall(), GetRoot()
-        local block = ParryDistance
-        if not HRP then return end
-        if Ball:GetAttribute("Target") == Player.Name then
-                if not Player.IsBlocking.Value and (HRP.Position - Ball.Position).Magnitude / Ball.Positional.MaxVelocity <= block and AutoParry then
-                        ParryAttempt()
-                        Player.IsBlocking.Value = true
-                        Cooldown = tick()
-                        if (tick() - Cooldown) >= 1 then
-                               Player.IsBlocking.Value = false
-                        end
-                        while Player.IsBlocking.Value and task.wait() do
-                               if Ball:GetAttribute("Target") ~= Player.Name then
-                                      Player.IsBlocking.Value = false
-                                      break
-                               end
-                        end
-                end
-        end
-    end
-    while task.wait() do
-        pcall(Parry)
-    end
+workspace.Effects.ChildAdded:Connect(function(child)
+       if child.Name ~= "Shockwave" and child:GetAttribute("Target_First") == "BallSpawn" then
+              ResetConnection()
+              Connection = child:GetAttributeChangedSignal("Target"):Connect(function()
+                     if Parried then
+                            while Parried and task.wait() do
+                                   Parried = false
+                            end
+                     end
+              end)
+       end
+end)
+game.RunService.Heartbeat:Connect(function()
+       local Ball, HRP, block = GetBall(), GetRoot(), ParryDistance
+       if Ball:GetAttribute("Target") == Player.Name and not Parried and (Ball.Position - HRP.Position).Magnitude / Ball.Positional.MaxVelocity <= block and AutoParry then
+              game.ReplicatedStorage.Events.Block:InvokeServer(GetRoot().CFrame, GetRoot().Position)
+              Parried = true
+              Cooldown = tick()
+              if (tick() - Cooldown) >= 1 then
+                     Parried = false
+              end
+       end
 end)
 spawn(function()
     function task0()
-        if SpamParry then
-            ParryAttempt()
-        end
-        if showVisualizer and not visual then
-            createVisualizer()
-        elseif not showVisualizer and visual then
-            visual:Destroy(); visual = nil
+        if showCircle and not visual1 and not visual2 then
+            createCircle()
+        elseif not showCircle and visual1 and visual2 then
+            visual1:Destroy(); visual2:Destroy(); visual1 = nil; visual2 = nil
         end
     end
     while task.wait() do
         pcall(task0)
     end
 end)
+function step()
+    if SpamParry then
+        game.ReplicatedStorage.Events.Block:InvokeServer(GetRoot().CFrame, GetRoot().Position)
+    end
+end
+game.RunService.RenderStepped:Connect(step)
 spawn(function()
      function task1()
          local Ball, humanoid = GetBall(), Player.Character.Humanoid
          if not Ball or not humanoid then return end
          if Ball and humanoid and AutoMove then
                 humanoid:MoveTo(Ball.Position)
-         end
-         if bill and frame and TextLabel and Stroke then
-                Stroke.Color = Color3.fromHSV(tick() % (10/2) / (10/2), 1, 1)
          end
      end
      while task.wait() do
@@ -256,24 +257,42 @@ end)
 spawn(function()
      task2 = function()
          local Ball = GetBall()
-         local speed = Ball.Positional.MaxVelocity * ParryDistance
-         if speed and visual and AutoParry then
-                visual.Size = Vector3.new(speed, speed, speed)
+         local speed = Ball.Positional.MaxVelocity / 500 * 3 * ParryDistance
+         if speed and visual1 and visual2 and AutoParry then
+                visual1.CFrame = GetRoot().CFrame
+                visual2.CFrame = CFrame.new(GetRoot().Position, Ball.Position)
+                mesh1.Scale = Vector3.new(speed, 0.05, speed)
+                mesh2.Scale = Vector3.new(speed, 0.05, speed)
          end
          if bill and frame and TextLabel and Stroke then
-                TextLabel.Text = math.round(speed)
-         end
-         if visual then
-                visual.CFrame = GetRoot().CFrame
-                visual.Color = Color3.fromHSV(tick() % (10/1.5) / (10/1.5), 1, 1)
+                TextLabel.Text = math.round(Ball.Positional.MaxVelocity * ParryDistance)
+                Stroke.Color = Color3.fromHSV(tick() % (10/2) / (10/2), 1, 1)
          end
      end
      while task.wait() do
          pcall(task2)
      end
 end)
-Player.CharacterAdded:Connect(function()
-     Player.IsBlocking.Value = nil; createBallSpeed()
+spawn(function()
+      task3 = function()
+           if not GetBall() and visual1 and visual2 and AutoParry then
+                  visual1.CFrame = GetRoot().CFrame
+                  visual2.CFrame = GetRoot().CFrame
+           end
+           if not AutoParry and visual1 and visual2 then
+                  visual1.CFrame = GetRoot().CFrame
+                  visual2.CFrame = GetRoot().CFrame
+           end
+      end
+      while task.wait() do
+           pcall(task3)
+      end
 end)
+function newChar()
+        Parried = false
+        createBallSpeed()
+end
+Player.CharacterAdded:Connect(newChar)
 createBallSpeed()
+Fluent:Notify({Title = "NoobHubV4 Hub", Content = "Script not work in delta", Duration = 5})
 Window:SelectTab(1)
