@@ -213,15 +213,20 @@ workspace.Effects.ChildAdded:Connect(function(child)
               end)
        end
 end)
-game.RunService.Heartbeat:Connect(function()
-       local Ball, HRP, block = GetBall(), GetRoot(), ParryDistance
-       if Ball:GetAttribute("Target") == Player.Name and not Parried and (Ball.Position - HRP.Position).Magnitude / Ball.Positional.MaxVelocity <= block and AutoParry then
-              game.ReplicatedStorage.Events.Block:InvokeServer(GetRoot().CFrame, GetRoot().Position)
-              Parried = true
-              Cooldown = tick()
-              if (tick() - Cooldown) >= 1 then
-                     Parried = false
+task.spawn(function()
+       function auto()
+              local Ball, HRP, block = GetBall(), GetRoot(), ParryDistance
+              if Ball:GetAttribute("Target") == Player.Name and not Parried and (HRP.Position - Ball.Position).Magnitude / Ball.Positional.MaxVelocity <= block and AutoParry then
+                     game.ReplicatedStorage.Events.Block:InvokeServer(HRP.CFrame, HRP.Position)
+                     Parried = true
+                     Cooldown = tick()
+                     if (tick() - Cooldown) >= 1 then
+                            Parried = false
+                     end
               end
+       end
+       while task.wait() do
+              task.spawn(auto)
        end
 end)
 spawn(function()
@@ -259,8 +264,6 @@ spawn(function()
          local Ball = GetBall()
          local speed = Ball.Positional.MaxVelocity / 500 * 3 * ParryDistance
          if speed and visual1 and visual2 and AutoParry then
-                visual1.CFrame = GetRoot().CFrame
-                visual2.CFrame = CFrame.new(GetRoot().Position, Ball.Position)
                 mesh1.Scale = Vector3.new(speed, 0.05, speed)
                 mesh2.Scale = Vector3.new(speed, 0.05, speed)
          end
@@ -275,13 +278,11 @@ spawn(function()
 end)
 spawn(function()
       task3 = function()
-           if not GetBall() and visual1 and visual2 and AutoParry then
-                  visual1.CFrame = GetRoot().CFrame
-                  visual2.CFrame = GetRoot().CFrame
+           if visual1 and visual2 then
+               visual1.CFrame = GetRoot().CFrame
            end
-           if not AutoParry and visual1 and visual2 then
-                  visual1.CFrame = GetRoot().CFrame
-                  visual2.CFrame = GetRoot().CFrame
+           if AutoParry and visual1 and visual2 then
+               visual2.CFrame = CFrame.new(GetRoot().CFrame.p, GetBall().CFrame.p)
            end
       end
       while task.wait() do
