@@ -210,31 +210,19 @@ workspace.Balls.ChildAdded:Connect(function(child)
               end
        end)
 end)
-spawn(function()
-    function Parry()
-        local Ball, HRP = GetBall(), GetRoot()
-        local block = ParryDistance
-        if not HRP then return end
-        if Ball:GetAttribute("Target") == Player.Name then
-                if not Parried and (HRP.Position - Ball.Position).Magnitude / Ball.LinearVelocity.VectorVelocity.Magnitude <= block and AutoParry then
-                        game.ReplicatedStorage.Framework.RemoteFunction:InvokeServer("SwordService","Block",{0})
-                        Parried = true
-                        Cooldown = tick()
-                        if (tick() - Cooldown) >= 1 then
-                               Parried = false
-                        end
-                end
-        end
-    end
-    while task.wait() do
-        pcall(Parry)
-    end
+game.RunService.Heartbeat:Connect(function()
+       local Ball, HRP, block = GetBall(), GetRoot(), ParryDistance
+       if Ball:GetAttribute("Target") == Player.Name and not Parried and (Ball.Position - HRP.Position).Magnitude / Ball.LinearVelocity.VectorVelocity.Magnitude <= block and AutoParry then
+              game.ReplicatedStorage.Framework.RemoteFunction:InvokeServer("SwordService","Block",{0})
+              Parried = true
+              Cooldown = tick()
+              if (tick() - Cooldown) >= 1 then
+                     Parried = false
+              end
+       end
 end)
 spawn(function()
     function task0()
-        if SpamParry then
-            game.ReplicatedStorage.Framework.RemoteFunction:InvokeServer("SwordService","Block",{0})
-        end
         if showCircle and not visual1 and not visual2 then
             createCircle()
         elseif not showCircle and visual1 and visual2 then
@@ -245,6 +233,12 @@ spawn(function()
         pcall(task0)
     end
 end)
+function step()
+    if SpamParry then
+        game.ReplicatedStorage.Framework.RemoteFunction:InvokeServer("SwordService","Block",{0})
+    end
+end
+game.RunService.RenderStepped:Connect(step)
 spawn(function()
      function task1()
          local Ball, humanoid = GetBall(), Player.Character.Humanoid
@@ -260,7 +254,7 @@ end)
 spawn(function()
      task2 = function()
          local Ball = GetBall()
-         local speed = Ball.LinearVelocity.VectorVelocity.Magnitude / 475 * 3 * ParryDistance
+         local speed = Ball.LinearVelocity.VectorVelocity.Magnitude / 500 * 3 * ParryDistance
          if speed and visual1 and visual2 and AutoParry then
                 visual1.CFrame = GetRoot().CFrame
                 visual2.CFrame = CFrame.new(GetRoot().Position, Ball.Position)
@@ -297,4 +291,5 @@ function newChar()
 end
 Player.CharacterAdded:Connect(newChar)
 createBallSpeed()
+Fluent:Notify({Title = "NoobHubV4 Hub", Content = "Script not work in delta", Duration = 5})
 Window:SelectTab(1)
