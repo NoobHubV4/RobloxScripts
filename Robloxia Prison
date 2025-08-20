@@ -13,6 +13,7 @@ local LocalPlayer = game.Players.localPlayer
 local Teams = game.Teams
 local autoRespawn = nil
 local waitfor
+local Rstorage
 
 local LocTP = function(cframe)
 	LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame = cframe
@@ -26,7 +27,11 @@ function LoadCamPos()
 end
 
 function TeamEve(args)
-  game.ReplicatedStorage.Packages:FindFirstChild("_Index"):FindFirstChild("sleitnick_knit@1.7.0").knit.Services.TeamService.RF.SelectTeam:InvokeServer(args)
+  Rstorage.Packages:FindFirstChild("_Index"):FindFirstChild("sleitnick_knit@1.7.0").knit.Services.TeamService.RF.SelectTeam:InvokeServer(args)
+end
+
+function GetToolEvent(args)
+  Rstorage.Events.Interact:InvokeServer(args, "GetTool")
 end
 
 function Refresh()
