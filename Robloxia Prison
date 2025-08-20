@@ -3,7 +3,7 @@ local Window = lib:NewWindow("Robloxia Prison")
 local Main = Window:NewSection("Main")
 local Team = Window:NewSection("Team")
 local SavedPositions = {AutoRe = nil}
-local Connections = {Died = nil;}
+local Connections = {Died = nil}
 local Camera = game:FindService("Workspace").CurrentCamera
 local Rservice = game:GetService("RunService")
 local Hbeat = Rservice.Heartbeat
@@ -34,13 +34,12 @@ function Refresh()
   local team = LocalPlayer.Team; autoRespawn = true; SavedPositions.AutoRe = LocalPlayer.Character.HumanoidRootPart.CFrame
        if team == Teams.Criminals then
            TeamEve("Inmates")
-           LocalPlayer.CharacterAdded:Wait() task.wait()
+           task.wait(.25)
            repeat task.wait()
                     pcall(function()
                         LocalPlayer.Character.HumanoidRootPart.CFrame = workspace.Spawns.Criminals["2"].SpawnLocation.CFrame
                     end)
                 until LocalPlayer.Team == Teams.Criminals; LocalPlayer.Character.HumanoidRootPart.CFrame = SavedPositions.AutoRe
-                return
             elseif team == Teams.Guards then
                 TeamEve("Guards")
             elseif team == Teams.Inmates then
@@ -55,13 +54,12 @@ function TeamTo(args)
   local tmp = autoRespawn == true; autoRespawn = true; SavedPositions.AutoRe = LocalPlayer.Character.HumanoidRootPart.CFrame
        if args == "criminal" then
            TeamEve("Inmates")
-           LocalPlayer.CharacterAdded:Wait() task.wait()
+           task.wait(.25)
            repeat task.wait()
                     pcall(function()
                         LocalPlayer.Character.HumanoidRootPart.CFrame = workspace.Spawns.Criminals["2"].SpawnLocation.CFrame
                     end)
                 until LocalPlayer.Team == Teams.Criminals; LocalPlayer.Character.HumanoidRootPart.CFrame = SavedPositions.AutoRe
-                return
             elseif args == "guard" then
                 TeamEve("Guards")
             elseif args == "inmate" then
@@ -105,7 +103,7 @@ local function ondiedevent()
             local team = LocalPlayer.Team
             if team == Teams.Criminals then
                 TeamEve("Inmates")
-                LocalPlayer.CharacterAdded:Wait() task.wait()
+                task.wait(.25)
                 repeat task.wait()
                     pcall(function()
                         LocalPlayer.Character.HumanoidRootPart.CFrame = workspace.Spawns.Criminals["2"].SpawnLocation.CFrame
@@ -147,4 +145,9 @@ end
 Connections.Died = lochar:WaitForChild("Humanoid").Died:Connect(ondiedevent)
 Connections.CharacterAdded = LocalPlayer.CharacterAdded:Connect(function(newChar)
        oncharadded()
+       newChar.Head.ChildAdded:Connect(function(child)
+              if child.Name == "HandcuffedGui" then
+                     Refresh()
+              end
+       end)
 end)
