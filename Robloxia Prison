@@ -1,6 +1,7 @@
 local lib = loadstring(game:HttpGet("https://raw.github.com/NoobHubV1/NoobHubV1/main/Wizard%20Lib.lua"))()
 local Window = lib:NewWindow("Robloxia Prison")
 local Main = Window:NewSection("Main")
+local Team = Window:NewSection("Team")
 local SavedPositions = {AutoRe = nil}
 local Connections = {Died = nil;}
 local Camera = game:FindService("Workspace").CurrentCamera
@@ -50,12 +51,49 @@ function Refresh()
      end
 end
 
+function TeamTo(args)
+  local tmp = autoRespawn == true; autoRespawn = true; SavedPositions.AutoRe = LocalPlayer.Character.HumanoidRootPart.CFrame
+       if args == "criminal" then
+           TeamEve("Inmates")
+           LocalPlayer.CharacterAdded:Wait() task.wait()
+           repeat task.wait()
+                    pcall(function()
+                        LocalPlayer.Character.HumanoidRootPart.CFrame = workspace.Spawns.Criminals["2"].SpawnLocation.CFrame
+                    end)
+                until LocalPlayer.Team == Teams.Criminals; LocalPlayer.Character.HumanoidRootPart.CFrame = SavedPositions.AutoRe
+                return
+            elseif args == "guard" then
+                TeamEve("Guards")
+            elseif args == "inmate" then
+                TeamEve("Inmates")
+     end
+     if not tmp then
+         autoRespawn = false
+     end
+end
+
 Main:CreateButton("Refresh", function()
   Refresh()
 end)
 
 Main:CreateToggle("Auto Respawn", function(state)
   autoRespawn = state
+end)
+
+Team:CreateButton("Inmate", function()
+  TeamTo("inmate")
+end)
+
+Team:CreateButton("Guard", function()
+  TeamTo("guard")
+end)
+
+Team:CreateButton("Criminal", function()
+  TeamTo("criminal")
+end)
+
+Team:CreateButton("Neutral", function()
+  TeamEve("Neutral")
 end)
 
 local lochar = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
