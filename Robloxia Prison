@@ -1,0 +1,112 @@
+local lib = loadstring(game:HttpGet("https://raw.github.com/NoobHubV1/NoobHubV1/main/Wizard%20Lib.lua"))()
+local Window = lib:NewWindow("Robloxia Prison")
+local Main = Window:NewSection("Main")
+local SavedPositions = {AutoRe = nil}
+local Connections = {Died = nil;}
+local Camera = game:FindService("Workspace").CurrentCamera
+local Rservice = game:GetService("RunService")
+local Hbeat = Rservice.Heartbeat
+local Rstep = Rservice.RenderStepped
+local Stepped = Rservice.Stepped
+local LocalPlayer = game.Players.localPlayer
+local Teams = game.Teams
+local autoRespawn = nil
+local waitfor
+
+local LocTP = function(cframe)
+	LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame = cframe
+end
+function SaveCamPos()
+	SavedPositions.OldCameraPos = Camera.CFrame
+end
+function LoadCamPos()
+	Rstep:Wait()
+	Camera.CFrame = SavedPositions.OldCameraPos or Camera.CFrame
+end
+
+function TeamEve(args)
+  game.ReplicatedStorage.Packages:FindFirstChild("_Index"):FindFirstChild("sleitnick_knit@1.7.0").knit.Services.TeamService.RF.SelectTeam:InvokeServer(args)
+end
+
+function Refresh()
+  local tmp = autoRespawn == true
+  local team = LocalPlayer.Team; autoRespawn = true; SavedPositions.AutoRe = LocalPlayer.Character.HumanoidRootPart.CFrame
+       if team == Teams.Criminals then
+           TeamEve("Inmates")
+           LocalPlayer.CharacterAdded:Wait() task.wait()
+           repeat task.wait()
+                    pcall(function()
+                        LocalPlayer.Character.HumanoidRootPart.CFrame = workspace.Spawns.Criminals["2"].SpawnLocation.CFrame
+                    end)
+                until LocalPlayer.Team == Teams.Criminals; LocalPlayer.Character.HumanoidRootPart.CFrame = SavedPositions.AutoRe
+                return
+            elseif team == Teams.Guards then
+                TeamEve("Guards")
+            elseif team == Teams.Inmates then
+                TeamEve("Inmates")
+     end
+     if not tmp then
+         autoRespawn = false
+     end
+end
+
+Main:CreateButton("Refresh", function()
+  Refresh()
+end)
+
+Main:CreateToggle("Auto Respawn", function(state)
+  autoRespawn = state
+end)
+
+local lochar = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+local function ondiedevent()
+	coroutine.wrap(function()
+		Connections.Died:Disconnect(); SaveCamPos()
+		SavedPositions.AutoRe = lochar:WaitForChild("HumanoidRootPart", 1) and LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame; Camera.CameraType = Enum.CameraType.Track
+    if autoRespawn then
+            local team = LocalPlayer.Team
+            if team == Teams.Criminals then
+                TeamEve("Inmates")
+                LocalPlayer.CharacterAdded:Wait() task.wait()
+                repeat task.wait()
+                    pcall(function()
+                        LocalPlayer.Character.HumanoidRootPart.CFrame = workspace.Spawns.Criminals["2"].SpawnLocation.CFrame
+                    end)
+                until LocalPlayer.Team == Teams.Criminals; LocalPlayer.Character.HumanoidRootPart.CFrame = SavedPositions.AutoRe
+                return
+            elseif team == Teams.Guards then
+                TeamEve("Guards")
+            elseif team == Teams.Inmates then
+                TeamEve("Inmates")
+            end
+        end
+	end)()
+end
+local function charaddtask()
+	local LHuman = lochar:WaitForChild("Humanoid", 1)
+	if LHuman then
+        if Connections.Died then Connections.Died:Disconnect(); Connections.Died = nil end
+        Connections.Died = LHuman.Died:Connect(ondiedevent)
+	end
+end
+local function oncharadded()
+	lochar = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+	if SavedPositions.AutoRe and autoRespawn then
+		local LRoot = lochar:WaitForChild("HumanoidRootPart", 1)
+		if LRoot then
+			LRoot.CFrame = SavedPositions.AutoRe; LoadCamPos(); LRoot.CFrame = SavedPositions.AutoRe
+			task.spawn(function()
+				for i = 1, 5 do
+					task.wait(); LRoot.CFrame = SavedPositions.AutoRe
+				end
+			end)
+		end
+	end
+	lochar:WaitForChild("Humanoid", 1):SetStateEnabled(Enum.HumanoidStateType.FallingDown, false)
+	lochar:WaitForChild("Humanoid", 1):SetStateEnabled(Enum.HumanoidStateType.Ragdoll, false)
+  coroutine.wrap(charaddtask)()
+end
+Connections.Died = lochar:WaitForChild("Humanoid").Died:Connect(ondiedevent)
+Connections.CharacterAdded = LocalPlayer.CharacterAdded:Connect(function(newChar)
+       oncharadded()
+end)
