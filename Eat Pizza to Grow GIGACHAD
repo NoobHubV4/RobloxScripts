@@ -1,0 +1,13 @@
+local lib = loadstring(Game:HttpGet("https://raw.githubusercontent.com/NoobHubV1/NoobHubV1/main/Wizard%20Lib.lua"))()
+local infPizza
+local msg = game.ReplicatedStorage.Msg
+local Window = lib:NewWindow("Eat Pizza to Grow GIGACHAD")
+local Section = Window:NewSection("Main")
+Section:CreateToggle("infinite Pizza", function(state)
+  infPizza = state
+end)
+game.RunService.PreSimulation:Connect(function()
+  if infPizza then
+    msg:FindFirstChild("\229\144\131"):FireServer("\230\142\137\232\144\189\231\137\169", "1366")
+  end
+end)
