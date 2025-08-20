@@ -1,22 +1,31 @@
 local lib = loadstring(Game:HttpGet("https://raw.githubusercontent.com/NoobHubV1/NoobHubV1/main/Wizard%20Lib.lua"))()
 local Window = lib:NewWindow("Find the Button")
 local Section = Window:NewSection("Main")
-local level = 1
 local autoSkip
+local autoRebirth
+function Skip(level)
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = workspace.Levels:FindFirstChild(level):FindFirstChild("ButtonModel")["Button"].CFrame
+    fireclickdetector(workspace.Levels:FindFirstChild(level):FindFirstChild("ButtonModel")["Button"]:FindFirstChild("ClickDetector"))
+end
+Section:CreateButton("Skip Level", function()
+    Skip(game.Players.LocalPlayer.PlayerGui.HUD.LevelInfo.LevelFrame.LevelDisplayNum.Text)
+end)
 Section:CreateToggle("Auto Skip", function(state)
     autoSkip = state
+end)
+Section:CreateToggle("Auto Rebirth", function(state)
+    autoRebirth = state
 end)
 spawn(function()
   task0 = function()
     if autoSkip then
-      level = level + 1
-      game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = workspace.Levels:FindFirstChild(""..level):FindFirstChild("ButtonModel")["Button"].CFrame
-      wait(.15)
-      fireclickdetector(workspace.Levels:FindFirstChild(""..level):FindFirstChild("ButtonModel")["Button"]:FindFirstChild("ClickDetector"))
+      Skip(game.Players.LocalPlayer.PlayerGui.HUD.LevelInfo.LevelFrame.LevelDisplayNum.Text)
+    end
+    if autoRebirth then
+      game.ReplicatedStorage.FE.Rebirth:FireServer()
     end
   end
-  while true do
+  while task.wait() do
     pcall(task0)
-    wait(.45)
   end
 end)
