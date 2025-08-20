@@ -2,6 +2,7 @@ local lib = loadstring(game:HttpGet("https://raw.github.com/NoobHubV1/NoobHubV1/
 local Window = lib:NewWindow("Robloxia Prison")
 local Main = Window:NewSection("Main")
 local Team = Window:NewSection("Team")
+local Gun = Window:NewSection("Gun")
 local SavedPositions = {AutoRe = nil}
 local Connections = {Died = nil}
 local Camera = game:FindService("Workspace").CurrentCamera
@@ -13,7 +14,7 @@ local LocalPlayer = game.Players.localPlayer
 local Teams = game.Teams
 local autoRespawn = nil
 local waitfor
-local Rstorage
+local Rstorage = game.ReplicatedStorage
 
 local LocTP = function(cframe)
 	LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame = cframe
@@ -30,10 +31,14 @@ function TeamEve(args)
   Rstorage.Packages:FindFirstChild("_Index"):FindFirstChild("sleitnick_knit@1.7.0").knit.Services.TeamService.RF.SelectTeam:InvokeServer(args)
 end
 
-function GetToolEvent(args)
-  Rstorage.Events.Interact:InvokeServer(args, "GetTool")
+function GetItem(source)
+    SavedPositions.Item = LocalPlayer.Character.HumanoidRootPart.CFrame
+    repeat task.wait()
+        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = source.CFrame
+        Rstorage.Events.Interact:InvokeServer(source, "GetTool")
+    until LocalPlayer.Character:FindFirstChild(source.Parent.Name) or LocalPlayer.Backpack:FindFirstChild(source.Parent.Name)
+    LocalPlayer.Character.HumanoidRootPart.CFrame = SavedPositions.Item
 end
-
 function Refresh()
   local tmp = autoRespawn == true
   local team = LocalPlayer.Team; autoRespawn = true; SavedPositions.AutoRe = LocalPlayer.Character.HumanoidRootPart.CFrame
@@ -50,7 +55,6 @@ function Refresh()
             elseif team == Teams.Inmates then
                 TeamEve("Inmates")
      end
-     LocalPlayer.CharacterAdded:Wait()
      if not tmp then
          autoRespawn = false
      end
@@ -84,6 +88,10 @@ Main:CreateToggle("Auto Respawn", function(state)
   autoRespawn = state
 end)
 
+Gun:CreateButton("Give Shotgun", function()
+  GetItem(workspace.Prison_ITEMS.giver:GetChildren()[189]["Cylinder.002"])
+end)
+
 Team:CreateButton("Inmate", function()
   TeamTo("inmate")
 end)
@@ -98,6 +106,10 @@ end)
 
 Team:CreateButton("Neutral", function()
   TeamEve("Neutral")
+end)
+
+Gun:CreateButton("Give AK 47", function()
+  GetItem(workspace.Prison_ITEMS.giver:GetChildren()[115]["Cylinder.004"])
 end)
 
 local lochar = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
