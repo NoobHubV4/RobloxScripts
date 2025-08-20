@@ -112,19 +112,6 @@ Gun:CreateButton("Give AK 47", function()
   GetItem(workspace.Prison_ITEMS.giver:GetChildren()[115]["Cylinder.004"])
 end)
 
-Main:CreateButton("Arrest All", function()
-  for i,v in pairs(game.Teams.Criminals:GetPlayers()) do
-    if v.Character.Humanoid.Health ~= 0 and v ~= game.Players.LocalPlayer then
-      repeat task.wait()
-        for i = 1,10 do
-          LocalPlayer.Character.HumanoidRootPart.CFrame = v.Character.HumanoidRootPart.CFrame
-          Rstorage.Events.Arrest:InvokeServer(v)
-        end
-      until v.Character.Head:FindFirstChild("HandcuffedGui")
-    end
-  end
-end)
-
 Gun:CreateButton("Give M9", function()
   GetItem(workspace.Prison_ITEMS.giver:GetChildren()[135]["Cylinder.004"])
 end)
