@@ -34,7 +34,7 @@ function Refresh()
   local team = LocalPlayer.Team; autoRespawn = true; SavedPositions.AutoRe = LocalPlayer.Character.HumanoidRootPart.CFrame
        if team == Teams.Criminals then
            TeamEve("Inmates")
-           task.wait(.25)
+           task.wait(.2)
            repeat task.wait()
                     pcall(function()
                         LocalPlayer.Character.HumanoidRootPart.CFrame = workspace.Spawns.Criminals["2"].SpawnLocation.CFrame
@@ -45,6 +45,7 @@ function Refresh()
             elseif team == Teams.Inmates then
                 TeamEve("Inmates")
      end
+     LocalPlayer.CharacterAdded:Wait()
      if not tmp then
          autoRespawn = false
      end
@@ -54,7 +55,7 @@ function TeamTo(args)
   local tmp = autoRespawn == true; autoRespawn = true; SavedPositions.AutoRe = LocalPlayer.Character.HumanoidRootPart.CFrame
        if args == "criminal" then
            TeamEve("Inmates")
-           task.wait(.25)
+           task.wait(.2)
            repeat task.wait()
                     pcall(function()
                         LocalPlayer.Character.HumanoidRootPart.CFrame = workspace.Spawns.Criminals["2"].SpawnLocation.CFrame
@@ -103,7 +104,7 @@ local function ondiedevent()
             local team = LocalPlayer.Team
             if team == Teams.Criminals then
                 TeamEve("Inmates")
-                task.wait(.25)
+                task.wait(.2)
                 repeat task.wait()
                     pcall(function()
                         LocalPlayer.Character.HumanoidRootPart.CFrame = workspace.Spawns.Criminals["2"].SpawnLocation.CFrame
@@ -132,7 +133,7 @@ local function oncharadded()
 		if LRoot then
 			LRoot.CFrame = SavedPositions.AutoRe; LoadCamPos(); LRoot.CFrame = SavedPositions.AutoRe
 			task.spawn(function()
-				for i = 1, 5 do
+				for i = 1, 6 do
 					task.wait(); LRoot.CFrame = SavedPositions.AutoRe
 				end
 			end)
