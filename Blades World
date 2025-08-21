@@ -1,11 +1,23 @@
 local lib = loadstring(Game:HttpGet("https://raw.githubusercontent.com/NoobHubV1/NoobHubV1/main/Wizard%20Lib.lua"))()
-local autoOrbs
 local autoStrength
 local autoFarm
+local Connection
 local Window = lib:NewWindow("Blades World")
 local Section = Window:NewSection("Main")
 Section:CreateToggle("Auto Orbs", function(state)
-  autoOrbs = state
+  if state then
+      Connection = game.workspace.activeOrbs.ChildAdded:Connect(function(child)
+          child.CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
+      end)
+      for i,v in ipairs(game.workspace.activeOrbs:GetChildren()) do
+          if v:IsA("Part") then
+              v.CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
+          end
+      end
+  else
+      Connection:Disconnect()
+      Connection = nil
+  end
 end)
 Section:CreateToggle("Auto Strength", function(state)
   autoStrength = state
@@ -28,17 +40,10 @@ Section:CreateButton("Complete Quest 3", function()
   task.wait(.5)
   game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = pos
 end)
-spawn(function()
+task.spawn(function()
   task0 = function()
-    if autoOrbs then
-      for _,Orbs in ipairs(workspace.activeOrbs:GetChildren()) do
-        if Orbs:IsA("BasePart") then
-          Orbs.CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
-        end
-      end
-    end
     if autoStrength then
-      game.ReplicatedStorage.GivePower.RemoteEvent:FireServer()
+      game.workspace.BladePowerGiver.RemoteEvent:FireServer()
     end
     if autoFarm then
       for _,Orbs in ipairs(workspace.activeOrbs:GetChildren()) do
@@ -46,13 +51,11 @@ spawn(function()
           Orbs.CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
         end
       end
-      game.ReplicatedStorage.GivePower.RemoteEvent:FireServer()
+      game.workspace.BladePowerGiver.RemoteEvent:FireServer()
       game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(0, 10000, 0)
     end
   end
   while task.wait() do
-    pcall(task0)
+    task.spawn(task0)
   end
 end)
-workspace.BladePowerGiver.Parent = game.ReplicatedStorage
-game.ReplicatedStorage.BladePowerGiver.Name = "GivePower"
