@@ -7,11 +7,13 @@ local Section = Window:NewSection("Main")
 Section:CreateToggle("Auto Orbs", function(state)
   if state then
       Connection = game.workspace.activeOrbs.ChildAdded:Connect(function(child)
-          child.CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
+          for i = 1,3 do
+              firetouchinterest(child, game.Players.LocalPlayer.Character.HumanoidRootPart, 0); task.wait()
+          end
       end)
       for i,v in ipairs(game.workspace.activeOrbs:GetChildren()) do
           if v:IsA("Part") then
-              v.CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
+              firetouchinterest(v, game.Players.LocalPlayer.Character.HumanoidRootPart, 0)
           end
       end
   else
@@ -48,7 +50,7 @@ task.spawn(function()
     if autoFarm then
       for _,Orbs in ipairs(workspace.activeOrbs:GetChildren()) do
         if Orbs:IsA("BasePart") then
-          Orbs.CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
+          firetouchinterest(Orbs, game.Players.LocalPlayer.Character.HumanoidRootPart, 0)
         end
       end
       game.workspace.BladePowerGiver.RemoteEvent:FireServer()
