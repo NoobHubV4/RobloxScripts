@@ -111,7 +111,7 @@ Main:CreateButton("Refresh", function()
      Rstorage.Events.Player.ChangePlayerMode:FireServer(true)
      plr.CharacterAdded:Wait()
      TP(tmp)
-     for i = 1,4 do
+     for i = 1,5 do
          task.wait(); TP(tmp)
      end; LoadCamPos()
 end)
