@@ -1,12 +1,25 @@
 local lib = loadstring(Game:HttpGet("https://raw.githubusercontent.com/NoobHubV1/NoobHubV1/main/Wizard%20Lib.lua"))()
 local autoFinish
+local autoSell
 local Window = lib:NewWindow("Fish Go")
 local Section = Window:NewSection("Main")
 Section:CreateToggle("Auto Finish", function(state)
   autoFinish = state
 end)
+Section:CreateToggle("Auto Sell", function(state)
+  autoSell = state
+  if autoSell then
+    game.ReplicatedStorage.Modules.Utility.Network.Events.RemoteEvent:FireServer(unpack({"SellInventory", [3] = 2}))
+  end
+end)
 game.Players.LocalPlayer.PlayerGui.MainUi.Fishing:GetPropertyChangedSignal("Visible"):Connect(function()
   if game.Players.LocalPlayer.PlayerGui.MainUi.Fishing.Visible and autoFinish then
     game.ReplicatedStorage.Modules.Utility.Network.Events.RemoteEvent:FireServer(unpack({"GotFish", [3] = 2}))
+  end
+end)
+game.Players.LocalPlayer.Backpack.ChildAdded:Connect(function(tool)
+  if not tool.Name:lower():find("rod") and autoSell then
+    game.Players.LocalPlayer.Character.Humanoid:EquipTool(tool)
+    game.ReplicatedStorage.Modules.Utility.Network.Events.RemoteEvent:FireServer(unpack({"SellHoldingFish", [3] = 2}))
   end
 end)
