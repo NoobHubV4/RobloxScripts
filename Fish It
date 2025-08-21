@@ -1,14 +1,13 @@
 local lib = loadstring(Game:HttpGet("https://raw.githubusercontent.com/NoobHubV1/NoobHubV1/main/Wizard%20Lib.lua"))()
 local autoFinish
-local antiOxy
 local remote = game.ReplicatedStorage.Packages:FindFirstChild("_Index"):FindFirstChild("sleitnick_net@0.2.0").net
 local Window = lib:NewWindow("Fish It")
 local Section = Window:NewSection("Main")
 Section:CreateToggle("Auto Finish", function(state)
   autoFinish = state
 end)
-Section:CreateToggle("Anti Oxy", function(state)
-  antiOxy = state
+Section:CreateButton("God Mode", function()
+  remote:FindFirstChild("URE/UpdateOxygen"):FireServer(-math.huge)
 end)
 spawn(function()
   function task0()
@@ -18,10 +17,5 @@ spawn(function()
   end
   while task.wait() do
     pcall(task0)
-  end
-end)
-game.Players.LocalPlayer.Character.Humanoid:GetPropertyChangedSignal("Health"):Connect(function()
-  if game.Players.LocalPlayer.Character.Humanoid.Health ~= 100 and antiOxy then
-    remote:FindFirstChild("URE/UpdateOxygen"):FireServer(-math.huge)
   end
 end)
