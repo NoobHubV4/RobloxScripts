@@ -10,6 +10,7 @@ local SavedPositions = {AutoRe = nil; OldCameraPos = nil}
 local Camera = workspace.Camera
 local instantRevive
 local instantCarry
+local autoRevive
 
 function SaveCamPos()
 	SavedPositions.OldCameraPos = Camera.CFrame
@@ -95,12 +96,15 @@ end)
 Instant:CreateToggle("Instant Grab", function(state)
      instantCarry = state
 end)
+Main:CreateToggle("Auto Revive", function(state)
+     autoRevive = state
+end)
 spawn(function()
-     function instant()
+     function task0()
           if instantRevive then
                for i,v in ipairs(game.Players:GetPlayers()) do
                     if v and v.Character then
-                         if (plr.Character.HumanoidRootPart.Position - v.Character.HumanoidRootPart.Position).Magnitude <= 15 and v ~= plr then
+                         if v.Character.Humanoid.Health == 0 and (plr.Character.HumanoidRootPart.Position - v.Character.HumanoidRootPart.Position).Magnitude <= 15 and v ~= plr then
                               Rstorage.Events.Character.Interact:FireServer("Revive", true, v.Name)
                          end
                     end
@@ -109,15 +113,25 @@ spawn(function()
           if instantCarry then
                for i,v in ipairs(game.Players:GetPlayers()) do
                     if v and v.Character then
-                         if (plr.Character.HumanoidRootPart.Position - v.Character.HumanoidRootPart.Position).Magnitude <= 15 and v ~= plr then
+                         if v.Character.Humanoid.Health == 0 and (plr.Character.HumanoidRootPart.Position - v.Character.HumanoidRootPart.Position).Magnitude <= 15 and v ~= plr then
                               Rstorage.Events.Character.Interact:FireServer("Carry", true, v.Name)
+                         end
+                    end
+               end
+          end
+          if autoRevive then
+               for i,v in ipairs(game.Players:GetPlayers()) do
+                    if v and v.Character and v.Character.HumanoidRootPart then
+                         if v.Character.Humanoid.Health == 0 and v ~= plr then
+                              plr.Character.HumanoidRootPart.CFrame = CFrame.new(v.Character.HumanoidRootPart.CFrame.p + Vector3.new(0, 7, 0))
+                              Rstorage.Events.Character.Interact:FireServer("Revive", true, v.Name)
                          end
                     end
                end
           end
      end
      while task.wait() do
-          task.spawn(instant)
+          task.spawn(task0)
      end
 end)
 listenToPlayerGui()
