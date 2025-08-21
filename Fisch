@@ -1,0 +1,18 @@
+local lib = loadstring(Game:HttpGet("https://raw.githubusercontent.com/NoobHubV1/NoobHubV1/main/Wizard%20Lib.lua"))()
+local autoFinish
+local autoSell
+local Window = lib:NewWindow("Fisch")
+local Section = Window:NewSection("Main")
+Section:CreateToggle("Auto Finish", function(state)
+  autoFinish = state
+end)
+task.spawn(function()
+  function finish()
+    if autoFinish then
+      game.ReplicatedStorage.events.reelfinished:FireServer(100, true)
+    end
+  end
+  while task.wait() do
+    task.spawn(finish)
+  end
+end)
