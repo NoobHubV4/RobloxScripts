@@ -1,0 +1,16 @@
+local lib = loadstring(Game:HttpGet("https://raw.githubusercontent.com/NoobHubV1/NoobHubV1/main/Wizard%20Lib.lua"))()
+local autoMine
+local Window = lib:NewWindow("Mine a Brainrot")
+local Section = Window:NewSection("Main")
+Section:CreateToggle("Auto Mine", function(state)
+  autoMine = state
+end)
+game.RunService.PreSimulation:Connect(function()
+  if autoMine then
+    for i,v in ipairs(workspace.Map.Plots[game.Players.LocalPlayer.UserId].Ore:GetChildren()) do
+      if v:IsA("Model") then
+        game.ReplicatedStorage.Packages:FindFirstChild("_Index"):FindFirstChild("sleitnick_knit@1.7.0").knit.Services.PlotService.RE.HitOre:FireServer(v)
+      end
+    end
+  end
+end)
