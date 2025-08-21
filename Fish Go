@@ -1,0 +1,12 @@
+local lib = loadstring(Game:HttpGet("https://raw.githubusercontent.com/NoobHubV1/NoobHubV1/main/Wizard%20Lib.lua"))()
+local autoFinish
+local Window = lib:NewWindow("Fish Go")
+local Section = Window:NewSection("Main")
+Section:CreateToggle("Auto Finish", function(state)
+  autoFinish = state
+end)
+game.Players.LocalPlayer.PlayerGui.MainUi.Fishing:GetPropertyChangedSignal("Visible"):Connect(function()
+  if game.Players.LocalPlayer.PlayerGui.MainUi.Fishing.Visible and autoFinish then
+    game.ReplicatedStorage.Modules.Utility.Network.Events.RemoteEvent:FireServer(unpack({"GotFish", [3] = 2}))
+  end
+end)
