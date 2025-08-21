@@ -4,9 +4,9 @@ local Rstorage = game.ReplicatedStorage
 local Players = game.Players
 local plr = Players.LocalPlayer
 local Main = Window:NewSection("Main")
-local enabled = false
-local hudVisible = true
-local sentOnce = false
+local autoRespawn
+local SavedPositions = {AutoRe = nil; OldCameraPos = nil}
+local Camera = workspace.Camera
 
 local connection
 local sharedConnection
@@ -27,10 +27,19 @@ local function disconnectAll()
     end
 end
 
+function SaveCamPos()
+	SavedPositions.OldCameraPos = Camera.CFrame
+end
+function LoadCamPos()
+	Camera.CFrame = SavedPositions.OldCameraPos or Camera.CFrame
+end
+
+function TP(cframe)
+    plr.Character.HumanoidRootPart.CFrame = cframe
+end
+
 local function setupHUDListener(hud)
     if not hud then return end
-    hudVisible = hud.Visible
-    sentOnce = false
 
     if connection then
         connection:Disconnect()
@@ -38,14 +47,9 @@ local function setupHUDListener(hud)
     end
 
     connection = hud:GetPropertyChangedSignal("Visible"):Connect(function()
-        if enabled then
-            if hud.Visible == false and hudVisible == true and not sentOnce then
-                sentOnce = true
-                Rstorage.Events.Player.ChangePlayerMode:FireServer(true)
-            elseif hud.Visible == true then
-                sentOnce = false
-            end
-            hudVisible = hud.Visible
+        if not hud.Visible and autoRespawn then
+            SavedPositions.AutoRe = plr.Character:WaitForChild("HumanoidRootPart", 1) and plr.Character:FindFirstChild("HumanoidRootPart").CFrame; SaveCamPos()
+            Rstorage.Events.Player.ChangePlayerMode:FireServer(true)
         end
     end)
 end
@@ -63,7 +67,7 @@ local function listenToShared(shared)
         hudAddedConnection = nil
     end
     hudAddedConnection = shared.ChildAdded:Connect(function(child)
-        if enabled and child.Name == "HUD" then
+        if child.Name == "HUD" then
             setupHUDListener(child)
         end
     end)
@@ -83,19 +87,40 @@ local function listenToPlayerGui()
         sharedConnection = nil
     end
     sharedConnection = playerGui.ChildAdded:Connect(function(child)
-        if enabled and child.Name == "Shared" then
+        if child.Name == "Shared" then
             listenToShared(child)
         end
     end)
 end
-Main:CreateButton("Respawn", function()
+local function oncharadded()
+	lochar = plr.Character or plr.CharacterAdded:Wait()
+	if SavedPositions.AutoRe and autoRespawn then
+		local LRoot = lochar:WaitForChild("HumanoidRootPart", 1)
+		if LRoot then
+			LRoot.CFrame = SavedPositions.AutoRe; LoadCamPos(); LRoot.CFrame = SavedPositions.AutoRe
+			task.spawn(function()
+				for i = 1, 5 do
+					task.wait(); LRoot.CFrame = SavedPositions.AutoRe
+				end
+			end)
+		end
+	end
+end
+Main:CreateButton("Refresh", function()
+     local tmp = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame; SavedPositions.AutoRe = tmp; SaveCamPos()
      Rstorage.Events.Player.ChangePlayerMode:FireServer(true)
+     plr.CharacterAdded:Wait()
+     TP(tmp)
+     for i = 1,4 do
+         task.wait(); TP(tmp)
+     end; LoadCamPos()
 end)
 Main:CreateToggle("Auto Respawn", function(value)
-     enabled = value
-     if value == true then
-          listenToPlayerGui()
-     elseif not value then
-          disconnectAll()
+     autoRespawn = value
+     if autoRespawn then
+        listenToPlayerGui()
+     else
+        disconnectAll()
      end
 end)
+plr.CharacterAdded:Connect(oncharadded)
