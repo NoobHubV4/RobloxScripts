@@ -11,7 +11,6 @@ local Camera = workspace.Camera
 local instantRevive
 local instantCarry
 local autoRevive
-local Active
 
 function SaveCamPos()
 	SavedPositions.OldCameraPos = Camera.CFrame
@@ -123,13 +122,9 @@ spawn(function()
           if autoRevive then
                for i,v in ipairs(game.Players:GetPlayers()) do
                     if v and v.Character and v.Character.HumanoidRootPart then
-                         if v.Character.Humanoid.Health == 0 and v ~= plr and not Active then
-                              Active = true; local tempos = plr.Character.HumanoidRootPart.CFrame; SavedPositions.AutoRe = tempos
-                              repeat task.wait()
-                                   plr.Character.HumanoidRootPart.CFrame = CFrame.new(v.Character.HumanoidRootPart.CFrame.p + Vector3.new(0, -7, 0))
-                                   Rstorage.Events.Character.Interact:FireServer("Revive", true, v.Name)
-                              until v.Character.Humanoid.Health ~= 0
-                              Active = false; TP(tempos)
+                         if v.Character.Humanoid.Health == 0 and v ~= plr then
+                              plr.Character.HumanoidRootPart.CFrame = CFrame.new(v.Character.HumanoidRootPart.CFrame.p + Vector3.new(0, 8, 0))
+                              Rstorage.Events.Character.Interact:FireServer("Revive", true, v.Name)
                          end
                     end
                end
