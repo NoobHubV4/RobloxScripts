@@ -11,6 +11,7 @@ local Camera = workspace.Camera
 local instantRevive
 local instantCarry
 local autoRevive
+local sent
 
 function SaveCamPos()
 	SavedPositions.OldCameraPos = Camera.CFrame
@@ -28,7 +29,7 @@ local function setupHUDListener(hud)
 
     hud:GetPropertyChangedSignal("Visible"):Connect(function()
         if not hud.Visible and autoRespawn then
-            SavedPositions.AutoRe = plr.Character:WaitForChild("HumanoidRootPart", 1) and plr.Character:FindFirstChild("HumanoidRootPart").CFrame; SaveCamPos()
+            SavedPositions.AutoRe = plr.Character:WaitForChild("HumanoidRootPart", 1) and plr.Character:FindFirstChild("HumanoidRootPart").CFrame; SaveCamPos(); sent = true
             Rstorage.Events.Player.ChangePlayerMode:FireServer(true)
         end
     end)
@@ -66,10 +67,10 @@ local function listenToPlayerGui()
 end
 local function oncharadded()
 	lochar = plr.Character or plr.CharacterAdded:Wait()
-	if SavedPositions.AutoRe and autoRespawn then
+	if SavedPositions.AutoRe and autoRespawn and sent then
 		local LRoot = lochar:WaitForChild("HumanoidRootPart", 1)
 		if LRoot then
-			LRoot.CFrame = SavedPositions.AutoRe; LoadCamPos(); LRoot.CFrame = SavedPositions.AutoRe
+			LRoot.CFrame = SavedPositions.AutoRe; LoadCamPos(); LRoot.CFrame = SavedPositions.AutoRe; sent = false
 			task.spawn(function()
 				for i = 1, 5 do
 					task.wait(); LRoot.CFrame = SavedPositions.AutoRe
