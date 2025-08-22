@@ -4,6 +4,7 @@ local state = nil
 local Connection = nil
 local Connection2 = nil
 local runTrack = runId or "rbxassetid://913376220"
+local speed
 local screengui = Instance.new("ScreenGui",game.CoreGui)
 local frame = Instance.new("Frame",screengui)
 local textbutton = Instance.new("TextButton",frame)
@@ -34,13 +35,11 @@ if game.Players.LocalPlayer.Character.Humanoid.RigType == Enum.HumanoidRigType.R
         runTrack = "rbxassetid://180426354"
 end
 function enableEgor()
-        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 3
+        speed = game.Players.LocalPlayer.Character.Humanoid.WalkSpeed; game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 3
         anim = Instance.new("Animation", game.Players.LocalPlayer.Character.Humanoid)
         anim.AnimationId = runTrack
         loadanim = game.Players.LocalPlayer.Character.Humanoid.Animator:LoadAnimation(anim)
         loadanim.Priority = Enum.AnimationPriority.Action
-        loadanim:Play()
-        loadanim:AdjustSpeed(10)
         Connection = game.RunService.Heartbeat:Connect(function()
             if game.Players.LocalPlayer.Character.Humanoid.MoveDirection.Magnitude == 0 then
                 if not loadanim.IsPlaying == false then
@@ -55,7 +54,7 @@ function enableEgor()
         end)
 end
 function disableEgor()
-        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 16
+        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = speed
         loadanim:Stop()
         anim:Destroy()
         Connection:Disconnect()
@@ -67,9 +66,9 @@ textbutton.MouseButton1Click:Connect(function()
              textbutton.BackgroundColor3 = Color3.fromRGB(0, 180, 0)
              textbutton.Text = "Egor: On"
              Connection2 = game.Players.LocalPlayer.CharacterAdded:Connect(function()
-                 task.wait(.05)
+                 task.wait(.0375)
                  disableEgor()
-                 task.wait(.1)
+                 task.wait(.0875)
                  enableEgor()
              end)
       else
