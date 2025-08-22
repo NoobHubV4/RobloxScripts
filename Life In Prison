@@ -3,6 +3,7 @@ local Window = lib:NewWindow("Life In Prison")
 local Main = Window:NewSection("Main")
 local Team = Window:NewSection("Team")
 local Main2 = Window:NewSection("Kill Or Arrest")
+local Gun = Window:NewSection("Gun")
 local SavedPositions = {AutoRe = nil}
 local Connections = {Died = nil;}
 local Camera = game:FindService("Workspace").CurrentCamera
@@ -15,7 +16,6 @@ local Teams = game.Teams
 local autoRespawn = nil
 local killAura = nil
 local remote = game.ReplicatedStorage.RemoteEvent
-local source = workspace.pickups:FindFirstChild("AWM"):FindFirstChild("~+\198\005C\221%\196jq\239\208\236\153\015\221\152++\222\255\15738E\133Q\151\1980\135\150\222f\164:\153\181\173\t\221\1891\152\185\160\127c\1967")
 local sent
 
 local LocTP = function(cframe)
@@ -30,12 +30,12 @@ function FindMedkit()
     end
 end
 
-function GetAwm()
+function GetGun(source)
     SavedPositions.Gun = LocalPlayer.Character.HumanoidRootPart.CFrame
     repeat task.wait()
         game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = source.CFrame
         remote:FireServer("ItemHandler",source)
-    until LocalPlayer.Character:FindFirstChild("AWM") or LocalPlayer.Backpack:FindFirstChild("AWM")
+    until LocalPlayer.Character:FindFirstChild(source.Parent.Name) or LocalPlayer.Backpack:FindFirstChild(source.Parent.Name)
     LocalPlayer.Character.HumanoidRootPart.CFrame = SavedPositions.Gun
 end
 function PlaceMedkit()
@@ -119,8 +119,8 @@ Main:CreateToggle("Kill Aura", function(state)
   killAura = state
 end)
 
-Main:CreateButton("Get Awm Gun", function()
-  GetAwm()
+Gun:CreateButton("Get Awm Gun", function()
+  GetGun(workspace.pickups:GetChildren()[23]["i+\003\165\"\180\146a\002G\17575\022z\022\181(\180\248Sc\239\182\016#\153\132\017\1884h\027\220\003@\220\143\243\200G#J\166@5J\201B\166"])
 end)
 
 Main:CreateButton("Place Medkit", function()
