@@ -5,6 +5,7 @@ local Players = game.Players
 local plr = Players.LocalPlayer
 local Main = Window:NewSection("Main")
 local Instant = Window:NewSection("Instant")
+local Esp = Window:NewSection("Esp")
 local autoRespawn
 local SavedPositions = {AutoRe = nil; OldCameraPos = nil}
 local Camera = workspace.Camera
@@ -12,6 +13,12 @@ local instantRevive
 local instantCarry
 local autoRevive
 local sent
+local connection
+local highlight = Instance.new("Highlight", game.Lighting)
+highlight.Name = "esp"
+highlight.FillColor = Color3.fromRGB(0, 255, 0)
+highlight.FillTransparency = 0.5
+highlight.DepthMode = "AlwaysOnTop"
 
 function SaveCamPos()
 	SavedPositions.OldCameraPos = Camera.CFrame
@@ -99,6 +106,29 @@ Instant:CreateToggle("Instant Grab", function(state)
 end)
 Main:CreateToggle("Auto Revive", function(state)
      autoRevive = state
+end)
+Esp:CreateToggle("Esp All", function(state)
+     if state then
+          connection = game.RunService.RenderStepped:Connect(function()
+               for i,v in ipairs(game.Players:GetPlayers()) do
+                    if v ~= plr and not v.Character:FindFirstChild("esp") then
+                         local espClone = highlight:Clone()
+                         espClone.Parent = v.Character
+                    end
+               end
+          end)
+     else
+          connection:Disconnect(); connection = nil
+          for i,v in ipairs(game.Players:GetPlayers()) do
+               if v ~= plr then
+                    for i,v in pairs(v.Character:GetChildren()) do
+                         if v.Name == "esp" and v.ClassName == "Highlight" then
+                              v:Destroy()
+                         end
+                    end
+               end
+          end
+     end
 end)
 spawn(function()
      function task0()
