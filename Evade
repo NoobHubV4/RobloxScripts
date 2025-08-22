@@ -14,6 +14,7 @@ local instantCarry
 local autoRevive
 local sent
 local connection
+local active
 
 function SaveCamPos()
 	SavedPositions.OldCameraPos = Camera.CFrame
@@ -104,7 +105,11 @@ Main:CreateToggle("Auto Revive", function(state)
 end)
 Esp:CreateToggle("Esp All", function(state)
      if state then
-          connection = game.RunService.RenderStepped:Connect(function()
+          active = true
+          while task.wait() do
+               if not active then
+                    break
+               end
                for i,v in ipairs(game.Players:GetPlayers()) do
                     if v ~= plr and not v.Character:FindFirstChild("esp") then
                          local highlight = Instance.new("Highlight", v.Character)
@@ -114,9 +119,9 @@ Esp:CreateToggle("Esp All", function(state)
                          highlight.DepthMode = "AlwaysOnTop"
                     end
                end
-          end)
+          end
      else
-          connection:Disconnect(); connection = nil
+          active = false; task.wait(.075)
           for i,v in ipairs(game.Players:GetPlayers()) do
                if v ~= plr then
                     for i,v in pairs(v.Character:GetChildren()) do
