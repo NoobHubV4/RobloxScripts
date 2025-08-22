@@ -16,6 +16,7 @@ local autoRespawn = nil
 local killAura = nil
 local remote = game.ReplicatedStorage.RemoteEvent
 local source = workspace.pickups:FindFirstChild("AWM"):FindFirstChild("~+\198\005C\221%\196jq\239\208\236\153\015\221\152++\222\255\15738E\133Q\151\1980\135\150\222f\164:\153\181\173\t\221\1891\152\185\160\127c\1967")
+local sent
 
 local LocTP = function(cframe)
 	LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame = cframe
@@ -170,7 +171,7 @@ local function ondiedevent()
 		Connections.Died:Disconnect(); SaveCamPos()
 		SavedPositions.AutoRe = lochar:WaitForChild("HumanoidRootPart", 1) and LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame; Camera.CameraType = Enum.CameraType.Track
         if autoRespawn then
-            local team = LocalPlayer.Team
+            sent = true; local team = LocalPlayer.Team
             if team == Teams.Criminals then
                 remote:FireServer("ChangeTeam", Teams.Neutral)
                 remote:FireServer("ChangeTeam", Teams.Criminals)
@@ -202,10 +203,10 @@ local function charaddtask()
 end
 local function oncharadded()
 	lochar = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
-	if SavedPositions.AutoRe and autoRespawn then
+	if SavedPositions.AutoRe and autoRespawn and sent then
 		local LRoot = lochar:WaitForChild("HumanoidRootPart", 1)
 		if LRoot then
-			LRoot.CFrame = SavedPositions.AutoRe; LoadCamPos(); LRoot.CFrame = SavedPositions.AutoRe
+			LRoot.CFrame = SavedPositions.AutoRe; LoadCamPos(); LRoot.CFrame = SavedPositions.AutoRe; sent = false
 			task.spawn(function()
 				for i = 1, 4 do
 					task.wait(); LRoot.CFrame = SavedPositions.AutoRe
