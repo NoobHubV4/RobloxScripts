@@ -253,9 +253,6 @@ local function charaddtask()
                       game.RunService.RenderStepped:Wait(); LocalPlayer.Character.Humanoid.WalkSpeed = Saved.NormalSpeed
                end
         end)
-        Connections.Changed = LHuman:GetPropertyChangedSignal("WalkSpeed"):Connect(function()
-               Saved.NormalSpeed = LHuman.WalkSpeed
-        end)
 	end
 end
 local function oncharadded()
