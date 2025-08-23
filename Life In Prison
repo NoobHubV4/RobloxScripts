@@ -260,7 +260,7 @@ local function charaddtask()
                if anim.Animation.AnimationId == "rbxassetid://103349191835500" and antiArrest then
                       anim:Stop(); anim:Destroy(); autoRespawn = true
                       game.RunService.RenderStepped:Wait(); LocalPlayer.Character.Humanoid.WalkSpeed = Saved.NormalSpeed; sent = true
-                      SavedPositions.AutoRe = SavedPositions.AutoRe = lochar:WaitForChild("HumanoidRootPart", 1) and LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame
+                      SavedPositions.AutoRe = lochar:WaitForChild("HumanoidRootPart", 1) and LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame
                end
         end)
 	end
