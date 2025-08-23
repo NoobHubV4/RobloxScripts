@@ -4,6 +4,7 @@ local Main = Window:NewSection("Main")
 local Team = Window:NewSection("Team")
 local Main2 = Window:NewSection("Kill Or Arrest")
 local Gun = Window:NewSection("Gun")
+local Gun2 = Window:NewSection("Gun 2")
 local SavedPositions = {AutoRe = nil}
 local Connections = {Died = nil;}
 local Camera = game:FindService("Workspace").CurrentCamera
@@ -187,6 +188,10 @@ end)
 
 Gun:CreateButton("Get M60", function()
   GetGun(workspace.pickups.M60["\209C\221\142\187\134%\221\164L8\024\128\164\004\177u1b\012]\235v\250\251\165e\157\175\1357\016Sj\022\204n\221\130\196\157\255\233\141g\131fr[9"])
+end)
+
+Gun2:CreateButton("Get SPAS", function()
+  GetGun(workspace.pickups:GetChildren()[30]["\199\128\142\026y\204w\1654\167\197\151s\019\133vlr\028 \188\027Z\131\132\221kX\145Eu\252\236\158\248\203q\138c\228\179H\229\005\191\129\223\138\199H"])
 end)
 
 local lochar = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
