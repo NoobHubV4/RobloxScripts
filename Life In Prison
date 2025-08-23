@@ -147,7 +147,7 @@ Team.newButton("Neutral", "", function()
 end)
 
 Main.newButton("Arrest All", "", function()
-  SavedPositions.Arrest = LocalPlayer.Character:FindFirstChild("HumanoidRootPart", 1) and LocalPlayer.Character.HumanoidRootPart.CFrame
+  SavedPositions.Arrest = LocalPlayer.Character:FindFirstChild("HumanoidRootPart", 1) and LocalPlayer.Character.HumanoidRootPart.CFrame; task.wait()
   for i,v in pairs(game.Teams.Criminals:GetPlayers()) do
     if not v.Character:FindFirstChild("ForceField") and v.Character.Humanoid.Health ~= 0 and v ~= game.Players.LocalPlayer then
       repeat task.wait()
@@ -169,7 +169,7 @@ Items.newButton("Get MP5", "", function()
 end)
 
 Main.newButton("Kill All", "", function()
-  SavedPositions.Kill = LocalPlayer.Character:FindFirstChild("HumanoidRootPart", 1) and LocalPlayer.Character.HumanoidRootPart.CFrame
+  SavedPositions.Kill = LocalPlayer.Character:FindFirstChild("HumanoidRootPart", 1) and LocalPlayer.Character.HumanoidRootPart.CFrame; task.wait()
   for i,v in pairs(game.Players:GetPlayers()) do
     if not v.Character:FindFirstChild("ForceField") and v.Character.Humanoid.Health ~= 0 and v ~= game.Players.LocalPlayer then
       repeat task.wait()
