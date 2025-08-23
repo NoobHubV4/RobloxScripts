@@ -2,8 +2,8 @@ local DrRayLibrary = loadstring(game:HttpGet("https://raw.githubusercontent.com/
 local window = DrRayLibrary:Load("Life In Prison", "Default")
 local Main = DrRayLibrary.newTab("Main", "")
 local Team = DrRayLibrary.newTab("Team", "")
-local Gun = DrRayLibrary.newTab("Gun", "")
-local SavedPositions = {AutoRe = nil}
+local Items = DrRayLibrary.newTab("Items", "")
+local SavedPositions = {AutoRe = nil; Item = nil; Medkit = nil; Kill = nil; Arrest = nil}
 local Connections = {Died = nil;}
 local Camera = game:FindService("Workspace").CurrentCamera
 local Rservice = game:GetService("RunService")
@@ -16,7 +16,7 @@ local autoRespawn = nil
 local killAura = nil
 local sent
 local antiTase
-local NormalSpeed = 16
+local Saved = {NormalSpeed = 16}
 
 local LocTP = function(cframe)
 	LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame = cframe
@@ -30,13 +30,13 @@ function FindSource(name)
     end
 end
 
-function GetGun(source)
-    SavedPositions.Gun = LocalPlayer.Character.HumanoidRootPart.CFrame
+function GetItem(source)
+    SavedPositions.Item = LocalPlayer.Character.HumanoidRootPart.CFrame
     repeat task.wait()
         game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = source.CFrame
         game.ReplicatedStorage.RemoteEvent:FireServer("ItemHandler",source)
     until LocalPlayer.Character:FindFirstChild(source.Parent.Name) or LocalPlayer.Backpack:FindFirstChild(source.Parent.Name)
-    LocalPlayer.Character.HumanoidRootPart.CFrame = SavedPositions.Gun
+    LocalPlayer.Character.HumanoidRootPart.CFrame = SavedPositions.Item
 end
 function SaveCamPos()
 	SavedPositions.OldCameraPos = Camera.CFrame
@@ -130,11 +130,11 @@ Team.newButton("Police", "", function()
   TeamTo("guard")
 end)
 
-Gun.newButton("Get AWM", "", function()
-  GetGun(workspace.pickups.AWM:FindFirstChildOfClass("MeshPart"))
+Items.newButton("Get AWM", "", function()
+  GetItem(workspace.pickups.AWM:FindFirstChildOfClass("MeshPart"))
 end)
-Gun.newButton("Get M9", "", function()
-  GetGun(workspace.pickups.M9["\133\241\220\255\018\241[Q(e\189\165\227\236\246\131\220\139\217\129\161\200y3v\196A4\207\004R\136\144\196\002\215\205\179x\027\217\182'\154\220\1874\161\255\129"])
+Items.newButton("Get M9", "", function()
+  GetItem(workspace.pickups.M9["\133\241\220\255\018\241[Q(e\189\165\227\236\246\131\220\139\217\129\161\200y3v\196A4\207\004R\136\144\196\002\215\205\179x\027\217\182'\154\220\1874\161\255\129"])
 end)
 
 Team.newButton("Neutral", "", function()
@@ -142,6 +142,7 @@ Team.newButton("Neutral", "", function()
 end)
 
 Main.newButton("Arrest All", "", function()
+  SavedPositions.Arrest = LocalPlayer.Character:FindFirstChild("HumanoidRootPart", 1) and LocalPlayer.Character.HumanoidRootPart.CFrame
   for i,v in pairs(game.Teams.Criminals:GetPlayers()) do
     if not v.Character:FindFirstChild("ForceField") and v.Character.Humanoid.Health ~= 0 and v ~= game.Players.LocalPlayer then
       repeat task.wait()
@@ -153,13 +154,15 @@ Main.newButton("Arrest All", "", function()
       until v.Character.Head:FindFirstChild("handcuffedGui")
     end
   end
+  LocTP(SavedPositions.Arrest)
 end)
 
-Gun.newButton("Get MP5", "", function()
-  GetGun(workspace.pickups.MP5["p0\172\165\127A\178f\172\183f=\208O\214\244\241\192\1685Eqd\197\2020\023\184|\249wy\241\003H\017R\151\220\146\019\213\229\151\014\160\184\244WK"])
+Items.newButton("Get MP5", "", function()
+  GetItem(workspace.pickups.MP5["p0\172\165\127A\178f\172\183f=\208O\214\244\241\192\1685Eqd\197\2020\023\184|\249wy\241\003H\017R\151\220\146\019\213\229\151\014\160\184\244WK"])
 end)
 
 Main.newButton("Kill All", "", function()
+  SavedPositions.Kill = LocalPlayer.Character:FindFirstChild("HumanoidRootPart", 1) and LocalPlayer.Character.HumanoidRootPart.CFrame
   for i,v in pairs(game.Players:GetPlayers()) do
     if not v.Character:FindFirstChild("ForceField") and v.Character.Humanoid.Health ~= 0 and v ~= game.Players.LocalPlayer then
       repeat task.wait()
@@ -171,34 +174,47 @@ Main.newButton("Kill All", "", function()
       until v.Character.Humanoid.Health == 0
     end
   end
+  LocTP(SavedPositions.Kill)
 end)
 
-Gun.newButton("Get DB Shotgun", "", function()
-  GetGun(workspace.pickups["DB Shotgun"]["Go2\239\027\190\026\018d\012L[\185m\020\178\146\2472\150\236\197\\\164\246]R,YK1\200>\227\137\011\215\161\166\016\163\206\":\017E\224V\243\029"])
+Items.newButton("Get DB Shotgun", "", function()
+  GetItem(workspace.pickups["DB Shotgun"]["Go2\239\027\190\026\018d\012L[\185m\020\178\146\2472\150\236\197\\\164\246]R,YK1\200>\227\137\011\215\161\166\016\163\206\":\017E\224V\243\029"])
 end)
 
-Gun.newButton('Get AK 74', "", function()
-  GetGun(workspace.pickups["AK-74"]["U\215\225Kc\143Z\1867R\183)\243m\152\241\207@]\016`\236Z\209\144\226\159$\229\196\029\163.\202\195U*?\242\024\248\170\153\241\145m\239\018\2117"])
+Items.newButton('Get AK 74', "", function()
+  GetItem(workspace.pickups["AK-74"]["U\215\225Kc\143Z\1867R\183)\243m\152\241\207@]\016`\236Z\209\144\226\159$\229\196\029\163.\202\195U*?\242\024\248\170\153\241\145m\239\018\2117"])
 end)
 
-Gun.newButton("Get AR 15", "", function()
-  GetGun(workspace.pickups["AR-15"]["Jgx\012\149\230\248\242\005\006\243\020\206\157\232\254\200\020\128~\196\239h\219\224\\@\008l\210\011\246\007\015\214\138\030\215\130w$\1308\253\208\02737\152\010"])
+Items.newButton("Get AR 15", "", function()
+  GetItem(workspace.pickups["AR-15"]["Jgx\012\149\230\248\242\005\006\243\020\206\157\232\254\200\020\128~\196\239h\219\224\\@\008l\210\011\246\007\015\214\138\030\215\130w$\1308\253\208\02737\152\010"])
 end)
 
-Gun.newButton("Get M1 Carabine", "", function()
-  GetGun(workspace.pickups["M1 Carabine"]["\176\013K:\166\231U\161\018,N\147\191+\254\006\221\021.=\229+\2362\160\209Rl=\"\145P\133N\154\208\232\205-\1376[\024\150|\176\199\146\247\204"])
+Items.newButton("Get M1 Carabine", "", function()
+  GetItem(workspace.pickups["M1 Carabine"]["\176\013K:\166\231U\161\018,N\147\191+\254\006\221\021.=\229+\2362\160\209Rl=\"\145P\133N\154\208\232\205-\1376[\024\150|\176\199\146\247\204"])
 end)
 
-Gun.newButton("Get M60", "", function()
-  GetGun(workspace.pickups.M60["\209C\221\142\187\134%\221\164L8\024\128\164\004\177u1b\012]\235v\250\251\165e\157\175\1357\016Sj\022\204n\221\130\196\157\255\233\141g\131fr[9"])
+Items.newButton("Get M60", "", function()
+  GetItem(workspace.pickups.M60["\209C\221\142\187\134%\221\164L8\024\128\164\004\177u1b\012]\235v\250\251\165e\157\175\1357\016Sj\022\204n\221\130\196\157\255\233\141g\131fr[9"])
 end)
 
-Gun.newButton("Get SPAS", "", function()
-  GetGun(workspace.pickups.SPAS:FindFirstChildOfClass("MeshPart"))
+Items.newButton("Get SPAS", "", function()
+  GetItem(workspace.pickups.SPAS:FindFirstChildOfClass("MeshPart"))
 end)
 
-Gun.newButton("Get FAL Gun", "", function()
-  GetGun(FindSource("FAL"):FindFirstChildOfClass("MeshPart"))
+Items.newButton("Get FAL Gun", "", function()
+  GetItem(FindSource("FAL"):FindFirstChildOfClass("MeshPart"))
+end)
+
+Items.newButton("Get Hammer", "", function()
+  GetItem(workspace.pickups.Hammer["\185\216\128\240\154d\129rqa\231\217\241V\223'\031\028\012a\207\178]\015\243\020\158\229\132\151\1329KB\163a\004\2546\023\241Z@\155\199\131\014\159p3"])
+end)
+
+Items.newButton("Get Apple", "", function()
+  GetItem(FindSource("Apple"):FindFirstChildOfClass("MeshPart"))
+end)
+
+Items.newButton("Get Bat", "", function()
+  GetItem(FindSource("Bat"):FindFirstChildOfClass("MeshPart"))
 end)
 
 local lochar = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
@@ -229,12 +245,16 @@ local function charaddtask()
 	if LHuman then
         if Connections.Died then Connections.Died:Disconnect(); Connections.Died = nil end
         if Connections.Animation then Connections.Animation:Disconnect(); Connections.Animation = nil end
+        if Connections.Changed then Connections.Changed:Disconnect(); Connections.Changed = nil end
 		Connections.Died = LHuman.Died:Connect(ondiedevent)
         Connections.Animation = LHuman.AnimationPlayed:Connect(function(anim)
                if antiTase and anim.Animation.AnimationId == "rbxassetid://125882711002228" then
                       anim:Stop(); anim:Destroy()
-                      game.RunService.RenderStepped:Wait(); LocalPlayer.Character.Humanoid.WalkSpeed = NormalSpeed
+                      game.RunService.RenderStepped:Wait(); LocalPlayer.Character.Humanoid.WalkSpeed = Saved.NormalSpeed
                end
+        end)
+        Connections.Changed = LHuman:GetPropertyChangedSignal("WalkSpeed"):Connect(function()
+               Saved.NormalSpeed = LHuman.WalkSpeed
         end)
 	end
 end
