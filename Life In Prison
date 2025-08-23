@@ -12,9 +12,8 @@ local Rstep = Rservice.RenderStepped
 local Stepped = Rservice.Stepped
 local LocalPlayer = game.Players.localPlayer
 local Teams = game.Teams
-local autoRespawn = nil
-local killAura = nil
-local sent
+local autoRespawn, killAura
+local forceField, sent
 local antiTase, antiArrest
 local Saved = {NormalSpeed = 16, AutoRespawn = nil}
 
@@ -248,6 +247,10 @@ Items.newButton('Get Famas Gun', "", function()
     GetItem(workspace.pickups.Famas.Carry)
 end)
 
+Main.newToggle("Force Field", "", false, function(state)
+  forceField = state
+end)
+
 local lochar = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
 local function ondiedevent()
 	coroutine.wrap(function()
@@ -277,6 +280,7 @@ local function charaddtask()
         if not Saved.AutoRespawn then autoRespawn = false end
         if Connections.Died then Connections.Died:Disconnect(); Connections.Died = nil end
         if Connections.Animation then Connections.Animation:Disconnect(); Connections.Animation = nil end
+        if Connections.CharacterChildAdded then Connections.CharacterChildAdded:Disconnect(); Connections.CharacterChildAdded = nil end
         Connections.Died = LHuman.Died:Connect(ondiedevent)
         Connections.Animation = LHuman.AnimationPlayed:Connect(function(anim)
                if anim.Animation.AnimationId == "rbxassetid://125882711002228" and antiTase then
@@ -289,6 +293,14 @@ local function charaddtask()
                       SavedPositions.AutoRe = lochar:WaitForChild("HumanoidRootPart", 1) and LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame
                end
         end)
+        while task.wait() do
+               if LocalPlayer.Character then
+                      if LocalPlayer.Team ~= Teams.Prisoners and forceField and not LocalPlayer.Character:FindFirstChild("ForceField") then
+                             Refresh()
+                             break
+                      end
+               end
+        end
 	end
 end
 local function oncharadded()
