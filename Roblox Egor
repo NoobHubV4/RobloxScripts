@@ -55,7 +55,7 @@ function enableEgor()
             else
                 if not loadanim.IsPlaying == true then
                     loadanim:Play()
-                    loadanim:AdjustSpeed(11)
+                    loadanim:AdjustSpeed(10)
                 end
             end
         end)
@@ -76,9 +76,9 @@ function FakeLag()
                   local root = char.HumanoidRootPart
                   if root then
                        root.Anchored = true
-                       task.wait(.03)
+                       wait(.0875)
                        root.Anchored = false
-                       task.wait(.01)
+                       task.wait()
                   end
              end
         end
@@ -90,9 +90,9 @@ textbutton.MouseButton1Click:Connect(function()
              textbutton.BackgroundColor3 = Color3.fromRGB(0, 180, 0)
              textbutton.Text = "Egor: On"
              Connection2 = game.Players.LocalPlayer.CharacterAdded:Connect(function()
-                 task.wait(.0375)
+                 task.wait(.025)
                  disableEgor()
-                 task.wait(.0875)
+                 task.wait(.075)
                  enableEgor()
              end)
       else
