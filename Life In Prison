@@ -139,7 +139,7 @@ Items.newButton("Get AWM", "", function()
   GetItem(workspace.pickups.AWM:FindFirstChildOfClass("MeshPart"))
 end)
 Items.newButton("Get M9", "", function()
-  GetItem(workspace.pickups.M9["\133\241\220\255\018\241[Q(e\189\165\227\236\246\131\220\139\217\129\161\200y3v\196A4\207\004R\136\144\196\002\215\205\179x\02217\182'\154\220\1874\161\255\129"])
+  GetItem(workspace.pickups.M9["T\016+\195\198V\149\194\172i\173\007\182\025\153\178\003\246\172M\241\166D\252\226\162\185N\181\165\141\008\214R\237\166\248\225Y\250\158tS\1524\127\179N\252."])
 end)
 
 Team.newButton("Neutral", "", function()
@@ -159,7 +159,9 @@ Main.newButton("Arrest All", "", function()
       until v.Character.Head:FindFirstChild("handcuffedGui")
     end
   end
-  LocTP(SavedPositions.Arrest)
+  for i = 1,3 do
+    task.wait(); LocTP(SavedPositions.Arrest)
+  end
 end)
 
 Items.newButton("Get MP5", "", function()
@@ -179,7 +181,9 @@ Main.newButton("Kill All", "", function()
       until v.Character.Humanoid.Health == 0
     end
   end
-  LocTP(SavedPositions.Kill)
+  for i = 1,3 do
+    task.wait(); LocTP(SavedPositions.Kill)
+  end
 end)
 
 Items.newButton("Get DB Shotgun", "", function()
@@ -220,6 +224,10 @@ end)
 
 Items.newButton("Get Bat", "", function()
   GetItem(FindSource("Bat"):FindFirstChildOfClass("MeshPart"))
+end)
+
+Items.newButton("Get Baton", "", function()
+  GetItem(FindSource("Baton"):FindFirstChildOfClass("MeshPart"))
 end)
 
 local lochar = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
