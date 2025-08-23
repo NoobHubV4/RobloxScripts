@@ -119,10 +119,6 @@ Main:CreateToggle("Kill Aura", function(state)
   killAura = state
 end)
 
-Gun:CreateButton("Get AWM", function()
-  GetGun(workspace.pickups:GetChildren()[45]["\178\250\174D\127\161F\215\019)\026s\129\179{\152V\175\025\210n\178Y\012\140\200\212+\148kU\201s\22647p[X\158\228n\0251\142\030\207@\"\027"])
-end)
-
 Main:CreateButton("Place Medkit", function()
   PlaceMedkit()
 end)
