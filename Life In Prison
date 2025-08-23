@@ -230,6 +230,24 @@ Items.newButton("Get Baton", "", function()
   GetItem(FindSource("Baton"):FindFirstChildOfClass("MeshPart"))
 end)
 
+Items.newButton("Get Holy Bible", '', function()
+  GetItem(workspace.pickups["Holy Bible"]["\002\240\154\019\131\132\190\214\144\174\025\216\141\187\161L14!J\134W\226\009\027&\150\2492\131\205\026,\219_\231\254\148kafJ\134\171K~u\227\168h"])
+end)
+
+Items.newButton('Get Cap Hat', "", function()
+    local source = workspace.pickups.Cap["\180*.\208\205\226\240\167\173k\231\219E\225)0R\"\187\187\0147K\196.`\241\028\160\026HO\\\012\161\1700\018\206\234\223\031\234\198\171\007O\014\001L"]
+    SavedPositions.Cap = LocalPlayer.Character.HumanoidRootPart.CFrame
+    repeat task.wait()
+        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = source.CFrame
+        game.ReplicatedStorage.RemoteEvent:FireServer("ItemHandler",source)
+    until LocalPlayer.Character:FindFirstChildOfClass("Hat")
+    LocalPlayer.Character.HumanoidRootPart.CFrame = SavedPositions.Cap
+end)
+
+Items.newButton('Get Famas Gun', "", function()
+    GetItem(workspace.pickups.Famas.Carry)
+end)
+
 local lochar = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
 local function ondiedevent()
 	coroutine.wrap(function()
@@ -299,6 +317,15 @@ task.spawn(function()
       for i,v in ipairs(game.Players:GetPlayers()) do
         if not v.Character:FindFirstChild("ForceField") and v.Character.Humanoid.Health ~= 0 then
           if v ~= LocalPlayer and (LocalPlayer.Character.HumanoidRootPart.Position - v.Character.HumanoidRootPart.Position).Magnitude <= 15 then
+            game.ReplicatedStorage.RemoteEvent:FireServer("meleeEvent", v.Character:FindFirstChild("Humanoid"))
+          end
+        end
+      end
+    end
+    if antiArrest then
+      for i,v in ipairs(game.Teams.Police:GetPlayers()) do
+        if not v.Character:FindFirstChild("ForceField") and v.Character.Humanoid.Health ~= 0 then
+          if (LocalPlayer.Character.HumanoidRootPart.Position - v.Character.HumanoidRootPart.Position).Magnitude <= 20 and v ~= LocalPlayer and v.Character:FindFirstChild("Handcuffs") then
             game.ReplicatedStorage.RemoteEvent:FireServer("meleeEvent", v.Character:FindFirstChild("Humanoid"))
           end
         end
