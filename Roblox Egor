@@ -1,13 +1,9 @@
-local anim = nil
-local loadanim = nil
-local state = nil
-local Connection = nil
-local Connection2 = nil
-local runTrack = runId or "rbxassetid://913376220"
-local speed
+local anim, loadanim, state, state2, Connection, Connection2 = nil, nil, nil, nil, nil, nil
+local runTrack, speed = runId or "rbxassetid://913376220", nil
 local screengui = Instance.new("ScreenGui",game.CoreGui)
 local frame = Instance.new("Frame",screengui)
 local textbutton = Instance.new("TextButton",frame)
+local textbutton2 = Instance.new("TextButton",frame)
 screengui.Name = "EgorPlay"
 screengui.ResetOnSpawn = true
 screengui.ZIndexBehavior = "Global"
@@ -20,17 +16,28 @@ frame.Size = UDim2.new(0, 200, 0, 100)
 frame.Active = true
 frame.Archivable = true
 frame.Draggable = true
-textbutton.Name = "EgorOn"
-textbutton.BackgroundColor3 = Color3.fromRGB(0, 180, 0)
+textbutton.Name = "EgorButton"
+textbutton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
 textbutton.BorderColor3 = Color3.fromRGB(27, 42, 53)
 textbutton.BorderSizePixel = 1
-textbutton.Position = UDim2.new(0, 10, 0, 32.5)
+textbutton.Position = UDim2.new(0, 10, 0, 10)
 textbutton.Size = UDim2.new(1, -20, 0, 30)
 textbutton.Text = "Egor: Off"
 textbutton.TextColor3 = Color3.fromRGB(255, 255, 255)
 textbutton.TextScaled = false
 textbutton.TextSize = 10
 textbutton.TextStrokeTransparency = 1
+textbutton2.Name = "FakeLag"
+textbutton2.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+textbutton2.BorderColor3 = Color3.fromRGB(27, 42, 53)
+textbutton2.BorderSizePixel = 1
+textbutton2.Position = UDim2.new(0, 10, 0, 50)
+textbutton2.Size = UDim2.new(1, -20, 0, 30)
+textbutton2.Text = "Fake Lag: Off"
+textbutton2.TextColor3 = Color3.fromRGB(255, 255, 255)
+textbutton2.TextScaled = false
+textbutton2.TextSize = 10
+textbutton2.TextStrokeTransparency = 1
 if game.Players.LocalPlayer.Character.Humanoid.RigType == Enum.HumanoidRigType.R6 then
         runTrack = "rbxassetid://180426354"
 end
@@ -48,16 +55,33 @@ function enableEgor()
             else
                 if not loadanim.IsPlaying == true then
                     loadanim:Play()
-                    loadanim:AdjustSpeed(10)
+                    loadanim:AdjustSpeed(11)
                 end
             end
         end)
 end
 function disableEgor()
         game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = speed
-        loadanim:Stop()
-        anim:Destroy()
-        Connection:Disconnect()
+        loadanim:Stop(); loadanim = nil
+        anim:Destroy(); anim = nil
+        Connection:Disconnect(); Connection = nil
+        Connection2:Disconnect(); Connection2 = nil
+end
+function FakeLag()
+        local plr = game.Players.localPlayer
+        while state2 do
+             task.wait()
+             local char = plr.Character
+             if char then
+                  local root = char.HumanoidRootPart
+                  if root then
+                       root.Anchored = true
+                       task.wait(.03)
+                       root.Anchored = false
+                       task.wait(.01)
+                  end
+             end
+        end
 end
 textbutton.MouseButton1Click:Connect(function()
       state = not state
@@ -77,5 +101,13 @@ textbutton.MouseButton1Click:Connect(function()
              textbutton.Text = "Egor: Off"
              Connection2:Disconnect()
              Connection2 = nil
+      end
+end)
+textbutton2.MouseButton1Click:Connect(function()
+      state2 = not state2
+      textbutton2.BackgroundColor3 = state2 and Color3.fromRGB(0, 180, 0) or Color3.fromRGB(255, 0, 0)
+      textbutton2.Text = state2 and "Fake Lag: On" or "Fake Lag: Off"
+      if state2 then
+           coroutine.wrap(FakeLag)()
       end
 end)
