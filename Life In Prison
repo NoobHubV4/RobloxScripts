@@ -56,7 +56,7 @@ function TeamTo(args)
   elseif args == "guard" then
     game.ReplicatedStorage.RemoteEvent:FireServer("ChangeTeam", Teams.Police)
   end; LocalPlayer.CharacterAdded:Wait()
-		if waitfor(LocalPlayer.Character, "HumanoidRootPart", 4) then
+		if waitfor(LocalPlayer.Character, "HumanoidRootPart", 5) then
 			LocTP(tmp)
 		end; LoadCamPos()
 end
@@ -76,7 +76,7 @@ function Refresh()
         game.ReplicatedStorage.RemoteEvent:FireServer("ChangeTeam", Teams.Prisoners)
         game.ReplicatedStorage.RemoteEvent:FireServer("ChangeTeam", Teams.Neutral)
     end; LocalPlayer.CharacterAdded:Wait()
-		if waitfor(LocalPlayer.Character, "HumanoidRootPart", 4) then
+		if waitfor(LocalPlayer.Character, "HumanoidRootPart", 5) then
 			LocTP(tmp)
 		end; LoadCamPos()
 end
@@ -262,7 +262,7 @@ local function oncharadded()
 		if LRoot then
 			LRoot.CFrame = SavedPositions.AutoRe; LoadCamPos(); LRoot.CFrame = SavedPositions.AutoRe; sent = false
 			task.spawn(function()
-				for i = 1, 4 do
+				for i = 1, 5 do
 					task.wait(); LRoot.CFrame = SavedPositions.AutoRe
 				end
 			end)
@@ -273,14 +273,7 @@ local function oncharadded()
   coroutine.wrap(charaddtask)()
 end
 Connections.Died = lochar:WaitForChild("Humanoid").Died:Connect(ondiedevent)
-Connections.CharacterAdded = LocalPlayer.CharacterAdded:Connect(function(newChar)
-  oncharadded()
-  newChar.Head.ChildAdded:Connect(function(child)
-    if autoRespawn and child.Name == "handcuffedGui" then
-      Refresh()
-    end
-  end)
-end)
+Connections.CharacterAdded = LocalPlayer.CharacterAdded:Connect(oncharadded)
 
 task.spawn(function()
   task1 = function()
