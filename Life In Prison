@@ -4,7 +4,7 @@ local Main = DrRayLibrary.newTab("Main", "")
 local Team = DrRayLibrary.newTab("Team", "")
 local Items = DrRayLibrary.newTab("Items", "")
 local SavedPositions = {AutoRe = nil; Item = nil; Medkit = nil; Kill = nil; Arrest = nil}
-local Connections = {Died = nil;}
+local Connections = {Died = nil; Animation = nil; CharacterAdded = nil}
 local Camera = game:FindService("Workspace").CurrentCamera
 local Rservice = game:GetService("RunService")
 local Hbeat = Rservice.Heartbeat
@@ -15,7 +15,8 @@ local Teams = game.Teams
 local autoRespawn, killAura
 local forceField, sent
 local antiTase, antiArrest
-local Saved = {NormalSpeed = 16, AutoRespawn = nil}
+local looped
+local Saved = {NormalSpeed = 16; AutoRespawn = nil; Tool = nil}
 
 local LocTP = function(cframe)
 	LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame = cframe
@@ -281,6 +282,7 @@ local function charaddtask()
         if Connections.Died then Connections.Died:Disconnect(); Connections.Died = nil end
         if Connections.Animation then Connections.Animation:Disconnect(); Connections.Animation = nil end
         if Connections.CharacterChildAdded then Connections.CharacterChildAdded:Disconnect(); Connections.CharacterChildAdded = nil end
+        if Connections.BackpackChildAdded then Connections.BackpackChildAdded:Disconnect(); Connections.BackpackChildAdded = nil end
         Connections.Died = LHuman.Died:Connect(ondiedevent)
         Connections.Animation = LHuman.AnimationPlayed:Connect(function(anim)
                if anim.Animation.AnimationId == "rbxassetid://125882711002228" and antiTase then
@@ -293,11 +295,11 @@ local function charaddtask()
                       SavedPositions.AutoRe = lochar:WaitForChild("HumanoidRootPart", 1) and LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame
                end
         end)
-        while task.wait() do
-               if LocalPlayer.Character then
+        looped = true
+        while looped and task.wait(.05) do
+               if LocalPlayer.Character and looped then
                       if LocalPlayer.Team ~= Teams.Prisoners and forceField and not LocalPlayer.Character:FindFirstChild("ForceField") then
-                             Refresh()
-                             break
+                             looped = false; Saved.Tool = LocalPlayer.Character:FindFirstChildOfClass("Tool"); Refresh()
                       end
                end
         end
@@ -319,6 +321,10 @@ local function oncharadded()
 	lochar:WaitForChild("Humanoid", 1):SetStateEnabled(Enum.HumanoidStateType.FallingDown, false)
 	lochar:WaitForChild("Humanoid", 1):SetStateEnabled(Enum.HumanoidStateType.Ragdoll, false)
     coroutine.wrap(charaddtask)()
+    if forceField and LocalPlayer.Team == Teams.Police then
+        Saved.Tool.Parent = lochar; task.wait()
+        Saved.Tool = nil
+    end
 end
 Connections.Died = lochar:WaitForChild("Humanoid").Died:Connect(ondiedevent)
 Connections.CharacterAdded = LocalPlayer.CharacterAdded:Connect(oncharadded)
