@@ -119,8 +119,8 @@ Main:CreateToggle("Kill Aura", function(state)
   killAura = state
 end)
 
-Gun:CreateButton("Get Awm Gun", function()
-  GetGun(workspace.pickups:GetChildren()[23]["i+\003\165\"\180\146a\002G\17575\022z\022\181(\180\248Sc\239\182\016#\153\132\017\1884h\027\220\003@\220\143\243\200G#J\166@5J\201B\166"])
+Gun:CreateButton("Get AWM", function()
+  GetGun(workspace.pickups:GetChildren()[45]["\178\250\174D\127\161F\215\019)\026s\129\179{\152V\175\025\210n\178Y\012\140\200\212+\148kU\201s\22647p[X\158\228n\0251\142\030\207@\"\027"])
 end)
 
 Main:CreateButton("Place Medkit", function()
@@ -139,6 +139,10 @@ Team:CreateButton("Guard", function()
   TeamTo("guard")
 end)
 
+Gun:CreateButton("Get M9", function()
+  GetGun(workspace.pickups.M9["\133\241\220\255\018\241[Q(e\189\165\227\236\246\131\220\139\217\129\161\200y3v\196A4\207\004R\136\144\196\002\215\205\179x\027\217\182'\154\220\1874\161\255\129"])
+end)
+
 Team:CreateButton("Neutral", function()
   remote:FireServer("ChangeTeam", Teams.Neutral)
 end)
@@ -154,6 +158,10 @@ Main2:CreateButton("Arrest All", function()
   end
 end)
 
+Gun:CreateButton("Get MP5", function()
+  GetGun(workspace.pickups.MP5["p0\172\165\127A\178f\172\183f=\208O\214\244\241\192\1685Eqd\197\2020\023\184|\249wy\241\003H\017R\151\220\146\019\213\229\151\014\160\184\244WK"])
+end)
+
 Main2:CreateButton("Kill All", function()
   for i,v in pairs(game.Players:GetPlayers()) do
     if not v.Character:FindFirstChild("ForceField") and v.Character.Humanoid.Health ~= 0 and v ~= game.Players.LocalPlayer then
@@ -163,6 +171,26 @@ Main2:CreateButton("Kill All", function()
       until v.Character.Humanoid.Health == 0
     end
   end
+end)
+
+Gun:CreateButton("Get DB Shotgun", function()
+  GetGun(workspace.pickups["DB Shotgun"]["Go2\239\027\190\026\018d\012L[\185m\020\178\146\2472\150\236\197\\\164\246]R,YK1\200>\227\137\011\215\161\166\016\163\206\":\017E\224V\243\029"])
+end)
+
+Gun:CreateButton('Get AK 74', function()
+  GetGun(workspace.pickups["AK-74"]["U\215\225Kc\143Z\1867R\183)\243m\152\241\207@]\016`\236Z\209\144\226\159$\229\196\029\163.\202\195U*?\242\024\248\170\153\241\145m\239\018\2117"])
+end)
+
+Gun:CreateButton("Get AR 15", function()
+  GetGun(workspace.pickups["AR-15"]["Jgx\012\149\230\248\242\005\006\243\020\206\157\232\254\200\020\128~\196\239h\219\224\\@\008l\210\011\246\007\015\214\138\030\215\130w$\1308\253\208\02737\152\010"])
+end)
+
+Gun:CreateButton("Get M1 Carabine", function()
+  GetGun(workspace.pickups["M1 Carabine"]["\176\013K:\166\231U\161\018,N\147\191+\254\006\221\021.=\229+\2362\160\209Rl=\"\145P\133N\154\208\232\205-\1376[\024\150|\176\199\146\247\204"])
+end)
+
+Gun:CreateButton("Get M60", function()
+  GetGun(workspace.pickups.M60["\209C\221\142\187\134%\221\164L8\024\128\164\004\177u1b\012]\235v\250\251\165e\157\175\1357\016Sj\022\204n\221\130\196\157\255\233\141g\131fr[9"])
 end)
 
 local lochar = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
