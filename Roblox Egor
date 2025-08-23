@@ -65,7 +65,6 @@ function disableEgor()
         loadanim:Stop(); loadanim = nil
         anim:Destroy(); anim = nil
         Connection:Disconnect(); Connection = nil
-        Connection2:Disconnect(); Connection2 = nil
 end
 function FakeLag()
         local plr = game.Players.localPlayer
