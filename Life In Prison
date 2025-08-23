@@ -16,15 +16,16 @@ local autoRespawn = nil
 local killAura = nil
 local sent
 local antiTase
+local NormalSpeed = 16
 
 local LocTP = function(cframe)
 	LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame = cframe
 end
 
-function FindMedkit()
+function FindSource(name)
     for i, v in ipairs(workspace.pickups:GetChildren()) do
-        if v.Name == "Medkit" then
-            return v:FindFirstChild("Meshes/outside")
+        if v.Name == name then
+            return v
         end
     end
 end
@@ -104,16 +105,11 @@ Main.newToggle("Kill Aura", "", false, function(state)
 end)
 
 Main.newButton("Place Medkit", "", function()
-  local medkit = FindMedkit()
-    SavedPositions.Medkit = LocalPlayer.Character.HumanoidRootPart.CFrame
+  local medkit = FindSource("Medkit"):FindFirstChild("Meshes/outside"); SavedPositions.Medkit = LocalPlayer.Character.HumanoidRootPart.CFrame
     repeat task.wait()
         game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = medkit.CFrame
         game.ReplicatedStorage.RemoteEvent:FireServer("ItemHandler",medkit)
-    until LocalPlayer.Character:FindFirstChild("Medkit") or LocalPlayer.Backpack:FindFirstChild("Medkit")
-    LocalPlayer.Character.HumanoidRootPart.CFrame = SavedPositions.Medkit
-    repeat task.wait()
-        game.Players.LocalPlayer.Character.Humanoid:EquipTool(LocalPlayer.Backpack:FindFirstChild("Medkit"))
-    until LocalPlayer.Character:FindFirstChild("Medkit")
+    until LocalPlayer.Character:FindFirstChild("Medkit") or LocalPlayer.Backpack:FindFirstChild("Medkit"); LocalPlayer.Character.HumanoidRootPart.CFrame = SavedPositions.Medkit; game.Players.LocalPlayer.Character.Humanoid:EquipTool(LocalPlayer.Backpack:FindFirstChild("Medkit"))
     wait(.15)
     game.ReplicatedStorage.RemoteEvent:FireServer("PlaceMedkit",LocalPlayer.Character:FindFirstChild("Medkit"))
 end)
@@ -134,6 +130,9 @@ Team.newButton("Police", "", function()
   TeamTo("guard")
 end)
 
+Gun.newButton("Get AWM", "", function()
+  GetGun(workspace.pickups.AWM:FindFirstChildOfClass("MeshPart"))
+end)
 Gun.newButton("Get M9", "", function()
   GetGun(workspace.pickups.M9["\133\241\220\255\018\241[Q(e\189\165\227\236\246\131\220\139\217\129\161\200y3v\196A4\207\004R\136\144\196\002\215\205\179x\027\217\182'\154\220\1874\161\255\129"])
 end)
@@ -146,6 +145,9 @@ Main.newButton("Arrest All", "", function()
   for i,v in pairs(game.Teams.Criminals:GetPlayers()) do
     if not v.Character:FindFirstChild("ForceField") and v.Character.Humanoid.Health ~= 0 and v ~= game.Players.LocalPlayer then
       repeat task.wait()
+        if LocalPlayer.Character.Humanoid.Sit then
+               LocalPlayer.Character.Humanoid.Sit = false
+        end
         LocalPlayer.Character.HumanoidRootPart.CFrame = v.Character.HumanoidRootPart.CFrame
         game.ReplicatedStorage.RemoteEvent:FireServer("Handcuffs", v)
       until v.Character.Head:FindFirstChild("handcuffedGui")
@@ -161,6 +163,9 @@ Main.newButton("Kill All", "", function()
   for i,v in pairs(game.Players:GetPlayers()) do
     if not v.Character:FindFirstChild("ForceField") and v.Character.Humanoid.Health ~= 0 and v ~= game.Players.LocalPlayer then
       repeat task.wait()
+        if LocalPlayer.Character.Humanoid.Sit then
+               LocalPlayer.Character.Humanoid.Sit = false
+        end
         LocalPlayer.Character.HumanoidRootPart.CFrame = v.Character.HumanoidRootPart.CFrame
         game.ReplicatedStorage.RemoteEvent:FireServer("meleeEvent", v.Character.Humanoid)
       until v.Character.Humanoid.Health == 0
@@ -189,7 +194,11 @@ Gun.newButton("Get M60", "", function()
 end)
 
 Gun.newButton("Get SPAS", "", function()
-  GetGun(workspace.pickups:GetChildren()[30]["\199\128\142\026y\204w\1654\167\197\151s\019\133vlr\028 \188\027Z\131\132\221kX\145Eu\252\236\158\248\203q\138c\228\179H\229\005\191\129\223\138\199H"])
+  GetGun(workspace.pickups.SPAS:FindFirstChildOfClass("MeshPart"))
+end)
+
+Gun.newButton("Get FAL Gun", "", function()
+  GetGun(FindSource("FAL"):FindFirstChildOfClass("MeshPart"))
 end)
 
 local lochar = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
@@ -224,6 +233,7 @@ local function charaddtask()
         Connections.Animation = LHuman.AnimationPlayed:Connect(function(anim)
                if antiTase and anim.Animation.AnimationId == "rbxassetid://125882711002228" then
                       anim:Stop(); anim:Destroy()
+                      game.RunService.RenderStepped:Wait(); LocalPlayer.Character.Humanoid.WalkSpeed = NormalSpeed
                end
         end)
 	end
