@@ -1,10 +1,8 @@
-local lib = loadstring(game:HttpGet("https://raw.github.com/NoobHubV1/NoobHubV1/main/Wizard%20Lib.lua"))()
-local Window = lib:NewWindow("Life In Prison")
-local Main = Window:NewSection("Main")
-local Team = Window:NewSection("Team")
-local Main2 = Window:NewSection("Kill Or Arrest")
-local Gun = Window:NewSection("Gun")
-local Gun2 = Window:NewSection("Gun 2")
+local DrRayLibrary = loadstring(game:HttpGet("https://raw.githubusercontent.com/NoobHubV1/NoobHubV1/main/Dr%20Ray%20Lib.lua"))()
+local window = DrRayLibrary:Load("Life In Prison", "Default")
+local Main = DrRayLibrary.newTab("Main", "")
+local Team = DrRayLibrary.newTab("Team", "")
+local Gun = DrRayLibrary.newTab("Gun", "")
 local SavedPositions = {AutoRe = nil}
 local Connections = {Died = nil;}
 local Camera = game:FindService("Workspace").CurrentCamera
@@ -16,8 +14,8 @@ local LocalPlayer = game.Players.localPlayer
 local Teams = game.Teams
 local autoRespawn = nil
 local killAura = nil
-local remote = game.ReplicatedStorage.RemoteEvent
 local sent
+local antiTase
 
 local LocTP = function(cframe)
 	LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame = cframe
@@ -35,23 +33,9 @@ function GetGun(source)
     SavedPositions.Gun = LocalPlayer.Character.HumanoidRootPart.CFrame
     repeat task.wait()
         game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = source.CFrame
-        remote:FireServer("ItemHandler",source)
+        game.ReplicatedStorage.RemoteEvent:FireServer("ItemHandler",source)
     until LocalPlayer.Character:FindFirstChild(source.Parent.Name) or LocalPlayer.Backpack:FindFirstChild(source.Parent.Name)
     LocalPlayer.Character.HumanoidRootPart.CFrame = SavedPositions.Gun
-end
-function PlaceMedkit()
-    local medkit = FindMedkit()
-    SavedPositions.Medkit = LocalPlayer.Character.HumanoidRootPart.CFrame
-    repeat task.wait()
-        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = medkit.CFrame
-        remote:FireServer("ItemHandler",medkit)
-    until LocalPlayer.Character:FindFirstChild("Medkit") or LocalPlayer.Backpack:FindFirstChild("Medkit")
-    LocalPlayer.Character.HumanoidRootPart.CFrame = SavedPositions.Medkit
-    repeat task.wait()
-        game.Players.LocalPlayer.Character.Humanoid:EquipTool(LocalPlayer.Backpack:FindFirstChild("Medkit"))
-    until LocalPlayer.Character:FindFirstChild("Medkit")
-    wait(.25)
-    remote:FireServer("PlaceMedkit",LocalPlayer.Character:FindFirstChild("Medkit"))
 end
 function SaveCamPos()
 	SavedPositions.OldCameraPos = Camera.CFrame
@@ -63,13 +47,13 @@ end
 
 function TeamTo(args)
   local tmp = LocalPlayer.Character.HumanoidRootPart.CFrame; SavedPositions.AutoRe = tmp; SaveCamPos()
-  remote:FireServer("ChangeTeam", Teams.Neutral)
+  game.ReplicatedStorage.RemoteEvent:FireServer("ChangeTeam", Teams.Neutral)
   if args == "criminal" then
-    remote:FireServer("ChangeTeam", Teams.Criminals)
+    game.ReplicatedStorage.RemoteEvent:FireServer("ChangeTeam", Teams.Criminals)
   elseif args == "inmate" then
-    remote:FireServer("ChangeTeam", Teams.Prisoners)
+    game.ReplicatedStorage.RemoteEvent:FireServer("ChangeTeam", Teams.Prisoners)
   elseif args == "guard" then
-    remote:FireServer("ChangeTeam", Teams.Police)
+    game.ReplicatedStorage.RemoteEvent:FireServer("ChangeTeam", Teams.Police)
   end; LocalPlayer.CharacterAdded:Wait()
 		if waitfor(LocalPlayer.Character, "HumanoidRootPart", 4) then
 			LocTP(tmp)
@@ -79,17 +63,17 @@ end
 function Refresh()
     local team = LocalPlayer.Team; local tmp = LocalPlayer.Character.HumanoidRootPart.CFrame; SavedPositions.AutoRe = tmp; SaveCamPos()
     if team == Teams.Criminals then
-        remote:FireServer("ChangeTeam", Teams.Neutral)
-        remote:FireServer("ChangeTeam", Teams.Criminals)
+        game.ReplicatedStorage.RemoteEvent:FireServer("ChangeTeam", Teams.Neutral)
+        game.ReplicatedStorage.RemoteEvent:FireServer("ChangeTeam", Teams.Criminals)
     elseif team == Teams.Prisoners then
-        remote:FireServer("ChangeTeam", Teams.Neutral)
-        remote:FireServer("ChangeTeam", Teams.Prisoners)
+        game.ReplicatedStorage.RemoteEvent:FireServer("ChangeTeam", Teams.Neutral)
+        game.ReplicatedStorage.RemoteEvent:FireServer("ChangeTeam", Teams.Prisoners)
     elseif team == Teams.Police then
-        remote:FireServer("ChangeTeam", Teams.Neutral)
-        remote:FireServer("ChangeTeam", Teams.Police)
+        game.ReplicatedStorage.RemoteEvent:FireServer("ChangeTeam", Teams.Neutral)
+        game.ReplicatedStorage.RemoteEvent:FireServer("ChangeTeam", Teams.Police)
     else
-        remote:FireServer("ChangeTeam", Teams.Prisoners)
-        remote:FireServer("ChangeTeam", Teams.Neutral)
+        game.ReplicatedStorage.RemoteEvent:FireServer("ChangeTeam", Teams.Prisoners)
+        game.ReplicatedStorage.RemoteEvent:FireServer("ChangeTeam", Teams.Neutral)
     end; LocalPlayer.CharacterAdded:Wait()
 		if waitfor(LocalPlayer.Character, "HumanoidRootPart", 4) then
 			LocTP(tmp)
@@ -108,89 +92,103 @@ waitfor = function(source, args, interval)
 	end
 end
 
-Main:CreateButton("Refresh", function()
-  Refresh()
+Main.newButton("Refresh", "", function()
+    Refresh()
 end)
-
-Main:CreateToggle("Auto Respawn", function(state)
+Main.newToggle("Auto Respawn", "", false, function(state)
   autoRespawn = state
 end)
 
-Main:CreateToggle("Kill Aura", function(state)
+Main.newToggle("Kill Aura", "", false, function(state)
   killAura = state
 end)
 
-Main:CreateButton("Place Medkit", function()
-  PlaceMedkit()
+Main.newButton("Place Medkit", "", function()
+  local medkit = FindMedkit()
+    SavedPositions.Medkit = LocalPlayer.Character.HumanoidRootPart.CFrame
+    repeat task.wait()
+        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = medkit.CFrame
+        game.ReplicatedStorage.RemoteEvent:FireServer("ItemHandler",medkit)
+    until LocalPlayer.Character:FindFirstChild("Medkit") or LocalPlayer.Backpack:FindFirstChild("Medkit")
+    LocalPlayer.Character.HumanoidRootPart.CFrame = SavedPositions.Medkit
+    repeat task.wait()
+        game.Players.LocalPlayer.Character.Humanoid:EquipTool(LocalPlayer.Backpack:FindFirstChild("Medkit"))
+    until LocalPlayer.Character:FindFirstChild("Medkit")
+    wait(.15)
+    game.ReplicatedStorage.RemoteEvent:FireServer("PlaceMedkit",LocalPlayer.Character:FindFirstChild("Medkit"))
 end)
 
-Team:CreateButton("Criminal", function()
+Main.newToggle("Anti Tase", "", false, function(state)
+  antiTase = state
+end)
+
+Team.newButton("Criminal", "", function()
   TeamTo("criminal")
 end)
 
-Team:CreateButton("Inmate", function()
+Team.newButton("Prisoners", "", function()
   TeamTo("inmate")
 end)
 
-Team:CreateButton("Guard", function()
+Team.newButton("Police", "", function()
   TeamTo("guard")
 end)
 
-Gun:CreateButton("Get M9", function()
+Gun.newButton("Get M9", "", function()
   GetGun(workspace.pickups.M9["\133\241\220\255\018\241[Q(e\189\165\227\236\246\131\220\139\217\129\161\200y3v\196A4\207\004R\136\144\196\002\215\205\179x\027\217\182'\154\220\1874\161\255\129"])
 end)
 
-Team:CreateButton("Neutral", function()
-  remote:FireServer("ChangeTeam", Teams.Neutral)
+Team.newButton("Neutral", "", function()
+  game.ReplicatedStorage.RemoteEvent:FireServer("ChangeTeam", Teams.Neutral)
 end)
 
-Main2:CreateButton("Arrest All", function()
+Main.newButton("Arrest All", "", function()
   for i,v in pairs(game.Teams.Criminals:GetPlayers()) do
     if not v.Character:FindFirstChild("ForceField") and v.Character.Humanoid.Health ~= 0 and v ~= game.Players.LocalPlayer then
       repeat task.wait()
         LocalPlayer.Character.HumanoidRootPart.CFrame = v.Character.HumanoidRootPart.CFrame
-        remote:FireServer("Handcuffs", v)
+        game.ReplicatedStorage.RemoteEvent:FireServer("Handcuffs", v)
       until v.Character.Head:FindFirstChild("handcuffedGui")
     end
   end
 end)
 
-Gun:CreateButton("Get MP5", function()
+Gun.newButton("Get MP5", "", function()
   GetGun(workspace.pickups.MP5["p0\172\165\127A\178f\172\183f=\208O\214\244\241\192\1685Eqd\197\2020\023\184|\249wy\241\003H\017R\151\220\146\019\213\229\151\014\160\184\244WK"])
 end)
 
-Main2:CreateButton("Kill All", function()
+Main.newButton("Kill All", "", function()
   for i,v in pairs(game.Players:GetPlayers()) do
     if not v.Character:FindFirstChild("ForceField") and v.Character.Humanoid.Health ~= 0 and v ~= game.Players.LocalPlayer then
       repeat task.wait()
         LocalPlayer.Character.HumanoidRootPart.CFrame = v.Character.HumanoidRootPart.CFrame
-        remote:FireServer("meleeEvent", v.Character.Humanoid)
+        game.ReplicatedStorage.RemoteEvent:FireServer("meleeEvent", v.Character.Humanoid)
       until v.Character.Humanoid.Health == 0
     end
   end
 end)
 
-Gun:CreateButton("Get DB Shotgun", function()
+Gun.newButton("Get DB Shotgun", "", function()
   GetGun(workspace.pickups["DB Shotgun"]["Go2\239\027\190\026\018d\012L[\185m\020\178\146\2472\150\236\197\\\164\246]R,YK1\200>\227\137\011\215\161\166\016\163\206\":\017E\224V\243\029"])
 end)
 
-Gun:CreateButton('Get AK 74', function()
+Gun.newButton('Get AK 74', "", function()
   GetGun(workspace.pickups["AK-74"]["U\215\225Kc\143Z\1867R\183)\243m\152\241\207@]\016`\236Z\209\144\226\159$\229\196\029\163.\202\195U*?\242\024\248\170\153\241\145m\239\018\2117"])
 end)
 
-Gun:CreateButton("Get AR 15", function()
+Gun.newButton("Get AR 15", "", function()
   GetGun(workspace.pickups["AR-15"]["Jgx\012\149\230\248\242\005\006\243\020\206\157\232\254\200\020\128~\196\239h\219\224\\@\008l\210\011\246\007\015\214\138\030\215\130w$\1308\253\208\02737\152\010"])
 end)
 
-Gun:CreateButton("Get M1 Carabine", function()
+Gun.newButton("Get M1 Carabine", "", function()
   GetGun(workspace.pickups["M1 Carabine"]["\176\013K:\166\231U\161\018,N\147\191+\254\006\221\021.=\229+\2362\160\209Rl=\"\145P\133N\154\208\232\205-\1376[\024\150|\176\199\146\247\204"])
 end)
 
-Gun:CreateButton("Get M60", function()
+Gun.newButton("Get M60", "", function()
   GetGun(workspace.pickups.M60["\209C\221\142\187\134%\221\164L8\024\128\164\004\177u1b\012]\235v\250\251\165e\157\175\1357\016Sj\022\204n\221\130\196\157\255\233\141g\131fr[9"])
 end)
 
-Gun2:CreateButton("Get SPAS", function()
+Gun.newButton("Get SPAS", "", function()
   GetGun(workspace.pickups:GetChildren()[30]["\199\128\142\026y\204w\1654\167\197\151s\019\133vlr\028 \188\027Z\131\132\221kX\145Eu\252\236\158\248\203q\138c\228\179H\229\005\191\129\223\138\199H"])
 end)
 
@@ -202,17 +200,17 @@ local function ondiedevent()
         if autoRespawn then
             sent = true; local team = LocalPlayer.Team
             if team == Teams.Criminals then
-                remote:FireServer("ChangeTeam", Teams.Neutral)
-                remote:FireServer("ChangeTeam", Teams.Criminals)
+                game.ReplicatedStorage.RemoteEvent:FireServer("ChangeTeam", Teams.Neutral)
+                game.ReplicatedStorage.RemoteEvent:FireServer("ChangeTeam", Teams.Criminals)
             elseif team == Teams.Prisoners then
-                remote:FireServer("ChangeTeam", Teams.Neutral)
-                remote:FireServer("ChangeTeam", Teams.Prisoners)
+                game.ReplicatedStorage.RemoteEvent:FireServer("ChangeTeam", Teams.Neutral)
+                game.ReplicatedStorage.RemoteEvent:FireServer("ChangeTeam", Teams.Prisoners)
             elseif team == Teams.Police then
-                remote:FireServer("ChangeTeam", Teams.Neutral)
-                remote:FireServer("ChangeTeam", Teams.Police)
+                game.ReplicatedStorage.RemoteEvent:FireServer("ChangeTeam", Teams.Neutral)
+                game.ReplicatedStorage.RemoteEvent:FireServer("ChangeTeam", Teams.Police)
             else
-                remote:FireServer("ChangeTeam", Teams.Prisoners)
-                remote:FireServer("ChangeTeam", Teams.Neutral)
+                game.ReplicatedStorage.RemoteEvent:FireServer("ChangeTeam", Teams.Prisoners)
+                game.ReplicatedStorage.RemoteEvent:FireServer("ChangeTeam", Teams.Neutral)
             end
         end
 	end)()
@@ -224,8 +222,8 @@ local function charaddtask()
         if Connections.Animation then Connections.Animation:Disconnect(); Connections.Animation = nil end
 		Connections.Died = LHuman.Died:Connect(ondiedevent)
         Connections.Animation = LHuman.AnimationPlayed:Connect(function(anim)
-               if autoRespawn and anim.Animation.AnimationId == "rbxassetid://125882711002228" then
-                      Refresh()
+               if antiTase and anim.Animation.AnimationId == "rbxassetid://125882711002228" then
+                      anim:Stop(); anim:Destroy()
                end
         end)
 	end
@@ -263,7 +261,7 @@ task.spawn(function()
       for i,v in ipairs(game.Players:GetPlayers()) do
         if not v.Character:FindFirstChild("ForceField") and v.Character.Humanoid.Health ~= 0 then
           if v ~= LocalPlayer and (LocalPlayer.Character.HumanoidRootPart.Position - v.Character.HumanoidRootPart.Position).Magnitude <= 25 then
-            remote:FireServer("meleeEvent", v.Character:FindFirstChild("Humanoid"))
+            game.ReplicatedStorage.RemoteEvent:FireServer("meleeEvent", v.Character:FindFirstChild("Humanoid"))
           end
         end
       end
