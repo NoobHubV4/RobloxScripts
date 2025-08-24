@@ -7,6 +7,7 @@ local TextButton2 = Instance.new("TextButton")
 
 --Properties:
 
+ScreenGui.Name = "AnimationFindGui"
 ScreenGui.Parent = game.CoreGui
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 ScreenGui.ResetOnSpawn = true
