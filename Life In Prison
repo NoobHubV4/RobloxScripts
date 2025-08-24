@@ -305,9 +305,8 @@ local function charaddtask()
                       game.RunService.RenderStepped:Wait(); LocalPlayer.Character.Humanoid.WalkSpeed = Saved.NormalSpeed
                end
                if anim.Animation.AnimationId == "rbxassetid://103349191835500" and antiArrest then
-                      anim:Stop(); anim:Destroy(); autoRespawn = true
-                      game.RunService.RenderStepped:Wait(); LocalPlayer.Character.Humanoid.WalkSpeed = Saved.NormalSpeed; sent = true
-                      SavedPositions.AutoRe = lochar:WaitForChild("HumanoidRootPart", 1) and LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame; Saved.wascriminal = LocalPlayer.Team == Teams.Criminals
+                      anim:Stop(); anim:Destroy()
+                      game.RunService.RenderStepped:Wait(); LocalPlayer.Character.Humanoid.WalkSpeed = Saved.NormalSpeed
                end
         end)
         looped = true
@@ -337,11 +336,19 @@ local function oncharadded()
 	lochar:WaitForChild("Humanoid", 1):SetStateEnabled(Enum.HumanoidStateType.Ragdoll, false)
     coroutine.wrap(charaddtask)()
     if Saved.wascriminal then
-        wait(.1); TeamTo("criminal"); task.wait(); Saved.wascriminal = nil
+        wait(.25); TeamTo("criminal"); task.wait(); Saved.wascriminal = nil
     end
 end
 Connections.Died = lochar:WaitForChild("Humanoid").Died:Connect(ondiedevent)
-Connections.CharacterAdded = LocalPlayer.CharacterAdded:Connect(oncharadded)
+Connections.CharacterAdded = LocalPlayer.CharacterAdded:Connect(function(newChar)
+    oncharadded()
+    newChar.Head.ChildAdded:Connect(function(child)
+        if child.Name == "handcuffedGui" then
+            sent = true; SavedPositions.AutoRe = lochar:WaitForChild("HumanoidRootPart", 1) and LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame; Saved.wascriminal = LocalPlayer.Team == Teams.Criminals
+            autoRespawn = true
+        end
+    end)
+end)
 Connections.PlayerAdded = game.Players.PlayerAdded:Connect(CopyChat)
 
 task.spawn(function()
