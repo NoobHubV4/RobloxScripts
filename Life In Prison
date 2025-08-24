@@ -240,7 +240,7 @@ Items.newButton('Get Cap Hat', "", function()
     repeat task.wait()
         game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = source.CFrame
         game.ReplicatedStorage.RemoteEvent:FireServer("ItemHandler",source)
-    until LocalPlayer.Character:FindFirstChildOfClass("Hat")
+    until LocalPlayer.Character:FindFirstChild("Cap")
     LocalPlayer.Character.HumanoidRootPart.CFrame = SavedPositions.Cap
 end)
 
