@@ -256,6 +256,17 @@ Main.newToggle("Copy Chat", "", false, function(state)
   copyChat = state
 end)
 
+Items.newButton('Get Beans', "", function()
+  repeat task.wait()
+         LocTP(source1.CFrame)
+         fireclickdetector(source1.ClickDetector)
+  until workspace.pickups:FindFirstChild("Beans") and workspace.pickups:FindFirstChild("Beans").ITEMPICKUP; task.wait()
+  repeat task.wait()
+         LocTP(workspace.pickups:FindFirstChild("Beans").ITEMPICKUP.CFrame)
+         game.ReplicatedStorage.RemoteEvent:FireServer("ItemHandler",workspace.pickups:FindFirstChild("Beans").ITEMPICKUP)
+  until LocalPlayer.Backpack:FindFirstChild("Beans") or LocalPlayer.Character:FindFirstChild("Beans")
+end)
+
 local lochar = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
 local function ondiedevent()
 	coroutine.wrap(function()
