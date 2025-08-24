@@ -155,20 +155,16 @@ Team.newButton("Neutral", "", function()
 end)
 
 Main.newButton("Arrest All", "", function()
-  SavedPositions.Arrest = LocalPlayer.Character:FindFirstChild("HumanoidRootPart", 1) and LocalPlayer.Character.HumanoidRootPart.CFrame; task.wait()
   for i,v in pairs(game.Teams.Criminals:GetPlayers()) do
     if not v.Character:FindFirstChild("ForceField") and v.Character.Humanoid.Health ~= 0 and v ~= game.Players.LocalPlayer then
+      SavedPositions.Arrest = LocalPlayer.Character:FindFirstChild("HumanoidRootPart", 1) and LocalPlayer.Character.HumanoidRootPart.CFrame
       repeat task.wait()
-        if LocalPlayer.Character.Humanoid.Sit then
-               LocalPlayer.Character.Humanoid.Sit = false
-        end
+        LocalPlayer.Character.Humanoid.Sit = false
         LocalPlayer.Character.HumanoidRootPart.CFrame = v.Character.HumanoidRootPart.CFrame
         game.ReplicatedStorage.RemoteEvent:FireServer("Handcuffs", v)
       until v.Character.Head:FindFirstChild("handcuffedGui")
+      LocTP(SavedPositions.Arrest)
     end
-  end
-  for i = 1,3 do
-    task.wait(); LocTP(SavedPositions.Arrest)
   end
 end)
 
@@ -177,20 +173,16 @@ Items.newButton("Get MP5", "", function()
 end)
 
 Main.newButton("Kill All", "", function()
-  SavedPositions.Kill = LocalPlayer.Character:FindFirstChild("HumanoidRootPart", 1) and LocalPlayer.Character.HumanoidRootPart.CFrame; task.wait()
   for i,v in pairs(game.Players:GetPlayers()) do
     if not v.Character:FindFirstChild("ForceField") and v.Character.Humanoid.Health ~= 0 and v ~= game.Players.LocalPlayer then
+      SavedPositions.Kill = LocalPlayer.Character:FindFirstChild("HumanoidRootPart", 1) and LocalPlayer.Character.HumanoidRootPart.CFrame
       repeat task.wait()
-        if LocalPlayer.Character.Humanoid.Sit then
-               LocalPlayer.Character.Humanoid.Sit = false
-        end
+        LocalPlayer.Character.Humanoid.Sit = false
         LocalPlayer.Character.HumanoidRootPart.CFrame = v.Character.HumanoidRootPart.CFrame
         game.ReplicatedStorage.RemoteEvent:FireServer("meleeEvent", v.Character.Humanoid)
       until v.Character.Humanoid.Health == 0
+      LocTP(SavedPositions.Kill)
     end
-  end
-  for i = 1,3 do
-    task.wait(); LocTP(SavedPositions.Kill)
   end
 end)
 
@@ -305,8 +297,7 @@ local function charaddtask()
                       game.RunService.RenderStepped:Wait(); LocalPlayer.Character.Humanoid.WalkSpeed = Saved.NormalSpeed
                end
                if anim.Animation.AnimationId == "rbxassetid://103349191835500" and antiArrest then
-                      anim:Stop(); anim:Destroy()
-                      game.RunService.RenderStepped:Wait(); LocalPlayer.Character.Humanoid.WalkSpeed = Saved.NormalSpeed
+                      Refresh()
                end
         end)
         looped = true
@@ -335,20 +326,9 @@ local function oncharadded()
 	lochar:WaitForChild("Humanoid", 1):SetStateEnabled(Enum.HumanoidStateType.FallingDown, false)
 	lochar:WaitForChild("Humanoid", 1):SetStateEnabled(Enum.HumanoidStateType.Ragdoll, false)
     coroutine.wrap(charaddtask)()
-    if Saved.wascriminal then
-        wait(.25); TeamTo("criminal"); task.wait(); Saved.wascriminal = nil
-    end
 end
 Connections.Died = lochar:WaitForChild("Humanoid").Died:Connect(ondiedevent)
-Connections.CharacterAdded = LocalPlayer.CharacterAdded:Connect(function(newChar)
-    oncharadded()
-    newChar.Head.ChildAdded:Connect(function(child)
-        if child.Name == "handcuffedGui" then
-            sent = true; SavedPositions.AutoRe = lochar:WaitForChild("HumanoidRootPart", 1) and LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame; Saved.wascriminal = LocalPlayer.Team == Teams.Criminals
-            autoRespawn = true
-        end
-    end)
-end)
+Connections.CharacterAdded = LocalPlayer.CharacterAdded:Connect(oncharadded)
 Connections.PlayerAdded = game.Players.PlayerAdded:Connect(CopyChat)
 
 task.spawn(function()
