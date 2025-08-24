@@ -1,23 +1,24 @@
 -- Gui to Instances
 local ScreenGui = Instance.new("ScreenGui", game.CoreGui)
 local Frame = Instance.new("Frame",ScreenGui)
-local TextButton = Instance.new("TextButton",Frame)
+local TextButton1 = Instance.new("TextButton",Frame)
 local TextLabel = Instance.new("TextLabel",Frame)
 local TextButton2 = Instance.new("TextButton",Frame)
 local TextButton3 = Instance.new("TextButton",Frame)
-ScreenGui.ZIndexBehavior = "Sibling"
+local TextButton4 = Instance.new("TextButton",Frame)
+ScreenGui.ZIndexBehavior = "Global"
 Frame.BackgroundColor3 = Color3.fromRGB(0, 255, 255)
 Frame.BorderSizePixel = 0
 Frame.Position = UDim2.new(0.5, 20, 0.5, -42)
 Frame.Size = UDim2.new(0.325, 0, 0.3, 0)
 Frame.Draggable = true
-TextButton.BackgroundColor3 = Color3.fromRGB(0, 0, 255)
-TextButton.BorderSizePixel = 0
-TextButton.Position = UDim2.new(0.4, 0, 0.6, 0)
-TextButton.Size = UDim2.new(0.2, 0, 0.2, 0)
-TextButton.Text = "Start"
-TextButton.TextScaled = true
-TextButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+TextButton1.BackgroundColor3 = Color3.fromRGB(0, 0, 255)
+TextButton1.BorderSizePixel = 0
+TextButton1.Position = UDim2.new(0.4, 0, 0.6, 0)
+TextButton1.Size = UDim2.new(0.2, 0, 0.2, 0)
+TextButton1.Text = "Start"
+TextButton1.TextScaled = true
+TextButton1.TextColor3 = Color3.fromRGB(255, 255, 255)
 TextLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 TextLabel.BorderSizePixel = 0
 TextLabel.Position = UDim2.new(0.125, 0, 0.2, 0)
@@ -40,5 +41,51 @@ TextButton3.Text = "Pause"
 TextButton3.TextScaled = true
 TextButton3.TextColor3 = Color3.fromRGB(255, 255, 255)
 TextButton3.Visible = false
+TextButton4.BackgroundColor3 = Color3.fromRGB(0, 0, 255)
+TextButton4.BorderSizePixel = 0
+TextButton4.Position = UDim2.new(0.1, 0, 0.6, 0)
+TextButton4.Size = UDim2.new(0.2, 0, 0.2, 0)
+TextButton4.Text = "Play"
+TextButton4.TextScaled = true
+TextButton4.TextColor3 = Color3.fromRGB(255, 255, 255)
+TextButton4.Visible = false
 
---Wait to Scripts
+--Locals
+
+local Connection, time
+
+--Scripts
+
+function MouseButton(frame, func)
+       local script = Instance.new("Script",frame)
+
+       local gui = script.Parent
+
+       gui.MouseButton1Click:Connect(func)
+end
+
+MouseButton(TextButton1, function()
+       time = tick()
+       TextButton1.Visible = false; TextButton2.Visible = true; TextButton3.Visible = true; TextButton4.Visible = false
+       Connection = game.RunService.RenderStepped:Connect(function()
+              TextLabel.Text = math.round(tick() - time)
+       end)
+end)
+
+MouseButton(TextButton2, function()
+       TextButton1.Visible = true; TextButton2.Visible = false; TextButton3.Visible = false; TextButton4.Visible = false
+       Connection:Disconnect(); Connection = nil
+       TextLabel.Text = "0"
+end)
+
+MouseButton(TextButton3, function()
+       Connection:Disconnect(); Connection = nil
+       TextButton4.Visible = true; TextButton3.Visible = false
+end)
+
+MouseButton(TextButton4, function()
+       TextButton4.Visible = false; TextButton3.Visible = true
+       Connection = game.RunService.RenderStepped:Connect(function()
+              TextLabel.Text = math.round(tick() - time)
+       end)
+end)
