@@ -1,8 +1,9 @@
-local DrRayLibrary = loadstring(game:HttpGet("https://raw.githubusercontent.com/NoobHubV1/NoobHubV1/main/Dr%20Ray%20Lib.lua"))()
+local DrRayLibrary = loadstring(game:HttpGet("https://raw.githubusercontent.com/NoobHubV4/RobloxScripts/main/DrRay/Lib"))()
 local window = DrRayLibrary:Load("Life In Prison", "Default")
 local Main = DrRayLibrary.newTab("Main", "")
 local Team = DrRayLibrary.newTab("Team", "")
 local Items = DrRayLibrary.newTab("Items", "")
+local Chat = DrRayLibrary.newTab('Chat', "")
 local SavedPositions = {AutoRe = nil; Item = nil; Medkit = nil; Kill = nil; Arrest = nil}
 local Connections = {Died = nil; Animation = nil; CharacterAdded = nil}
 local Camera = game:FindService("Workspace").CurrentCamera
@@ -15,7 +16,7 @@ local Teams = game.Teams
 local autoRespawn, killAura
 local forceField, sent
 local antiTase, antiArrest
-local looped, copyChat
+local looped, copyChat, hideCopyName
 local Saved = {NormalSpeed = 16; AutoRespawn = nil; wascriminal = nil}
 
 local LocTP = function(cframe)
@@ -96,7 +97,11 @@ end
 function CopyChat(player)
     player.Chatted:Connect(function(msg)
         if copyChat and msg then
-            game.TextChatService.TextChannels.RBXGeneral:SendAsync("["..player.DisplayName.."]: "..msg)
+            if not hideCopyName then
+                game.TextChatService.TextChannels.RBXGeneral:SendAsync("["..player.DisplayName.."]: "..msg)
+            else
+                game.TextChatService.TextChannels.RBXGeneral:SendAsync(msg.."")
+            end
         end
     end)
 end
@@ -252,8 +257,16 @@ Items.newButton('Get Famas Gun', "", function()
     GetItem(workspace.pickups.Famas.Carry)
 end)
 
-Main.newToggle("Copy Chat", "", false, function(state)
-  copyChat = state
+Chat.newInput("Chat", 'Say Message', function(text)
+    game.TextChatService.TextChannels.RBXGeneral:SendAsync(text)
+end)
+
+Chat.newToggle('Copy Chat', "", false, function(state)
+    copyChat = state
+end)
+
+Chat.newToggle("Hide Copy Chat Name", '', false, function(state)
+    hideCopyName = state
 end)
 
 local lochar = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
