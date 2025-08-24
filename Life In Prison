@@ -15,7 +15,7 @@ local Teams = game.Teams
 local autoRespawn, killAura
 local forceField, sent
 local antiTase, antiArrest
-local looped
+local looped, copyChat
 local Saved = {NormalSpeed = 16; AutoRespawn = nil; wascriminal = nil}
 
 local LocTP = function(cframe)
@@ -91,6 +91,14 @@ waitfor = function(source, args, interval)
 	else
 		return nil
 	end
+end
+
+function CopyChat(player)
+    player.Chatted:Connect(function(msg)
+        if copyChat and msg then
+            game.TextChatService.TextChannels.RBXGeneral:SendAsync("["..player.DisplayName.."]: "..msg)
+        end
+    end)
 end
 
 Main.newButton("Refresh", "", function()
@@ -234,6 +242,10 @@ Items.newButton("Get Holy Bible", '', function()
   GetItem(workspace.pickups["Holy Bible"]["\002\240\154\019\131\132\190\214\144\174\025\216\141\187\161L14!J\134W\226\009\027&\150\2492\131\205\026,\219_\231\254\148kafJ\134\171K~u\227\168h"])
 end)
 
+Main.newToggle("Force Field", "", false, function(state)
+  forceField = state
+end)
+
 Items.newButton('Get Cap Hat', "", function()
     local source = workspace.pickups.Cap["\180*.\208\205\226\240\167\173k\231\219E\225)0R\"\187\187\0147K\196.`\241\028\160\026HO\\\012\161\1700\018\206\234\223\031\234\198\171\007O\014\001L"]
     SavedPositions.Cap = LocalPlayer.Character.HumanoidRootPart.CFrame
@@ -248,8 +260,8 @@ Items.newButton('Get Famas Gun', "", function()
     GetItem(workspace.pickups.Famas.Carry)
 end)
 
-Main.newToggle("Force Field", "", false, function(state)
-  forceField = state
+Main.newToggle("Copy Chat", "", false, function(state)
+  copyChat = state
 end)
 
 local lochar = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
@@ -274,6 +286,11 @@ local function ondiedevent()
             end
         end
 	end)()
+end
+for i,v in ipairs(game.Players:GetPlayers()) do
+    if v ~= LocalPlayer then
+        CopyChat(v)
+    end
 end
 local function charaddtask()
 	local LHuman = lochar:WaitForChild("Humanoid", 1)
@@ -325,6 +342,7 @@ local function oncharadded()
 end
 Connections.Died = lochar:WaitForChild("Humanoid").Died:Connect(ondiedevent)
 Connections.CharacterAdded = LocalPlayer.CharacterAdded:Connect(oncharadded)
+Connections.PlayerAdded = game.Players.PlayerAdded:Connect(CopyChat)
 
 task.spawn(function()
   task1 = function()
