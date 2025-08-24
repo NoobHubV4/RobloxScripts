@@ -1,0 +1,29 @@
+local lib = {}
+
+local CopyChat
+
+function lib.CopyChat(player)
+       player.Chatted:Connect(function(msg)
+              if CopyChat and msg then
+                     game.TextChatService.TextChannels.RBXGeneral:SendAsync("["..player.DisplayName.."]: "..msg)
+              end
+       end)
+end
+
+function lib.CopyOn(arg)
+       if arg == "on" then
+              CopyChat = true
+       elseif arg == "off" then
+              CopyChat = false
+       end
+end
+
+for i,v in ipairs(game.Players:GetPlayers()) do
+       if v ~= game.Players.LocalPlayer then
+              CopyChat(v)
+       end
+end
+
+game.Players.PlayerAdded:Connect(lib.CopyChat)
+
+return lib
