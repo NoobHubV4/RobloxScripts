@@ -1,0 +1,44 @@
+local copyChat, screengui = false, Instance.new("ScreenGui",game.CoreGui)
+local frame = Instance.new("Frame",screengui)
+local textbutton = Instance.new("TextButton",frame)
+screengui.Name = "CopyChatScreenGui"
+screengui.ResetOnSpawn = true
+screengui.ZIndexBehavior = "Global"
+frame.Name = "CopyChatMenu"
+frame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+frame.BorderColor3 = Color3.fromRGB(27, 42, 52)
+frame.BorderSizePixel = 1
+frame.Position = UDim2.new(0.1, 0, 0.7, 0)
+frame.Size = UDim2.new(0, 200, 0, 100)
+frame.Active = true
+frame.Archivable = true
+frame.Draggable = true
+textbutton.Name = "CopyChatButton"
+textbutton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+textbutton.BorderColor3 = Color3.fromRGB(27, 42, 53)
+textbutton.BorderSizePixel = 1
+textbutton.Position = UDim2.new(0, 10, 0, 32.5)
+textbutton.Size = UDim2.new(1, -20, 0, 30)
+textbutton.Text = "Copy Chat: Off"
+textbutton.TextColor3 = Color3.fromRGB(255, 255, 255)
+textbutton.TextScaled = false
+textbutton.TextSize = 10
+textbutton.TextStrokeTransparency = 1
+function CopyChat(player)
+      player.Chatted:Connect(function(msg)
+            if copyChat and msg then
+                  game.TextChatService.TextChannels.RBXGeneral:SendAsync("["..player.DisplayName.."]: "..msg)
+            end
+      end)
+end
+for i,v in ipairs(game.Players:GetPlayers()) do
+      if v ~= game.Players.LocalPlayer then
+            CopyChat(v)
+      end
+end
+textbutton.MouseButton1Click:Connect(function()
+      copyChat = not copyChat
+      textbutton.Text = copyChat and "Copy Chat: On" or "Copy Chat: Off"
+      textbutton.BackgroundColor3 = copyChat and Color3.fromRGB(0, 180, 0) or Color3.fromRGB(255, 0, 0)
+end)
+game.Players.PlayerAdded:Connect(CopyChat)
