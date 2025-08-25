@@ -1,5 +1,5 @@
 local anim, loadanim, state, state2, Connection, Connection2 = nil, nil, nil, nil, nil, nil
-local runTrack, speed = runId or "rbxassetid://913376220", nil
+local runTrack, speed = Settings.runId or "rbxassetid://913376220", nil
 local screengui = Instance.new("ScreenGui",game.CoreGui)
 local frame = Instance.new("Frame",screengui)
 local textbutton = Instance.new("TextButton",frame)
@@ -52,7 +52,7 @@ function enableEgor()
             else
                 if not loadanim.IsPlaying == true then
                     loadanim:Play()
-                    loadanim:AdjustSpeed(10)
+                    loadanim:AdjustSpeed(runSpeed)
                 end
             end
         end)
