@@ -20,7 +20,6 @@ local mesh1
 local mesh2
 local ParryDistance = 0
 local showCircle
-local Connection
 local bill
 local frame
 local TextLabel
@@ -197,12 +196,25 @@ do
               showCircle = Options.State4.Value; Notify('NoobHubV4 Hub', 'Show Visualizer '..tostring(showCircle))
        end)
 end
+workspace.Balls.ChildAdded:Connect(function(child)
+       child:GetAttributeChangedSignal("Target"):Connect(function()
+              Parried = false
+       end)
+end)
 spawn(function()
     function work()
         local Ball, HRP, block = GetBall(), GetRoot(), ParryDistance
-        if Ball:GetAttribute("Target") == Player.Name and (HRP.Position - Ball.Position).Magnitude / Ball.LinearVelocity.VectorVelocity.Magnitude <= block and AutoParry then
+        if Ball:GetAttribute("Target") == Player.Name and not Parried and (HRP.Position - Ball.Position).Magnitude / Ball.LinearVelocity.VectorVelocity.Magnitude <= block and AutoParry then
             game.ReplicatedStorage.Framework.RemoteFunction:InvokeServer("SwordService","Block",{0})
-            Ball:GetAttributeChangedSignal("Target"):Wait()
+            Parried = true; Cooldown = tick()
+            while task.wait() do
+                if not Parried then
+                    break
+                end
+                if tick() - Cooldown >= 1 and Ball:GetAttribute("Target") == Player.Name then
+                    Parried = false
+                end
+            end
         end
     end
     while task.wait() do
