@@ -73,7 +73,7 @@ end
 
 replicatesignal = missing("function", replicatesignal)
 local Players = game:GetService("Players")
-local localPlayer = Players.LocalPlayer
+local localPlayer, time = Players.LocalPlayer, tick()
 
 function Dupe(Amount)
   for i = 1,Amount or 1 do
@@ -82,6 +82,7 @@ function Dupe(Amount)
              break
         end
         char=game.Players.LocalPlayer.Character
+        time = tick()
 	game.Players.LocalPlayer.Character=nil
 	game.Players.LocalPlayer.Character=char
 	char.Animate:Destroy()
@@ -90,11 +91,11 @@ function Dupe(Amount)
 	char.HumanoidRootPart.Anchored=true
         char.Humanoid:UnequipTools()
         replicatesignal(localPlayer.ConnectDiedSignalBackend)
-        wait(Players.RespawnTime-0.3)
+        repeat game.RunService.RenderStepped:Wait() until tick() - time >= 4.975
         for _, tool in pairs(localPlayer.Backpack:GetChildren()) do
             if tool:IsA("Tool") then
                 tool.Parent = char
-		tool.Parent = workspace
+	        	tool.Parent = workspace
             end
         end
         char:FindFirstChildWhichIsA"Humanoid":Destroy()
