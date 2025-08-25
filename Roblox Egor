@@ -1,5 +1,6 @@
+local Settings = {runId = setting.RunId, runSpeed = setting.RunSpeed}
 local anim, loadanim, state, state2, Connection, Connection2 = nil, nil, nil, nil, nil, nil
-local runTrack, speed = Settings.runId or "rbxassetid://913376220", nil
+local runTrack, speed = Settings.runId, nil
 local screengui = Instance.new("ScreenGui",game.CoreGui)
 local frame = Instance.new("Frame",screengui)
 local textbutton = Instance.new("TextButton",frame)
@@ -38,6 +39,12 @@ textbutton2.TextColor3 = Color3.fromRGB(255, 255, 255)
 textbutton2.TextScaled = false
 textbutton2.TextSize = 10
 textbutton2.TextStrokeTransparency = 1
+if not Settings.runId then
+        runTrack = "rbxassetid://913376220"
+end
+if not Settings.runSpeed then
+        runSpeed = 10
+end
 function enableEgor()
         speed = game.Players.LocalPlayer.Character.Humanoid.WalkSpeed; game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 3
         anim = Instance.new("Animation", game.Players.LocalPlayer.Character.Humanoid)
@@ -52,7 +59,7 @@ function enableEgor()
             else
                 if not loadanim.IsPlaying == true then
                     loadanim:Play()
-                    loadanim:AdjustSpeed(runSpeed)
+                    loadanim:AdjustSpeed(Settings.runSpeed)
                 end
             end
         end)
