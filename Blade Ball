@@ -10,13 +10,11 @@ local Player = game.Players.LocalPlayer
 local VIM = game:GetService("VirtualInputManager") or game:FindFirstDescendant("VirtualInputManager")
 local AutoMove = false
 local AutoParry
-local Cooldown = tick()
 local ScreenGui = Instance.new("ScreenGui", game.CoreGui)
 local Toggle = Instance.new("TextButton", ScreenGui)
 local Toggle2 = Instance.new("TextButton", ScreenGui)
 local UICorner = Instance.new("UICorner", Toggle2)
 local SpamParry = false
-local Connection
 local visual1
 local visual2
 local mesh1
@@ -199,23 +197,25 @@ do
               showCircle = Options.State4.Value
        end)
 end
+workspace.Balls.ChildAdded:Connect(function(child)
+       if child:GetAttribute("realBall") then
+              child:GetAttributeChangedSignal("target"):Connect(function()
+                     Parried = false
+              end)
+       end
+end)
 spawn(function()
     function Parry()
-        local Ball, HRP = GetBall(), GetRoot()
-        local block = ParryDistance
-        if not HRP then return end
+        local Ball, HRP, block = GetBall(), GetRoot(), ParryDistance
         if Ball:GetAttribute("target") == Player.Name then
                 if not Parried and (HRP.Position - Ball.Position).Magnitude / Ball.zoomies.VectorVelocity.Magnitude <= block and AutoParry then
                         VIM:SendMouseButtonEvent(0, 0, 0, true, game, false)
-                        Parried = true
-                        Cooldown = tick()
-                        if (tick() - Cooldown) >= 1 then
-                               Parried = false
-                        end
-                        while Parried and task.wait() do
-                               if Ball:GetAttribute("target") ~= Player.Name then
-                                      Parried = false
+                        Parried = true; Cooldown = tick()
+                        while task.wait() do
+                               if not Parried then
                                       break
+                               end; if tick() - Cooldown >= 1 and Ball:GetAttribute("target") == Player.Name then
+                                      Parried = false
                                end
                         end
                 end
@@ -292,19 +292,15 @@ spawn(function()
            if AutoParry and visual1 and visual2 then
                visual2.CFrame = CFrame.new(GetRoot().CFrame.p, GetBall().CFrame.p)
            end
+           if not GetBall() and AutoParry and visual1 and visual2 then
+               visual2.CFrame = GetRoot().CFrame
+           end
       end
       while task.wait() do
            pcall(task3)
       end
 end)
-local died
-function event()
-        died:Disconnect()
-        died = nil
-        Parried = false
-end
 function newChar()
-        died = Player.Character.Humanoid.Died:Connect(event)
         createBallSpeed()
 end
 died = Player.Character.Humanoid.Died:Connect(event)
