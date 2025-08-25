@@ -1,7 +1,5 @@
-for i,v in ipairs(game.CoreGui:GetChildren()) do
-        if v.Name == "gui" then
-                v:Destroy()
-        end
+if not game:IsLoaded() then
+       game.Loaded:Wait()
 end
 local Fluent = loadstring(game:HttpGet("https://github.com/NoobHubV4/RobloxScripts/blob/main/Fluent/Lib?raw=true"))()
 local Window = Fluent:CreateWindow({Title = "Anime Ball",SubTitle = "v1.2",TabWidth = 100,Size = UDim2.fromOffset(480, 300),Acrylic = false,Theme = "Amethyst",MinimizeKey = Enum.KeyCode.RightShift})
@@ -10,7 +8,7 @@ local Player = game.Players.localPlayer
 local VIM = game:GetService("VirtualInputManager") or game:FindFirstDescendant("VirtualInputManager")
 local AutoMove = false
 local AutoParry
-local Cooldown = tick()
+local Cooldown
 local ScreenGui = Instance.new("ScreenGui", game.CoreGui)
 local Toggle = Instance.new("TextButton", ScreenGui)
 local Toggle2 = Instance.new("TextButton", ScreenGui)
@@ -120,13 +118,6 @@ function createCircle()
     mesh2.Scale = Vector3.new(0.05, 0.05, 0.05)
 end
 
-function ResetConnection()
-    if Connection then
-        Connection:Disconnect()
-        Connection = nil
-    end
-end
-
 function Notify(title, content, duration)
     duration = duration
     if not duration then
@@ -206,22 +197,12 @@ do
               showCircle = Options.State4.Value; Notify('NoobHubV4 Hub', 'Show Visualizer '..tostring(showCircle))
        end)
 end
-workspace.Balls.ChildAdded:Connect(function(child)
-       ResetConnection()
-       Connection = child:GetAttributeChangedSignal("Target"):Connect(function()
-              Parried = false
-       end)
-end)
 spawn(function()
     function work()
         local Ball, HRP, block = GetBall(), GetRoot(), ParryDistance
-        if Ball:GetAttribute("Target") == Player.Name and not Parried and (HRP.Position - Ball.Position).Magnitude / Ball.LinearVelocity.VectorVelocity.Magnitude <= block and AutoParry then
+        if Ball:GetAttribute("Target") == Player.Name and (HRP.Position - Ball.Position).Magnitude / Ball.LinearVelocity.VectorVelocity.Magnitude <= block and AutoParry then
             game.ReplicatedStorage.Framework.RemoteFunction:InvokeServer("SwordService","Block",{0})
-            Parried = true
-            Cooldown = tick()
-            if (tick() - Cooldown) >= 1 then
-                Parried = false
-            end
+            Ball:GetAttributeChangedSignal("Target"):Wait()
         end
     end
     while task.wait() do
@@ -303,4 +284,5 @@ Player.CharacterAdded:Connect(function()
       createBallSpeed()
 end)
 createBallSpeed()
+Notify("Anime Ball", 'Script Loaded', 10)
 Window:SelectTab(1)
