@@ -27,6 +27,5 @@ TextButton.MouseButton1Click:Connect(function()
     local tool = character:FindFirstChildOfClass("Tool")
     if tool then
         tool.Parent = workspace
-        tool.Handle.Position = character.HumanoidRootPart.Position
     end
 end)
