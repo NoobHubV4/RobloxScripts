@@ -1,19 +1,17 @@
 local lib = loadstring(Game:HttpGet("https://raw.githubusercontent.com/NoobHubV1/NoobHubV1/main/Wizard%20Lib.lua"))()
-local autoFinish
 local remote = game.ReplicatedStorage.Packages:FindFirstChild("_Index"):FindFirstChild("sleitnick_net@0.2.0").net
 local Window = lib:NewWindow("Fish It")
 local Section = Window:NewSection("Main")
-Section:CreateToggle("Auto Finish", function(state)
-  autoFinish = state
+Section:CreateButton("Throw Perfect", function()
+  game:GetService("ReplicatedStorage"):WaitForChild("Packages"):WaitForChild("_Index"):WaitForChild("sleitnick_net@0.2.0"):WaitForChild("net"):WaitForChild("RF/ChargeFishingRod"):InvokeServer(0)
+  game:GetService("ReplicatedStorage"):WaitForChild("Packages"):WaitForChild("_Index"):WaitForChild("sleitnick_net@0.2.0"):WaitForChild("net"):WaitForChild("RF/RequestFishingMinigameStarted"):InvokeServer(0, 1)
 end)
 Section:CreateButton("God Mode", function()
   remote:FindFirstChild("URE/UpdateOxygen"):FireServer(-math.huge)
 end)
 spawn(function()
   function task0()
-    if game.Players.LocalPlayer.PlayerGui.Fishing.Enabled and autoFinish then
-      remote:FindFirstChild("RE/FishingCompleted"):FireServer()
-    end
+    remote:FindFirstChild("RE/FishingCompleted"):FireServer()
   end
   while task.wait() do
     pcall(task0)
