@@ -29,6 +29,15 @@ Section:CreateToggle("Auto Sell", function(state)
 end)
 game.Players.LocalPlayer.PlayerGui.MainUi.Fishing:GetPropertyChangedSignal("Visible"):Connect(function()
   if game.Players.LocalPlayer.PlayerGui.MainUi.Fishing.Visible and autoFinish then
-    game.ReplicatedStorage.Modules.Utility.Network.Events.RemoteEvent:FireServer(unpack({"GotFish", [3] = 2}))
+    game.ReplicatedStorage.Modules.Utility.Network.Events.RemoteEvent:FireServer(unpack({"GotFish", [3] = 2})); game.Players.LocalPlayer.PlayerGui.MainUi.Fishing.Visible = nil
+  end
+end)
+game.Players.LocalPlayer.Character.Humanoid.AnimationPlayed:Connect(function(anim)
+  if not autoFinish then return end
+  if anim.Animation.AnimationId == "rbxassetid://104869713435448" then
+    anim:Stop(); anim:Destroy()
+  end
+  if anim.Animation.AnimationId == "rbxassetid://101496371606410" then
+    anim:Stop(); anim:Destroy()
   end
 end)
