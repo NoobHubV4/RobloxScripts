@@ -10,7 +10,8 @@ Section:CreateToggle("Auto Sell", function(state)
   if autoSell then
     Connection = game.Players.LocalPlayer.Backpack.ChildAdded:Connect(function(child)
       if not child.Name:lower():find("rod") then
-        game.ReplicatedStorage.Modules.Utility.Network.Events.RemoteEvent:FireServer(unpack({"SellInventory", [3] = 2}))
+        game.Players.LocalPlayer.Character.Humanoid:EquipTool(child)
+        game.ReplicatedStorage.Modules.Utility.Network.Events.RemoteEvent:FireServer(unpack({"SellHoldingFish", [3] = 2}))
       end
     end)
     game.ReplicatedStorage.Modules.Utility.Network.Events.RemoteEvent:FireServer(unpack({"SellInventory", [3] = 2}))
@@ -22,7 +23,7 @@ end)
 while task.wait() do
   function task0()
     if autoFarm then
-      game.ReplicatedStorage.Modules.Utility.Network.Events.RemoteEvent:FireServer("RodActivated", {LuckMulti = 2, Mouse = {Target = workspace.World.Map.Holder.Water, Hit = CFrame.new(-587.568359375, 444.0174560546875, -181.7032928466797, -0.9397845268249512, -0.20697039365768433, 0.27197134494781494, 1.4901161193847656e-08, 0.7957784533500671, 0.6055879592895508, -0.34176769852638245, 0.5691221952438354, -0.7478601932525635)}}, 2)
+      game.ReplicatedStorage.Modules.Utility.Network.Events.RemoteEvent:FireServer("RodActivated", {LuckMulti = 2, Mouse = {Target = workspace.World.Map.Holder.Water, Hit = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame}}, 2)
       game.ReplicatedStorage.Modules.Utility.Network.Events.RemoteEvent:FireServer(unpack({"GotFish", [3] = 2}))
     end
   end
