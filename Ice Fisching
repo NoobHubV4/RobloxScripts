@@ -1,0 +1,17 @@
+local lib = loadstring(Game:HttpGet("https://raw.githubusercontent.com/NoobHubV1/NoobHubV1/main/Wizard%20Lib.lua"))()
+local autoFinish
+local Window = lib:NewWindow("Ice Fisching")
+local Section = Window:NewSection("Main")
+Section:CreateToggle("Auto Finish", function(state)
+  autoFinish = state
+end)
+task.spawn(function()
+  function finish()
+    if autoFinish then
+      game.ReplicatedStorage.Remote.RemoteEvent:FireServer(1112256688, true)
+    end
+  end
+  while task.wait() do
+    task.spawn(finish)
+  end
+end)
