@@ -1,6 +1,5 @@
 local lib = loadstring(Game:HttpGet("https://raw.githubusercontent.com/NoobHubV1/NoobHubV1/main/Wizard%20Lib.lua"))()
 local autoFinish
-local autoSell
 local Window = lib:NewWindow("Fisch")
 local Section = Window:NewSection("Main")
 Section:CreateToggle("Auto Finish", function(state)
