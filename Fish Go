@@ -1,17 +1,24 @@
 local lib = loadstring(Game:HttpGet("https://raw.githubusercontent.com/NoobHubV1/NoobHubV1/main/Wizard%20Lib.lua"))()
-local autoFarm, autoSell, Connection
+local autoFarm, autoSell, autoFinish, Connection
+local SavedTool
 local Window = lib:NewWindow("Fish Go")
 local Section = Window:NewSection("Main")
 Section:CreateToggle("Auto Farm", function(state)
   autoFarm = state
+  if autoFarm then
+    repeat game.RunService.Stepped:Wait() game.ReplicatedStorage.Modules.Utility.Network.Events.RemoteEvent:FireServer("RodActivated", {LuckMulti = 2, Mouse = {Target = workspace.World.Map.Holder.Water, Hit = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame}}, 2); game.ReplicatedStorage.Modules.Utility.Network.Events.RemoteEvent:FireServer(unpack({"GotFish", [3] = 2})) until not autoFarm
+  end
+end)
+Section:CreateToggle("Auto Finish", function(state)
+  autoFinish = state
 end)
 Section:CreateToggle("Auto Sell", function(state)
   autoSell = state
   if autoSell then
     Connection = game.Players.LocalPlayer.Backpack.ChildAdded:Connect(function(child)
       if not child.Name:lower():find("rod") then
-        game.Players.LocalPlayer.Character.Humanoid:EquipTool(child)
-        game.ReplicatedStorage.Modules.Utility.Network.Events.RemoteEvent:FireServer(unpack({"SellHoldingFish", [3] = 2}))
+        SavedTool = game.Players.LocalPlayer.Character:FindFirstChildOfClass("Tool"); game.Players.LocalPlayer.Character.Humanoid:EquipTool(child)
+        game.ReplicatedStorage.Modules.Utility.Network.Events.RemoteEvent:FireServer(unpack({"SellHoldingFish", [3] = 2})); SavedTool.Parent = game.Players.LocalPlayer.Character
       end
     end)
     game.ReplicatedStorage.Modules.Utility.Network.Events.RemoteEvent:FireServer(unpack({"SellInventory", [3] = 2}))
@@ -20,12 +27,8 @@ Section:CreateToggle("Auto Sell", function(state)
     Connection = nil
   end
 end)
-while task.wait() do
-  function task0()
-    if autoFarm then
-      game.ReplicatedStorage.Modules.Utility.Network.Events.RemoteEvent:FireServer("RodActivated", {LuckMulti = 2, Mouse = {Target = workspace.World.Map.Holder.Water, Hit = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame}}, 2)
-      game.ReplicatedStorage.Modules.Utility.Network.Events.RemoteEvent:FireServer(unpack({"GotFish", [3] = 2}))
-    end
+game.Players.LocalPlayer.PlayerGui.MainUi.Fishing:GetPropertyChangedSignal("Visible"):Connect(function()
+  if game.Players.LocalPlayer.PlayerGui.MainUi.Fishing.Visible and autoFinish then
+    game.ReplicatedStorage.Modules.Utility.Network.Events.RemoteEvent:FireServer(unpack({"GotFish", [3] = 2}))
   end
-  task.spawn(task0)
-end
+end)
