@@ -1,1 +1,11 @@
---Patched
+local lib = loadstring(Game:HttpGet("https://raw.githubusercontent.com/NoobHubV1/NoobHubV1/main/Wizard%20Lib.lua"))()
+local autoPerfectClick
+local RE = game.ReplicatedStorage.src.Packages.Knit.Services.GameService.RE
+local Window = lib:NewWindow("Click To Aura Farm")
+local Section = Window:NewSection("Main")
+Section:CreateToggle("Auto Perfect Click", function(state)
+  autoPerfectClick = state
+  if autoPerfectClick then
+    repeat game.RunService.Heartbeat:Wait() RE.HandleClick:FireServer(3) until not autoPerfectClick
+  end
+end)
