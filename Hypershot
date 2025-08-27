@@ -14,7 +14,7 @@ local time
 function LocTP(arg)
     LocalPlayer.Character.HumanoidRootPart.CFrame = arg
 end
-function SafeWait(timer)
+function waitfor(timer)
     time = tick()
     repeat game.RunService.Stepped:Wait() until tick() - time >= timer
 end
@@ -27,7 +27,7 @@ function LoadCamPos()
 end
 Main:CreateButton("Refresh", function()
     SavedPositions.AutoRe = LocalPlayer.Character.HumanoidRootPart.CFrame; sent2 = true
-    SaveCamPos(); LocalPlayer.Character:BreakJoints(); SafeWait(0.2); game.ReplicatedStorage.Network.Remotes.Spawn:FireServer()
+    SaveCamPos(); LocalPlayer.Character:BreakJoints(); waitfor(0.2); game.ReplicatedStorage.Network.Remotes.Spawn:FireServer()
 end)
 Main:CreateToggle("Auto Respawn", function(state)
   autoRespawn = state
@@ -55,7 +55,7 @@ Main:CreateToggle("Auto Kill", function(state)
       elseif LocalPlayer.Character:GetAttribute("Team") == -1 then
         for i,v in next, game.workspace:GetChildren() do
           if v:IsA("Model") and v ~= workspace:FindFirstChild(LocalPlayer.Name) then
-            if v:GetAttribute("Team") == 1 then
+            if v:GetAttribute("Team") == -1 then
               v.HumanoidRootPart.CFrame = LocalPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(0, 0, -9)
             end
           end
@@ -72,7 +72,7 @@ local function ondiedevent()
 		Connections.Died:Disconnect(); SaveCamPos()
 		SavedPositions.AutoRe = lochar:WaitForChild("HumanoidRootPart", 1) and LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame; sent = true
         if autoRespawn then
-               SafeWait(0.2)
+               waitfor(0.2)
                game.ReplicatedStorage.Network.Remotes.Spawn:FireServer()
         end
 	end)()
