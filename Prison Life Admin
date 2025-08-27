@@ -8,8 +8,11 @@ local Hbeat = Rservice.Heartbeat
 local Rstep = Rservice.RenderStepped
 local Stepped = Rservice.Stepped
 local LocalPlayer = game.Players.localPlayer
+local waitfor
 local Window = lib:NewWindow("Prison Life Admin")
-local Section = Window:NewSection("Main")
+local Main = Window:NewSection("Main")
+local Team = Window:NewSection("Team")
+local team
 function SaveCamPos()
 	SavedPositions.OldCameraPos = Camera.CFrame
 end
@@ -17,8 +20,36 @@ function LoadCamPos()
 	Rstep:Wait()
 	Camera.CFrame = SavedPositions.OldCameraPos or Camera.CFrame
 end
-Section:CreateToggle("Auto Respawn", function(state)
+waitfor = function(source, args, interval)
+	local int = interval or 5
+	local timeout = tick() + int
+	repeat Stepped:Wait() until source:FindFirstChild(args) or tick() - timeout >=0
+	timeout = nil
+	if source:FindFirstChild(args) then
+		return source:FindFirstChild(args)
+	else
+		return nil
+	end
+end
+function TeamTo(teamColor)
+    local tmp = LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame; SavedPositions.AutoRe = tmp; SaveCamPos()
+	game.ReplicatedStorage.HomeConfig.JoinTeam:FireServer(teamColor); LocalPlayer.CharacterAdded:Wait()
+		if waitfor(LocalPlayer.Character, "HumanoidRootPart", 4) then
+			LocTP(tmp)
+		end; LoadCamPos()
+end
+Main:CreateToggle("Auto Respawn", function(state)
   autoRespawn = state
+end)
+Team:CreateTextbox("Team Color", function(text)
+  team = text
+end)
+Team:CreateButton("Change Team", function()
+  if not team then
+    game:FindService("StarterGui"):SetCore("SendNotification",{Title="Prison Life Admin",Text="Not Team Color",Icon="",Duration=3})
+  else
+    TeamTo(BrickColor.new(team))
+  end
 end)
 SavedPositions.AutoRe = nil
 Connections.Died = nil
