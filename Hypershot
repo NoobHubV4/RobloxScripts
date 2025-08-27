@@ -1,5 +1,5 @@
 local lib = loadstring(Game:HttpGet("https://raw.githubusercontent.com/NoobHubV1/NoobHubV1/main/Wizard%20Lib.lua"))()
-local autoRespawn
+local autoRespawn, autoKill
 local SavedPositions = {AutoRe = nil;}
 local Connections = {Died = nil;}
 local Camera = game:FindService("Workspace").CurrentCamera
@@ -24,6 +24,35 @@ end)
 Main:CreateToggle("Auto Respawn", function(state)
   autoRespawn = state
 end)
+Main:CreateToggle("Auto Kill", function(state)
+  autoKill = state
+end)
+spawn(function()
+  function task0()
+    if autoKill then
+      if LocalPlayer.Character:GetAttribute("Team") == 1 then
+        for i,v in next, game.workspace:GetChildren() do
+          if v:IsA("Model") and v ~= workspace:FindFirstChild(LocalPlayer.Name) then
+            if v:GetAttribute("Team") == 2 then
+              v.HumanoidRootPart.CFrame = LocalPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(0, 0, -9)
+            end
+          end
+        end
+      elseif LocalPlayer.Character:GetAttribute("Team") == 2 then
+        for i,v in next, game.workspace:GetChildren() do
+          if v:IsA("Model") and v ~= workspace:FindFirstChild(LocalPlayer.Name) then
+            if v:GetAttribute("Team") == 1 then
+              v.HumanoidRootPart.CFrame = LocalPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(0, 0, -9)
+            end
+          end
+        end
+      end
+    end
+  end
+  while task.wait() do
+    task.spawn(task0)
+  end
+end)
 local lochar = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
 local function ondiedevent()
 	coroutine.wrap(function()
@@ -44,7 +73,7 @@ local function charaddtask()
 end
 local function oncharadded()
 	lochar = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
-	if SavedPositions.AutoRe and autoRespawn and not autoWin then
+	if SavedPositions.AutoRe and autoRespawn then
 		local LRoot = lochar:WaitForChild("HumanoidRootPart", 1)
 		if LRoot then
 			LRoot.CFrame = SavedPositions.AutoRe; LoadCamPos(); LRoot.CFrame = SavedPositions.AutoRe
