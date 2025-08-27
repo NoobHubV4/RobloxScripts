@@ -1,7 +1,7 @@
 local lib = loadstring(Game:HttpGet("https://raw.githubusercontent.com/NoobHubV1/NoobHubV1/main/Wizard%20Lib.lua"))()
 local autoRespawn, autoKill, sent, sent2
 local SavedPositions = {AutoRe = nil;}
-local Connections = {Died = nil, CharacterAdded = nil}
+local Connections = {Died = nil, CharacterAdded = nil, Stepped = nil}
 local Camera = game:FindService("Workspace").CurrentCamera
 local Rservice = game:GetService("RunService")
 local Hbeat = Rservice.Heartbeat
@@ -34,10 +34,8 @@ Main:CreateToggle("Auto Respawn", function(state)
 end)
 Main:CreateToggle("Auto Kill", function(state)
   autoKill = state
-end)
-spawn(function()
-  function task0()
-    if autoKill then
+  if autoKill then
+    Connections.Stepped = Rstep:Connect(function()
       if LocalPlayer.Character:GetAttribute("Team") == 1 then
         for i,v in next, game.workspace:GetChildren() do
           if v:IsA("Model") and v ~= workspace:FindFirstChild(LocalPlayer.Name) then
@@ -55,10 +53,9 @@ spawn(function()
           end
         end
       end
-    end
-  end
-  while task.wait() do
-    task.spawn(task0)
+    end)
+  else
+    Connections.Stepped:Disconnect(); Connections.Stepped = nil
   end
 end)
 local lochar = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
