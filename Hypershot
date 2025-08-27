@@ -1,7 +1,7 @@
 local lib = loadstring(Game:HttpGet("https://raw.githubusercontent.com/NoobHubV1/NoobHubV1/main/Wizard%20Lib.lua"))()
-local autoRespawn, autoKill
+local autoRespawn, autoKill, sent, sent2
 local SavedPositions = {AutoRe = nil;}
-local Connections = {Died = nil;}
+local Connections = {Died = nil, CharacterAdded = nil}
 local Camera = game:FindService("Workspace").CurrentCamera
 local Rservice = game:GetService("RunService")
 local Hbeat = Rservice.Heartbeat
@@ -10,7 +10,9 @@ local Stepped = Rservice.Stepped
 local LocalPlayer = game.Players.localPlayer
 local Window = lib:NewWindow("Hypershot")
 local Main = Window:NewSection("Main")
-local time = 0.3
+function LocTP(arg)
+    LocalPlayer.Character.HumanoidRootPart.CFrame = arg
+end
 function SaveCamPos()
 	SavedPositions.OldCameraPos = Camera.CFrame
 end
@@ -18,6 +20,11 @@ function LoadCamPos()
 	Rstep:Wait()
 	Camera.CFrame = SavedPositions.OldCameraPos or Camera.CFrame
 end
+Main:CreateButton("Refresh", function()
+    local tmp = LocalPlayer.Character.HumanoidRootPart.CFrame; SavedPositions.AutoRe = tmp; sent = true
+    SaveCamPos(); LocalPlayer.Character:BreakJoints(); task.wait(.15); game.ReplicatedStorage.Network.Remotes.Spawn:FireServer()
+    sent2 = true
+end)
 Main:CreateTextbox("Time To Respawn", function(text)
   time = text
 end)
@@ -57,9 +64,9 @@ local lochar = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
 local function ondiedevent()
 	coroutine.wrap(function()
 		Connections.Died:Disconnect(); SaveCamPos()
-		SavedPositions.AutoRe = lochar:WaitForChild("HumanoidRootPart", 1) and LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame
+		SavedPositions.AutoRe = lochar:WaitForChild("HumanoidRootPart", 1) and LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame; sent = true
         if autoRespawn then
-               task.wait(time); game.ReplicatedStorage.Network.Remotes.Spawn:FireServer()
+               task.wait(.15); game.ReplicatedStorage.Network.Remotes.Spawn:FireServer()
         end
 	end)()
 end
@@ -73,10 +80,10 @@ local function charaddtask()
 end
 local function oncharadded()
 	lochar = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
-	if SavedPositions.AutoRe and autoRespawn then
+	if SavedPositions.AutoRe and autoRespawn and sent then
 		local LRoot = lochar:WaitForChild("HumanoidRootPart", 1)
 		if LRoot then
-			LRoot.CFrame = SavedPositions.AutoRe; LoadCamPos(); LRoot.CFrame = SavedPositions.AutoRe
+			LRoot.CFrame = SavedPositions.AutoRe; LoadCamPos(); LRoot.CFrame = SavedPositions.AutoRe; sent = nil
 			task.spawn(function()
 				for i = 1, 4 do
 					task.wait(); LRoot.CFrame = SavedPositions.AutoRe
@@ -84,9 +91,20 @@ local function oncharadded()
 			end)
 		end
 	end
+    if sent2 then
+        local LRoot = lochar:WaitForChild("HumanoidRootPart", 1)
+		if LRoot then
+			LRoot.CFrame = SavedPositions.AutoRe; LoadCamPos(); LRoot.CFrame = SavedPositions.AutoRe; sent2 = nil
+			task.spawn(function()
+				for i = 1, 4 do
+					task.wait(); LRoot.CFrame = SavedPositions.AutoRe
+				end
+			end)
+		end
+    end
 	lochar:WaitForChild("Humanoid", 1):SetStateEnabled(Enum.HumanoidStateType.FallingDown, false)
 	lochar:WaitForChild("Humanoid", 1):SetStateEnabled(Enum.HumanoidStateType.Ragdoll, false)
-  coroutine.wrap(charaddtask)()
+    coroutine.wrap(charaddtask)()
 end
 Connections.Died = lochar:WaitForChild("Humanoid").Died:Connect(ondiedevent)
 Connections.CharacterAdded = LocalPlayer.CharacterAdded:Connect(oncharadded)
