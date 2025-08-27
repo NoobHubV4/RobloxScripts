@@ -35,7 +35,7 @@ function TeamTo(teamColor)
     local tmp = LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame; SavedPositions.AutoRe = tmp; SaveCamPos()
 	game.ReplicatedStorage.HomeConfig.JoinTeam:FireServer(teamColor); LocalPlayer.CharacterAdded:Wait()
 		if waitfor(LocalPlayer.Character, "HumanoidRootPart", 4) then
-			LocTP(tmp)
+			LocalPlayer.Character.HumanoidRootPart.CFrame = tmp
 		end; LoadCamPos()
 end
 Main:CreateToggle("Auto Respawn", function(state)
@@ -51,8 +51,6 @@ Team:CreateButton("Change Team", function()
     TeamTo(BrickColor.new(team))
   end
 end)
-SavedPositions.AutoRe = nil
-Connections.Died = nil
 local lochar = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
 local function ondiedevent()
 	coroutine.wrap(function()
@@ -90,3 +88,11 @@ local function oncharadded()
 end
 Connections.Died = lochar:WaitForChild("Humanoid").Died:Connect(ondiedevent)
 Connections.CharacterAdded = LocalPlayer.CharacterAdded:Connect(oncharadded)
+while task.wait() do
+  function task0()
+    if game:GetService("StarterGui"):GetCoreGuiEnabled("All") == false then
+      game:GetService("StarterGui"):SetCoreGuiEnabled('All', true)
+    end
+  end
+  task.spawn(task0)
+end
