@@ -21,12 +21,8 @@ function LoadCamPos()
 	Camera.CFrame = SavedPositions.OldCameraPos or Camera.CFrame
 end
 Main:CreateButton("Refresh", function()
-    local tmp = LocalPlayer.Character.HumanoidRootPart.CFrame; SavedPositions.AutoRe = tmp; sent = true
+    SavedPositions.AutoRe = LocalPlayer.Character.HumanoidRootPart.CFrame; sent2 = true
     SaveCamPos(); LocalPlayer.Character:BreakJoints(); task.wait(.15); game.ReplicatedStorage.Network.Remotes.Spawn:FireServer()
-    sent2 = true
-end)
-Main:CreateTextbox("Time To Respawn", function(text)
-  time = text
 end)
 Main:CreateToggle("Auto Respawn", function(state)
   autoRespawn = state
