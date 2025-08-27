@@ -3,12 +3,15 @@ local remote = game.ReplicatedStorage.Packages:FindFirstChild("_Index"):FindFirs
 local Window = lib:NewWindow("Fish It")
 local Section = Window:NewSection("Main")
 Section:CreateButton("Throw Perfect", function()
-  remote:FindFirstChild("RE/EquipToolFromHotbar"):FireServer(1); wait(.1)
+  if workspace.Characters:FindFirstChild(game.Players.LocalPlayer.Name):FindFirstChild("!!!FISHING_VIEW_MODEL!!!") then
+    remote:FindFirstChild("RE/EquipToolFromHotbar"):FireServer(1); repeat game.RunService.RenderStepped:Wait() until workspace.Characters:FindFirstChild(game.Players.LocalPlayer.Name):FindFirstChild("!!!EQUIPPED_TOOL!!!")
+  end
   remote:FindFirstChild("RF/ChargeFishingRod"):InvokeServer(0)
   remote:FindFirstChild("RF/RequestFishingMinigameStarted"):InvokeServer(0, 1)
 end)
 Section:CreateButton("God Mode", function()
   remote:FindFirstChild("URE/UpdateOxygen"):FireServer(-math.huge)
+  game.Lighting.Blur.Enabled = false
 end)
 spawn(function()
   function task0()
@@ -18,3 +21,11 @@ spawn(function()
     pcall(task0)
   end
 end)
+game.Players.LocalPlayer.CharacterAdded:Connect(function(newChar)
+  newChar:FindFirstChild("Humanoid", 1).AnimationPlayed:Connect(function(anim)
+    if anim.Animation.AnimationId == "rbxassetid://117319000848286" then
+      anim:Stop(); anim:Destroy()
+    end
+  end)
+end)
+remote:FindFirstChild("URE/UpdateOxygen"):FireServer(1e15)
