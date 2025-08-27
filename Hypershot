@@ -52,6 +52,14 @@ Main:CreateToggle("Auto Kill", function(state)
             end
           end
         end
+      elseif LocalPlayer.Character:GetAttribute("Team") == -1 then
+        for i,v in next, game.workspace:GetChildren() do
+          if v:IsA("Model") and v ~= workspace:FindFirstChild(LocalPlayer.Name) then
+            if v:GetAttribute("Team") == 1 then
+              v.HumanoidRootPart.CFrame = LocalPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(0, 0, -9)
+            end
+          end
+        end
       end
     end)
   else
