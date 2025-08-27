@@ -1,6 +1,5 @@
 local lib = loadstring(Game:HttpGet("https://raw.githubusercontent.com/NoobHubV1/NoobHubV1/main/Wizard%20Lib.lua"))()
 local autoFarm, autoSell, autoFinish, Connection
-local SavedTool
 local Window = lib:NewWindow("Fish Go")
 local Section = Window:NewSection("Main")
 Section:CreateToggle("Auto Farm", function(state)
@@ -17,8 +16,7 @@ Section:CreateToggle("Auto Sell", function(state)
   if autoSell then
     Connection = game.Players.LocalPlayer.Backpack.ChildAdded:Connect(function(child)
       if not child.Name:lower():find("rod") then
-        SavedTool = game.Players.LocalPlayer.Character:FindFirstChildOfClass("Tool"); game.Players.LocalPlayer.Character.Humanoid:EquipTool(child)
-        game.ReplicatedStorage.Modules.Utility.Network.Events.RemoteEvent:FireServer(unpack({"SellHoldingFish", [3] = 2})); SavedTool.Parent = game.Players.LocalPlayer.Character
+        game.ReplicatedStorage.Modules.Utility.Network.Events.RemoteEvent:FireServer(unpack({"SellInventory", [3] = 2}))
       end
     end)
     game.ReplicatedStorage.Modules.Utility.Network.Events.RemoteEvent:FireServer(unpack({"SellInventory", [3] = 2}))
@@ -36,8 +34,13 @@ game.Players.LocalPlayer.Character.Humanoid.AnimationPlayed:Connect(function(ani
   if not autoFinish then return end
   if anim.Animation.AnimationId == "rbxassetid://104869713435448" then
     anim:Stop(); anim:Destroy()
-  end
-  if anim.Animation.AnimationId == "rbxassetid://101496371606410" then
+  elseif anim.Animation.AnimationId == "rbxassetid://98335049045499" then
+    anim:Stop(); anim:Destroy()
+  elseif anim.Animation.AnimationId == "rbxassetid://92212103182902" then
+    anim:Stop(); anim:Destroy()
+  elseif anim.Animation.AnimationId == "rbxassetid://101496371606410" then
+    anim:Stop(); anim:Destroy()
+  elseif anim.Animation.AnimationId == "rbxassetid://72042857135745" then
     anim:Stop(); anim:Destroy()
   end
 end)
