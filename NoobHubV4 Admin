@@ -385,6 +385,7 @@ Cmd[#Cmd + 1] = {Text = "loudpunch [on/off]",Title = "States loudpunch to true o
 Cmd[#Cmd + 1] = {Text = "servercrash",Title = "Crash the Server"}
 Cmd[#Cmd + 1] = {Text = "notifybar",Title = "Visible Notify bar"}
 Cmd[#Cmd + 1] = {Text = "armory [plr]",Title = "Teleport Player to armory"}
+Cmd[#Cmd + 1] = {Text = "spamsounds [on/off]",Title = "States spamsounds to true or false"}
 
 local Material = {}
 local Toggles = {AutoRespawn = false; AutoGuns = nil, AntiTase = false, SpamPunch = false, AntiBring = false}
@@ -855,7 +856,7 @@ local MultiKill = function(plrs, bullet, guntouse)
 		SaveCamPos()
 		TeamEve("Medium stone grey")
 		Rstorage.ShootEvent:FireServer(ShootEvents, AK)
-		task.wait(0.015)
+		task.wait(0.01)
 		TeamEve("Bright orange")
 	else
 		Rstorage.ShootEvent:FireServer(ShootEvents, AK)
@@ -1464,6 +1465,15 @@ function PlayerChatted(Message)
         elseif not DaPlayer then
             Notify("Not Player in server or player left", Color3.fromRGB(255, 0, 0), "Error")
         end
+    elseif Command("spamsounds") then
+        if args[2] == "on" then
+            States.Spamsounds = true
+        elseif args[2] == "off" then
+            States.Spamsounds = false
+        else
+            States.Spamsounds = not States.Spamsounds
+        end
+        Notify("Spam Sound changed to "..tostring(States.Spamsounds), Color3.fromRGB(0, 255, 0), "Success")
     else
         Notify("Not a command list", Color3.fromRGB(255, 0, 0), "Error")
     end
@@ -1689,6 +1699,10 @@ task.spawn(function()
 		end
         if Toggles.AntiBring and LocalPlayer.Character.Humanoid.Sit then
             LAction("unsit")
+        end
+        if States.Spamsounds then
+            local sound = LocalPlayer.Character.Head.punchSound; sound.Volume = math.huge; sound:Play()
+            Rstorage.SoundEvent:FireServer(sound)
         end
     end
     while task.wait() do
