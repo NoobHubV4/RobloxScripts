@@ -10,11 +10,13 @@ local Stepped = Rservice.Stepped
 local LocalPlayer = game.Players.localPlayer
 local Window = lib:NewWindow("Hypershot")
 local Main = Window:NewSection("Main")
+function waitForRespawn(arg)
+    if arg then
+        repeat task.wait() until not LocalPlayer.PlayerGui.TouchGui.Enabled
+    end
+end
 function LocTP(arg)
     LocalPlayer.Character.HumanoidRootPart.CFrame = arg
-end
-function waitfor()
-    repeat game.RunService.Stepped:Wait() until not LocalPlayer.PlayerGui.TouchGui.Enabled
 end
 function SaveCamPos()
 	SavedPositions.OldCameraPos = Camera.CFrame
@@ -25,7 +27,7 @@ function LoadCamPos()
 end
 Main:CreateButton("Refresh", function()
     SavedPositions.AutoRe = LocalPlayer.Character.HumanoidRootPart.CFrame; sent2 = true
-    SaveCamPos(); LocalPlayer.Character:BreakJoints(); waitfor(); game.ReplicatedStorage.Network.Remotes.Spawn:FireServer()
+    SaveCamPos(); LocalPlayer.Character:BreakJoints(); waitForRespawn(true); game.ReplicatedStorage.Network.Remotes.Spawn:FireServer()
 end)
 Main:CreateToggle("Auto Respawn", function(state)
   autoRespawn = state
@@ -70,7 +72,7 @@ local function ondiedevent()
 		Connections.Died:Disconnect(); SaveCamPos()
 		SavedPositions.AutoRe = lochar:WaitForChild("HumanoidRootPart", 1) and LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame; sent = true
         if autoRespawn then
-               waitfor()
+               waitForRespawn(true)
                game.ReplicatedStorage.Network.Remotes.Spawn:FireServer()
         end
 	end)()
