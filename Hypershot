@@ -10,6 +10,7 @@ local Stepped = Rservice.Stepped
 local LocalPlayer = game.Players.localPlayer
 local Window = lib:NewWindow("Hypershot")
 local Main = Window:NewSection("Main")
+local autoReload
 function waitForRespawn(arg)
     if arg then
         repeat task.wait() until not LocalPlayer.PlayerGui.TouchGui.Enabled
@@ -24,17 +25,23 @@ function listenToMainGui(main)
             SaveCamPos(); waitForRespawn(true); game.ReplicatedStorage.Network.Remotes.Spawn:FireServer()
         end
     end)
+    main.AbilityFrames.AmmoFrame.AmmoLabel:GetPropertyChangedSignal("Text"):Connect(function()
+        if main.AbilityFrames.AmmoFrame.AmmoLabel.Text == "0 | 0" and autoReload then
+            SavedPositions.AutoRe = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame; SaveCamPos(); LocalPlayer.Character:BreakJoints(); sent2 = true; waitForRespawn(true)
+            game.ReplicatedStorage.Network.Remotes.Spawn:FireServer()
+        end
+    end)
 end
-function listenToPlayerGui()
+function listenToPlayerGui(childName)
     local playerGui = LocalPlayer.PlayerGui
 
-    local mainGui = playerGui:FindFirstChild("MainGui")
+    local mainGui = playerGui:FindFirstChild(childName)
     if mainGui then
         listenToMainGui(mainGui)
     end
 
     playerGui.ChildAdded:Connect(function(child)
-        if child.Name == "MainGui" then
+        if child.Name == childName then
             listenToMainGui(child)
         end
     end)
@@ -87,6 +94,9 @@ Main:CreateToggle("Auto Kill", function(state)
     Connections.Stepped:Disconnect(); Connections.Stepped = nil
   end
 end)
+Main:CreateToggle("Auto Reload Gun", function(state)
+  autoReload = state
+end)
 local lochar = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
 local function charaddtask()
 	Connections.Died:Disconnect()
@@ -124,4 +134,4 @@ local function oncharadded()
     coroutine.wrap(charaddtask)()
 end
 Connections.CharacterAdded = LocalPlayer.CharacterAdded:Connect(oncharadded)
-listenToPlayerGui()
+listenToPlayerGui("MainGui")
