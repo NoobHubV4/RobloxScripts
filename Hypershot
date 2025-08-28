@@ -26,7 +26,7 @@ function listenToMainGui(main)
         end
     end)
     main.AbilityFrames.AmmoFrame.AmmoLabel:GetPropertyChangedSignal("Text"):Connect(function()
-        if main.AbilityFrames.AmmoFrame.AmmoLabel.Text == "0 | 0" and autoReload then
+        if main.AbilityFrames.AmmoFrame.AmmoLabel.Text == "0 | 180" and autoReload then
             SavedPositions.AutoRe = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame; SaveCamPos(); LocalPlayer.Character:BreakJoints(); sent2 = true; waitForRespawn(true)
             game.ReplicatedStorage.Network.Remotes.Spawn:FireServer()
         end
