@@ -1,0 +1,17 @@
+local lib = loadstring(Game:HttpGet("https://raw.githubusercontent.com/NoobHubV1/NoobHubV1/main/Wizard%20Lib.lua"))()
+local autoRespawn
+local Window = lib:NewWindow("Gun Grounds FFA")
+local Section = Window:NewSection("Main")
+Section:CreateToggle("Auto Respawn", function(state)
+  autoRespawn = state
+end)
+game.Players.localPlayer.CharacterAdded:Connect(function(NewCharacter)
+	NewCharacter:WaitForChild("HumanoidRootPart")
+	NewCharacter:WaitForChild("Head")
+	NewCharacter:WaitForChild("Humanoid").Died:Connect(function()
+		if autoRespawn then
+			game.ReplicatedStorage.Remotes.PlayerReQuests.Deploy:FireServer("Play")
+		end
+	end)
+end)
+game.ReplicatedStorage.Remotes.PlayerReQuests.Deploy:FireServer("Play")
