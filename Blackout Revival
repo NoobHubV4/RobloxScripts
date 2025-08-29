@@ -1,0 +1,85 @@
+local lib = loadstring(Game:HttpGet("https://raw.githubusercontent.com/NoobHubV1/NoobHubV1/main/Wizard%20Lib.lua"))()
+local autoRespawn, sent, sent2
+local SavedPositions = {AutoRe = nil;}
+local Connections = {CharacterAdded = nil, Stepped = nil}
+local Camera = game:FindService("Workspace").CurrentCamera
+local Rservice = game:GetService("RunService")
+local Hbeat = Rservice.Heartbeat
+local Rstep = Rservice.RenderStepped
+local Stepped = Rservice.Stepped
+local LocalPlayer = game.Players.localPlayer
+local Window = lib:NewWindow("Blackout Revival")
+local Main = Window:NewSection("Main")
+function waitForRespawn(arg)
+    if arg then
+        repeat Hbeat:Wait() until LocalPlayer.PlayerGui.DeathGui.Enabled
+    end
+end
+function listenToMainGui(main)
+    if not main then return end
+
+    main:GetPropertyChangedSignal("Enabled"):Connect(function()
+        if main.Enabled and autoRespawn then
+            SavedPositions.AutoRe = LocalPlayer.Character:WaitForChild("HumanoidRootPart", 1) and LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame; sent = true
+            SaveCamPos(); waitForRespawn(true); game.ReplicatedStorage.Events.Player.Respawn:FireServer(); main.Enabled = nil
+        end
+    end)
+end
+function listenToPlayerGui(childName)
+    local playerGui = LocalPlayer.PlayerGui
+
+    local mainGui = playerGui:FindFirstChild(childName)
+    if mainGui then
+        listenToMainGui(mainGui)
+    end
+
+    playerGui.ChildAdded:Connect(function(child)
+        if child.Name == childName then
+            listenToMainGui(child)
+        end
+    end)
+end
+function SaveCamPos()
+	SavedPositions.OldCameraPos = Camera.CFrame
+end
+function LoadCamPos()
+	Rstep:Wait()
+	Camera.CFrame = SavedPositions.OldCameraPos or Camera.CFrame
+end
+Main:CreateButton("Refresh", function()
+    SavedPositions.AutoRe = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame; SaveCamPos(); sent2 = true; LocalPlayer.Character.Humanoid.Health = 0
+    waitForRespawn(true); game.ReplicatedStorage.Events.Player.Respawn:FireServer(); LocalPlayer.PlayerGui.DeathGui.Enabled = nil
+end)
+Main:CreateToggle("Auto Respawn", function(state)
+  autoRespawn = state
+end)
+local function oncharadded()
+	lochar = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+	if SavedPositions.AutoRe and autoRespawn and sent then
+		local LRoot = lochar:WaitForChild("HumanoidRootPart", 1)
+		if LRoot then
+			LRoot.CFrame = SavedPositions.AutoRe; LoadCamPos(); LRoot.CFrame = SavedPositions.AutoRe; sent = nil
+			task.spawn(function()
+				for i = 1, 4 do
+					task.wait(); LRoot.CFrame = SavedPositions.AutoRe
+				end
+			end)
+		end
+	end
+    if sent2 then
+		local LRoot = lochar:WaitForChild("HumanoidRootPart", 1)
+		if LRoot then
+			LRoot.CFrame = SavedPositions.AutoRe; LoadCamPos(); LRoot.CFrame = SavedPositions.AutoRe; sent2 = nil
+			task.spawn(function()
+				for i = 1, 4 do
+					task.wait(); LRoot.CFrame = SavedPositions.AutoRe
+				end
+			end)
+		end
+	end
+	lochar:WaitForChild("Humanoid", 1):SetStateEnabled(Enum.HumanoidStateType.FallingDown, false)
+	lochar:WaitForChild("Humanoid", 1):SetStateEnabled(Enum.HumanoidStateType.Ragdoll, false)
+    coroutine.wrap(charaddtask)()
+end
+Connections.CharacterAdded = LocalPlayer.CharacterAdded:Connect(oncharadded)
+listenToPlayerGui("DeathGui")
