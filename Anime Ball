@@ -6,24 +6,16 @@ local Window = Fluent:CreateWindow({Title = "Anime Ball",SubTitle = "v1.2",TabWi
 local Tabs = {Home = Window:AddTab({ Title = "Home", Icon = "" }),Combat = Window:AddTab({ Title = "Combat", Icon = "" }),}
 local Player = game.Players.localPlayer
 local VIM = game:GetService("VirtualInputManager") or game:FindFirstDescendant("VirtualInputManager")
-local AutoMove = false
-local AutoParry
-local Cooldown
+local AutoMove, AutoParry, Cooldown
 local ScreenGui = Instance.new("ScreenGui", game.CoreGui)
 local Toggle = Instance.new("TextButton", ScreenGui)
 local Toggle2 = Instance.new("TextButton", ScreenGui)
 local UICorner = Instance.new("UICorner", Toggle2)
 local SpamParry = false
-local visual1
-local visual2
-local mesh1
-local mesh2
-local ParryDistance = 0
-local showCircle
-local bill
-local frame
-local TextLabel
-local Stroke
+local visual1, visual2, mesh1, mesh2
+local ParryDistance, showCircle
+local bill, frame, TextLabel, Stroke
+local Position
 
 ScreenGui.Name = "gui"
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
@@ -211,7 +203,7 @@ spawn(function()
                 if not Parried then
                     break
                 end
-                if tick() - Cooldown >= 1 and Ball:GetAttribute("Target") == Player.Name then
+                if tick() - Cooldown >= 2 and Ball:GetAttribute("Target") == Player.Name then
                     Parried = false
                 end
             end
@@ -282,10 +274,11 @@ spawn(function()
                visual1.CFrame = GetRoot().CFrame
            end
            if GetBall() and AutoParry and visual1 and visual2 then
-               visual2.CFrame = CFrame.new(GetRoot().CFrame.p, GetBall().CFrame.p)
+               Position = GetBall().CFrame.p
+               visual2.CFrame = CFrame.new(GetRoot().CFrame.p, Position)
            end
            if not GetBall() and AutoParry and visual1 and visual2 then
-               visual2.CFrame = GetRoot().CFrame
+               visual2.CFrame = CFrame.new(GetRoot().CFrame.p, Position)
            end
       end
       while task.wait() do
