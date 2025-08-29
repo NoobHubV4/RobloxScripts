@@ -1,5 +1,5 @@
 local lib = loadstring(Game:HttpGet("https://raw.githubusercontent.com/NoobHubV1/NoobHubV1/main/Wizard%20Lib.lua"))()
-local autoRespawn, autoKill, sent, sent2
+local autoRespawn, sent, sent2
 local SavedPositions = {AutoRe = nil;}
 local Connections = {CharacterAdded = nil, Stepped = nil}
 local Camera = game:FindService("Workspace").CurrentCamera
@@ -10,7 +10,6 @@ local Stepped = Rservice.Stepped
 local LocalPlayer = game.Players.localPlayer
 local Window = lib:NewWindow("Blast Zone")
 local Main = Window:NewSection("Main")
-local autoReload
 function listenToMainGui(main)
     if not main then return end
 
