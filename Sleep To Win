@@ -1,8 +1,13 @@
+local lib = loadstring(Game:HttpGet("https://raw.githubusercontent.com/NoobHubV1/NoobHubV1/main/Wizard%20Lib.lua"))()
+local autoBuy, instantSleep
+local Window = lib:NewWindow("Sleep To Win")
+local Main = Window:NewSection("Main")
+local Open = Window:NewSection("Open UI")
 function listenToOverHead(Billboard)
     if not Billboard then return end
 
     Billboard.Protection:GetPropertyChangedSignal("Text"):Connect(function()
-        if Billboard.Protection.Text == "0" then
+        if Billboard.Protection.Text == "0" and autoBuy then
             game.ReplicatedStorage.BuyShield:FireServer()
         end
     end)
@@ -28,9 +33,31 @@ function listenToCharacterAdded()
         end
     end)
 end
+Main:CreateToggle("Auto Buy Shield", function(state)
+  autoBuy = state
+end)
+Open:CreateButton("Open Shop UI", function()
+  local UI = game.Players.localPlayer.PlayerGui.Main.Middle.Shop
+  UI.Visible = not UI.Visible
+end)
+Open:CreateButton("Open Buy Shield UI", function()
+  local UI = game.Players.localPlayer.PlayerGui.Main.Middle.BuyShield
+  UI.Visible = not UI.Visible
+end)
+Main:CreateToggle("Instant Sleep", function(state)
+  instantSleep = state
+  if instantSleep then
+    for i,v in ipairs(game.Workspace.Beds:GetChildren()) do
+      if v.Name == "Bed" and v.PromptButton and v.PromptButton.Sleep then
+        v.PromptButton.Sleep.HoldDuration = 0
+      end
+    end
+  else
+    for i,v in ipairs(game.Workspace.Beds:GetChildren()) do
+      if v.Name == "Bed" and v.PromptButton and v.PromptButton.Sleep then
+        v.PromptButton.Sleep.HoldDuration = 1
+      end
+    end
+  end
+end)
 listenToCharacterAdded()
-for i,v in ipairs(game.Workspace.Beds:GetChildren()) do
-if v.Name == "Bed" and v.PromptButton:FindFirstChild("Sleep") then
-v.PromptButton:FindFirstChild("Sleep").HoldDuration = 0
-end
-end
