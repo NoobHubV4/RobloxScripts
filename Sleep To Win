@@ -1,3 +1,34 @@
+function listenToOverHead(Billboard)
+    if not Billboard then return end
+
+    Billboard.Protection:GetPropertyChangedSignal("Text"):Connect(function()
+        if Billboard.Protection.Text == "0" then
+            game.ReplicatedStorage.BuyShield:FireServer()
+        end
+    end)
+end
+function listenToCharacterAdded()
+    local LocalPlayer = game.Players.localPlayer
+    local character = LocalPlayer.Character
+
+    local HRP = character.HumanoidRootPart
+
+    local bill = HRP:FindFirstChild("OverHead")
+    if bill then
+        listenToOverHead(bill)
+    end
+
+    LocalPlayer.CharacterAdded:Connect(function(newChar)
+        local rootPart = newChar:WaitForChild("HumanoidRootPart")
+        if rootPart then
+            local overHead = rootPart:WaitForChild("OverHead")
+            if overHead then
+                listenToOverHead(overHead)
+            end
+        end
+    end)
+end
+listenToCharacterAdded()
 for i,v in ipairs(game.Workspace.Beds:GetChildren()) do
 if v.Name == "Bed" and v.PromptButton:FindFirstChild("Sleep") then
 v.PromptButton:FindFirstChild("Sleep").HoldDuration = 0
