@@ -29,15 +29,19 @@ function TeamEve(arg)
   Resources("RemoteFunction"):InvokeServer("requestTeam", arg)
   LoadChar()
 end
-function GetPunch()
-  Resources("RemoteEvent"):FireServer('becomeHostile')
-  repeat task.wait() until LocalPlayer.Backpack:FindFirstChild("Punch") or LocalPlayer.Character:FindFirstChild("Punch")
-end
-function dealDamage(player, damage)
-  Resources("RemoteEvent"):FireServer("dealDamage", player.Character.Humanoid, damage)
-end
 Main:CreateToggle("Auto Respawn", function(state)
   autoRespawn = state
+end)
+Main:CreateButton("Kill All", function()
+  Resources("RemoteEvent"):FireServer("becomeHostile"); wait(.25)
+  repeat task.wait() until game.Players.LocalPlayer.Backpack.Punch
+game.Players.LocalPlayer.Backpack.Punch.Parent = game.Players.LocalPlayer.Character
+repeat task.wait() until game.Players.LocalPlayer.Character.Punch
+for i,v in ipairs(game.Players:GetPlayers()) do
+      if v ~= game.Players.LocalPlayer and not v.Character:FindFirstChild("ForceField") and v.Character.Humanoid.Health ~= 0 then
+            Resources("RemoteEvent"):FireServer("dealDamage", v.Character.Humanoid, 100)
+      end
+end
 end)
 Main:CreateToggle("Anti Ban", function(state)
   antiCheat = state
@@ -47,6 +51,10 @@ Team:CreateButton("Become Guard", function()
 end)
 Team:CreateButton("Become Inmate", function()
   TeamEve("prisoners")
+end)
+Team:CreateButton("Become Neutral", function()
+  Resources("RemoteEvent"):FireServer("choiceResult", "returnToMenu", true)
+  LoadChar()
 end)
 game.RunService.RenderStepped:Connect(function()
   if antiCheat and LocalPlayer.PlayerGui.GUI.banFrame.Visible then
