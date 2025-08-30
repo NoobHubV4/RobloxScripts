@@ -29,22 +29,31 @@ function TeamEve(arg)
   Resources("RemoteFunction"):InvokeServer("requestTeam", arg)
   LoadChar()
 end
+function Method(method, player)
+  if method == "tase" then
+    Resources("RemoteEvent"):FireServer("tase", player, Vector3.new())
+  elseif method == "arrest" then
+    Resources("RemoteEvent"):FireServer("cuff", player)
+  end
+end
+function damage(player, amount)
+  Resources("RemoteEvent"):FireServer("dealDamage", player.Character.Humanoid, amount)
+end
 Main:CreateToggle("Auto Respawn", function(state)
   autoRespawn = state
 end)
+Main:CreateToggle("Anti Ban", function(state)
+  antiCheat = state
+end)
 Main:CreateButton("Kill All", function()
   Resources("RemoteEvent"):FireServer("becomeHostile"); wait(.25)
-  repeat task.wait() until game.Players.LocalPlayer.Backpack.Punch
 game.Players.LocalPlayer.Backpack.Punch.Parent = game.Players.LocalPlayer.Character
 repeat task.wait() until game.Players.LocalPlayer.Character.Punch
 for i,v in ipairs(game.Players:GetPlayers()) do
       if v ~= game.Players.LocalPlayer and not v.Character:FindFirstChild("ForceField") and v.Character.Humanoid.Health ~= 0 then
-            Resources("RemoteEvent"):FireServer("dealDamage", v.Character.Humanoid, 100)
+             damage(v, 100)
       end
 end
-end)
-Main:CreateToggle("Anti Ban", function(state)
-  antiCheat = state
 end)
 Team:CreateButton("Become Guard", function()
   TeamEve("police")
