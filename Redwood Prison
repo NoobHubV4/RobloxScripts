@@ -1,6 +1,6 @@
 local lib = loadstring(Game:HttpGet("https://raw.githubusercontent.com/NoobHubV1/NoobHubV1/main/Wizard%20Lib.lua"))()
 local autoRespawn, Teams, antiCheat = nil, game.Teams, nil
-local SavedPositions = {AutoRe = nil}
+local SavedPositions = {AutoRe = nil, Crimpad = workspace["robber spawn"].CFrame}
 local Connections = {Died = nil, CharacterAdded = nil}
 local Camera = game:FindService("Workspace").CurrentCamera
 local Rservice = game:GetService("RunService")
