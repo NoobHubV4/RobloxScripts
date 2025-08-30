@@ -2,7 +2,7 @@ local lib = loadstring(Game:HttpGet("https://raw.githubusercontent.com/NoobHubV1
 local autoRespawn, Teams, antiCheat = nil, game.Teams, nil
 local SavedPositions = {AutoRe = nil, Crimpad = workspace["robber spawn"].CFrame}
 local Connections = {Died = nil, CharacterAdded = nil}
-local Camera = game:FindService("Workspace").CurrentCamera
+local Camera = game:FindService("Workspace").Camera
 local Rservice = game:GetService("RunService")
 local Hbeat = Rservice.Heartbeat
 local Rstep = Rservice.RenderStepped
@@ -12,12 +12,16 @@ local LocalPlayer = game.Players.localPlayer
 local Window = lib:NewWindow("Redwood Prison")
 local Main = Window:NewSection("Main")
 local Team = Window:NewSection("Team")
+local sentKill, connection
 function SaveCamPos()
 	SavedPositions.OldCameraPos = Camera.CFrame
 end
 function LoadCamPos()
 	Rstep:Wait()
 	Camera.CFrame = SavedPositions.OldCameraPos or Camera.CFrame
+end
+function LocTP(cframe)
+    LocalPlayer.Character.HumanoidRootPart.CFrame = cframe
 end
 function Resources(remote)
   return workspace.resources:FindFirstChild(remote)
@@ -26,8 +30,7 @@ function LoadChar()
   Resources("RemoteEvent"):FireServer("reloadMe")
 end
 function TeamEve(arg)
-  Resources("RemoteFunction"):InvokeServer("requestTeam", arg)
-  LoadChar()
+  Resources("RemoteFunction"):InvokeServer("requestTeam", arg); LoadChar()
 end
 function Method(method, player)
   if method == "tase" then
@@ -36,8 +39,39 @@ function Method(method, player)
     Resources("RemoteEvent"):FireServer("cuff", player)
   end
 end
-function damage(player, amount)
+function dealDamage(player, amount)
   Resources("RemoteEvent"):FireServer("dealDamage", player.Character.Humanoid, amount)
+end
+function TeamTo(args)
+  SavedPositions.AutoRe = LocalPlayer.Character.HumanoidRootPart.CFrame; SaveCamPos()
+  if args == "guard" then
+    TeamEve("police")
+  elseif args == "inmate" then
+    TeamEve("prisoners")
+  elseif args == "criminal" then
+    TeamEve("prisoners")
+    workspace["robber spawn"].CanCollide = false
+    workspace["robber spawn"].CFrame = LocalPlayer.Character.HumanoidRootPart.CFrame
+    LocalPlayer.CharacterAdded:Wait()
+    repeat task.wait()
+      pcall(function()
+        workspace["robber spawn"].CFrame = LocalPlayer.Character.HumanoidRootPart.CFrame
+      end)
+    until LocalPlayer.Team == game.Teams.Fugitives
+    workspace["robber spawn"].CFrame = SavedPositions.Crimpad
+    return
+  elseif args == "neutral" then
+    Resources("RemoteEvent"):FireServer("choiceResult", "returnToMenu", true); LoadChar()
+  end
+end
+function giveItem(Item)
+  Resources("RemoteFunction"):InvokeServer("giveItem", Item)
+end
+function Kill(plr)
+    repeat task.wait() giveItem("M60") until LocalPlayer.Backpack.M60
+    LocalPlayer.Backpack.M60.Parent = LocalPlayer.Character
+    dealDamage(plr, math.huge) wait(.075)
+    LocalPlayer.Character.M60:Destroy()
 end
 Main:CreateToggle("Auto Respawn", function(state)
   autoRespawn = state
@@ -46,28 +80,35 @@ Main:CreateToggle("Anti Ban", function(state)
   antiCheat = state
 end)
 Main:CreateButton("Kill All", function()
-  Resources("RemoteEvent"):FireServer("becomeHostile"); wait(.25)
-game.Players.LocalPlayer.Backpack.Punch.Parent = game.Players.LocalPlayer.Character
-repeat task.wait() until game.Players.LocalPlayer.Character.Punch
-for i,v in ipairs(game.Players:GetPlayers()) do
-      if v ~= game.Players.LocalPlayer and not v.Character:FindFirstChild("ForceField") and v.Character.Humanoid.Health ~= 0 then
-             damage(v, 100)
+if LocalPlayer.Team ~= Teams.Choosing then
+      TeamTo("neutral")
+      sentKill = true
+else
+      for i,v in ipairs(game.Players:GetPlayers()) do
+             if v.Team ~= Teams.Choosing and v ~= game.Players.LocalPlayer and not v.Character:FindFirstChild("ForceField") and v.Character.Humanoid.Health ~= 0 then
+                    Kill(v)
+             end
       end
 end
 end)
 Team:CreateButton("Become Guard", function()
-  TeamEve("police")
+  TeamTo("guard")
 end)
 Team:CreateButton("Become Inmate", function()
-  TeamEve("prisoners")
+  TeamTo("inmate")
+end)
+Team:CreateButton("Become Criminal", function()
+  TeamTo("criminal")
 end)
 Team:CreateButton("Become Neutral", function()
-  Resources("RemoteEvent"):FireServer("choiceResult", "returnToMenu", true)
-  LoadChar()
+  TeamTo("neutral")
 end)
 game.RunService.RenderStepped:Connect(function()
   if antiCheat and LocalPlayer.PlayerGui.GUI.banFrame.Visible then
     LocalPlayer.PlayerGui.GUI.banFrame.Visible = nil
+  end
+  if LocalPlayer.Team == Teams.Choosing and Camera.CameraType == "Scriptable" or LocalPlayer.PlayerGui.GUI.roleChoose.Visible then
+    Camera.CameraType = "Track"; LocalPlayer.PlayerGui.GUI.roleChoose.Visible = nil
   end
 end)
 local lochar = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
@@ -100,6 +141,14 @@ local function oncharadded()
 			end)
 		end
 	end
+    if sentKill then
+        sentKill = nil
+        for i,v in ipairs(game.Players:GetPlayers()) do
+               if v.Team ~= Teams.Choosing and v ~= game.Players.LocalPlayer and not v.Character:FindFirstChild("ForceField") and v.Character.Humanoid.Health ~= 0 then
+                      Kill(v)
+               end
+        end
+    end
 	lochar:WaitForChild("Humanoid", 1):SetStateEnabled(Enum.HumanoidStateType.FallingDown, false)
 	lochar:WaitForChild("Humanoid", 1):SetStateEnabled(Enum.HumanoidStateType.Ragdoll, false)
   coroutine.wrap(charaddtask)()
